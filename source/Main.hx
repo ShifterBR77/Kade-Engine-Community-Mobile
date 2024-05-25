@@ -28,16 +28,7 @@ import lime.app.Application;
 #if VIDEOS
 import hxvlc.util.Handle;
 #end
-#if desktop
-// crash handler stuff
-import openfl.events.UncaughtErrorEvent;
-import haxe.CallStack;
-import haxe.io.Path;
-import sys.FileSystem;
-import sys.io.File;
-import sys.io.Process;
-import openfl.system.System;
-#end
+import mobile.CrashHandler;
 import openfl.utils.AssetCache;
 
 using StringTools;
@@ -86,6 +77,8 @@ class Main extends Sprite
 		#end
 		Sys.setCwd(SUtil.getStorageDirectory());
 		#end
+
+		CrashHandler.init();
 
 		#if windows
 		@:functionCode("
@@ -169,7 +162,6 @@ class Main extends Sprite
 		// Finish up loading debug tools.
 		Debug.onGameStart();
 		#if desktop
-		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
 		#end
@@ -202,40 +194,6 @@ class Main extends Sprite
 	}
 
 	#if desktop
-	function onCrash(e:UncaughtErrorEvent):Void
-	{
-		var errMsg:String = "";
-		var path:String;
-		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
-		var dateNow:String = Date.now().toString();
-		dateNow = dateNow.replace(" ", "_");
-		dateNow = dateNow.replace(":", "'");
-		path = "./logs/" + "Crashlog " + dateNow + ".txt";
-		for (stackItem in callStack)
-		{
-			switch (stackItem)
-			{
-				case FilePos(s, file, line, column):
-					errMsg += file + " (line " + line + ")\n";
-				default:
-					Sys.println(stackItem);
-			}
-		}
-		errMsg += "\nUncaught Error: "
-			+ "Version : "
-			+ '${MainMenuState.kecVer} Error Type: '
-			+ e.error
-			+
-			"\nWoops! We fucked up somewhere! Report this window here : https://github.com/TheRealJake12/Kade-Engine-Community.git\n\n Why dont you join the discord while you're at it? : https://discord.gg/TKCzG5rVGf \n\n> Crash Handler written by: sqirra-rng";
-		if (!FileSystem.exists("./logs/"))
-			FileSystem.createDirectory("./logs/");
-		File.saveContent(path, errMsg + "\n");
-		Sys.println(errMsg);
-		Sys.println("Crash dump saved in " + Path.normalize(path));
-		Application.current.window.alert(errMsg, "Error!");
-		Sys.exit(1);
-	}
-
 	function onWindowFocusOut()
 	{
 		focused = false;

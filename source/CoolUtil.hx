@@ -291,6 +291,11 @@ class CoolUtil
 	{
 		return Path.withoutDirectory(Path.withoutExtension(file));
 	}
+
+	public static inline function last<T>(array:Array<T>):T
+	{
+		return array[array.length - 1];
+	}
 }
 
 /**
