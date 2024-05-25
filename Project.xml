@@ -166,8 +166,9 @@
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
 	
 	<!--Where credit is due, Thanks sqirra-rng.-->	
-	<haxedef name="HXCPP_CHECK_POINTER" if="desktop" />
-	<haxedef name="HXCPP_STACK_LINE" if="desktop" />
+	<haxedef name="HXCPP_CHECK_POINTER" />
+	<haxedef name="HXCPP_STACK_LINE" />
+	<haxedef name="HXCPP_STACK_TRACE" />
 	
 	<haxedef name="no_deprecation_warnings" />
 	
