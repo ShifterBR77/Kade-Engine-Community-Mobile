@@ -1,7 +1,5 @@
 package openfl.display;
 
-package openfl.display;
-
 #if !flash
 import openfl.display3D._internal.GLProgram;
 import openfl.display3D._internal.GLShader;
