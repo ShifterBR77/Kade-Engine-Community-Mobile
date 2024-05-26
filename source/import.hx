@@ -15,7 +15,6 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSpriteUtil;
 import tjson.TJSON as Json;
 import flixel.input.keyboard.FlxKey;
-
 #if android
 import android.content.Context as AndroidContext;
 import android.widget.Toast as AndroidToast;

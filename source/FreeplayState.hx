@@ -189,8 +189,10 @@ class FreeplayState extends MusicBeatState
 
 		var bottomText:String = #if PRELOAD_ALL "  Press SPACE to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /"
 			+ #else "  Click and scroll through the songs with your MOUSE /"
-			+ #end
-		" Your offset is " + FlxG.save.data.offset + "ms " + (FlxG.save.data.optimize ? "/ Optimized" : "");
+			+ #end " Your offset is "
+			+ FlxG.save.data.offset
+			+ "ms "
+			+ (FlxG.save.data.optimize ? "/ Optimized" : "");
 
 		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.4), 337, 0xFF000000);
 		scoreBG.alpha = 0.6;
@@ -638,7 +640,8 @@ class FreeplayState extends MusicBeatState
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
-			if (FlxG.mouse.wheel != 0) {
+			if (FlxG.mouse.wheel != 0)
+			{
 				#if desktop
 				changeSelection(-FlxG.mouse.wheel);
 				#else
