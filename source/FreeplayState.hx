@@ -111,8 +111,7 @@ class FreeplayState extends MusicBeatState
 	public static var list:Array<String> = [];
 
 	override function create()
-	{
-		var stamp = haxe.Timer.stamp();
+	{var stamp = haxe.Timer.stamp();
 		instance = this;
 		PlayState.SONG = null;
 		FlxG.mouse.visible = true;
@@ -190,9 +189,9 @@ class FreeplayState extends MusicBeatState
 		var bottomText:String = #if PRELOAD_ALL "  Press SPACE to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /"
 			+ #else "  Click and scroll through the songs with your MOUSE /"
 			+ #end " Your offset is "
-			+ FlxG.save.data.offset
-			+ "ms "
-			+ (FlxG.save.data.optimize ? "/ Optimized" : "");
+		+ FlxG.save.data.offset
+		+ "ms "
+		+ (FlxG.save.data.optimize ? "/ Optimized" : "");
 
 		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.4), 337, 0xFF000000);
 		scoreBG.alpha = 0.6;
@@ -237,10 +236,13 @@ class FreeplayState extends MusicBeatState
 
 		add(previewtext);
 
+		final daShift:String = FlxG.onMobile ? "X" : "SHIFT";
+		final daCtrl:String = FlxG.onMobile ? "Y" : "CTRL";
+
 		helpText = new CoolText(scoreText.x, scoreText.y + 200, 18, 18, Paths.bitmapFont('fonts/vcr'));
 		helpText.autoSize = true;
-		helpText.text = "LEFT-RIGHT to change Difficulty\n\n" + "SHIFT + LEFT-RIGHT to change Rate\n" + "if it's possible\n\n"
-			+ "CTRL to open Gameplay Modifiers\n" + "";
+		helpText.text = "LEFT-RIGHT to change Difficulty\n\n" + '$daShift + LEFT-RIGHT to change Rate\n' + "if it's possible\n\n"
+			+ '$daCtrl to open Gameplay Modifiers\n';
 
 		helpText.antialiasing = FlxG.save.data.antialiasing;
 		helpText.color = 0xFFfaff96;
@@ -291,6 +293,8 @@ class FreeplayState extends MusicBeatState
 			changeSelection();
 			changeDiff();
 		}
+
+		addVirtualPad(LEFT_FULL, A_B_X_Y);
 
 		super.create();
 		Paths.clearUnusedMemory();
@@ -398,7 +402,8 @@ class FreeplayState extends MusicBeatState
 		#elseif FEATURE_STEPMANIA
 		// TODO: Refactor this to multiple difficulties.
 		// trace("tryin to load sm files");
-		if (!FileSystem.exists("assets/sm/")) FileSystem.createDirectory("assets/sm/");
+		if (!FileSystem.exists("assets/sm/"))
+			FileSystem.createDirectory("assets/sm/");
 		for (i in FileSystem.readDirectory("assets/sm/"))
 		{
 			// trace(i);
@@ -672,7 +677,7 @@ class FreeplayState extends MusicBeatState
 		previewtext.updateHitbox();
 		previewtext.alpha = 1;
 
-		if (FlxG.keys.justPressed.CONTROL && !openMod && !MusicBeatState.switchingState && doUpdateText)
+		if (virtualPad.buttonY.justPressed || FlxG.keys.justPressed.CONTROL && !openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
 			openMod = true;
 			FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -681,7 +686,7 @@ class FreeplayState extends MusicBeatState
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
-			if (FlxG.keys.pressed.SHIFT) // && songs[curSelected].songName.toLowerCase() != "tutorial")
+			if (virtualPad.buttonX.pressed || FlxG.keys.pressed.SHIFT) // && songs[curSelected].songName.toLowerCase() != "tutorial")
 			{
 				if (FlxG.keys.justPressed.LEFT || controls.LEFT_P)
 				{
@@ -730,7 +735,7 @@ class FreeplayState extends MusicBeatState
 				if (FlxG.keys.justPressed.RIGHT || controls.RIGHT_P)
 					changeDiff(1);
 
-				if (FlxG.mouse.justPressedRight)
+				if (!FlxG.onMobile && FlxG.mouse.justPressedRight)
 				{
 					changeDiff(1);
 				}
@@ -783,7 +788,7 @@ class FreeplayState extends MusicBeatState
 
 			for (item in grpSongs.members)
 				if (accepted
-					|| (((FlxG.mouse.overlaps(item) && item.targetY == curSelected) || (FlxG.mouse.overlaps(iconArray[curSelected])))
+					|| !FlxG.onMobile && (((FlxG.mouse.overlaps(item) && item.targetY == curSelected) || (FlxG.mouse.overlaps(iconArray[curSelected])))
 						&& FlxG.mouse.justPressed))
 				{
 					doUpdateText = false;

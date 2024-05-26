@@ -30,22 +30,25 @@ class OutdatedSubState extends MusicBeatState
 		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 
+		final buttonACCEPT:String = FlxG.onMobile ? "A" : "Space";
+		final buttonBACK:String = FlxG.onMobile ? "B" : MainMenuState.kecVer.contains("PRE-RELEASE") ? "Space/Escape" : "ENTER";
+
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Your KEC is outdated!\nYou are on "
+			"Your KEC Port is outdated!\nYou are on "
 			+ MainMenuState.kecVer
 			+ "\nwhile the most recent version is "
 			+ needVer
 			+ "."
 			+ "\n\nWhat's new:\n\n"
 			+ currChanges
-			+ "\n\nPress Space to view the full changelog and update\nor ENTER to ignore this",
+			+ '\n\nPress $buttonACCEPT to view the full changelog and update\nor $buttonBACK to ignore this',
 			32);
 
 		if (MainMenuState.kecVer.contains("PRE-RELEASE"))
 			txt.text = "You are on\n"
 				+ MainMenuState.kecVer
 				+ "\nWhich is a PRE-RELEASE BUILD!"
-				+ "\n\nReport all bugs to the author of the pre-release.\nSpace/Escape ignores this.";
+				+ '\n\nReport all bugs to the author of the pre-release.\n$buttonBACK ignores this.';
 
 		txt.setFormat("VCR OSD Mono", 23, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -66,7 +69,7 @@ class OutdatedSubState extends MusicBeatState
 				+ "."
 				+ "\n\nWhat's new:\n\n"
 				+ currChanges
-				+ "\n\nPress Space to view the full changelog and update\nor ENTER to ignore this",
+				+ '\n\nPress $buttonACCEPT to view the full changelog and update\nor $buttonBACK to ignore this',
 				32);
 
 			mom.setFormat("VCR OSD Mono", 23, FlxColor.fromRGB(200, 200, 200), CENTER);
@@ -91,11 +94,13 @@ class OutdatedSubState extends MusicBeatState
 		}, 0);
 
 		Paths.clearUnusedMemory();
+
+		addVirtualPad(NONE, A_B);
 	}
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.SPACE && !MainMenuState.kecVer.contains("PRE-RELEASE"))
+		if (virtualPad.buttonA.justPressed || FlxG.keys.justPressed.SPACE && !MainMenuState.kecVer.contains("PRE-RELEASE"))
 		{
 			fancyOpenURL("https://therealjake12.github.io/Kade-Engine-Community/changelogs/changelog-" + needVer);
 		}

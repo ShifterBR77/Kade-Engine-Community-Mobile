@@ -155,6 +155,8 @@ class Main extends Sprite
 		FlxG.mouse.visible = false;
 		#end
 
+		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
+
 		#if VIDEOS
 		Handle.initAsync();
 		#end

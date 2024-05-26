@@ -194,7 +194,6 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = controls.ACCEPT;
 
-		#if mobile
 		for (touch in FlxG.touches.list)
 		{
 			if (touch.justPressed)
@@ -202,7 +201,6 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			}
 		}
-		#end
 
 		super.update(elapsed);
 

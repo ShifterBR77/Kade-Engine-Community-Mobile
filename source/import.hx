@@ -27,6 +27,7 @@ import android.os.Build as AndroidBuild;
 import android.os.Build.VERSION as AndroidVersion;
 #end
 import mobile.SUtil;
+import mobile.SwipeUtil;
 #end
 
 using StringTools;

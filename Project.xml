@@ -106,6 +106,7 @@
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
 	<assets path="assets/fonts"/>
+	<assets path="assets/mobile"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxedev set='webgl' />
