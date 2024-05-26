@@ -186,7 +186,9 @@ class FreeplayState extends MusicBeatState
 		bottomBG.alpha = 0.6;
 		add(bottomBG);
 
-		var bottomText:String = #if PRELOAD_ALL "  Press SPACE to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /"
+		final daSpace:String = FlxG.onMobile ? "C" : "SPACE";
+
+		var bottomText:String = #if PRELOAD_ALL '  Press $daSpace to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /'
 			+ #else "  Click and scroll through the songs with your MOUSE /"
 			+ #end " Your offset is "
 		+ FlxG.save.data.offset
@@ -294,7 +296,7 @@ class FreeplayState extends MusicBeatState
 			changeDiff();
 		}
 
-		addVirtualPad(LEFT_FULL, A_B_X_Y);
+		addVirtualPad(LEFT_FULL, A_B_C_X_Y_Z);
 
 		super.create();
 		Paths.clearUnusedMemory();
@@ -667,7 +669,7 @@ class FreeplayState extends MusicBeatState
 				changeSelection(1);
 			}
 
-			if (FlxG.keys.justPressed.O && !openedPreview)
+			if (virtualPad.buttonZ.justPressed || FlxG.keys.justPressed.O && !openedPreview)
 			{
 				openSubState(new DiffOverview());
 				openedPreview = true;
@@ -679,6 +681,8 @@ class FreeplayState extends MusicBeatState
 
 		if (virtualPad.buttonY.justPressed || FlxG.keys.justPressed.CONTROL && !openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
+			persistentUpdate = false;
+			removeVirtualPad();
 			openMod = true;
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			openSubState(new FreeplaySubState.ModMenu());
@@ -741,7 +745,7 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 
-			if (FlxG.keys.justPressed.SPACE)
+			if (virtualPad.buttonC.justPressed || FlxG.keys.justPressed.SPACE)
 			{
 				dotheMusicThing();
 			}

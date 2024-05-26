@@ -124,6 +124,8 @@ class ModMenu extends MusicBeatSubstate
 
 		selectModifier(selectedModifier);
 
+		addVirtualPad(LEFT_FULL, A_B);
+
 		super.create();
 	}
 
@@ -344,6 +346,14 @@ class ModMenu extends MusicBeatSubstate
 				PlayerSettings.player1.controls.loadKeyBinds();
 
 				FlxG.state.closeSubState();
+
+				removeVirtualPad();
+
+				@:privateAccess
+				{
+					FreeplayState.instance.persistentUpdate = true;
+					FreeplayState.instance.addVirtualPad(LEFT_FULL, A_B_C_X_Y_Z);
+				}
 
 				FreeplayState.openMod = false;
 
