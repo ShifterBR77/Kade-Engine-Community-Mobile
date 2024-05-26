@@ -353,6 +353,8 @@ class OptionsMenu extends MusicBeatSubstate
 
 		switchCat(selectedCat);
 
+		addVirtualPad(LEFT_FULL, A_B);
+
 		super.create();
 	}
 
@@ -478,7 +480,7 @@ class OptionsMenu extends MusicBeatSubstate
 		down = controls.DOWN_P || FlxG.keys.justPressed.DOWN || (gamepad != null ? gamepad.justPressed.DPAD_DOWN : false);
 
 		any = FlxG.keys.justPressed.ANY || (gamepad != null ? gamepad.justPressed.ANY : false);
-		escape = FlxG.keys.justPressed.ESCAPE || (gamepad != null ? gamepad.justPressed.B : false);
+		escape = virtualPad.buttonB.justPressed || FlxG.keys.justPressed.ESCAPE || (gamepad != null ? gamepad.justPressed.B : false);
 
 		if (selectedCat != null && !exiting)
 		{
@@ -582,6 +584,7 @@ class OptionsMenu extends MusicBeatSubstate
 							MusicBeatState.switchState(new MainMenuState());
 						}
 					});
+					FlxTween.tween(virtualPad, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
 				}
 				else
 				{

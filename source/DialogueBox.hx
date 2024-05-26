@@ -131,13 +131,15 @@ class DialogueBox extends FlxSpriteGroup
 		box.updateHitbox();
 		add(box);
 
+		final skipButton:String = #if android "Back" #else FlxG.onMobile ? "X" : "Backspace" #end;
+
 		box.screenCenter(X);
 		portraitLeft.screenCenter(X);
 		skipText = new FlxText(10, 10, Std.int(FlxG.width * 0.6), "", 24);
 		skipText.font = Paths.font("vcr.ttf");
 		skipText.antialiasing = true;
 		skipText.color = 0x000000;
-		skipText.text = 'Press Backspace To Skip.';
+		skipText.text = 'Press $skipButton To Skip.';
 		skipText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE_FAST, FlxColor.BLACK);
 		add(skipText);
 		handSelect = new FlxSprite(FlxG.width * 0.9, FlxG.height * 0.9).loadGraphic(Paths.image('hud/pixel/hand_textbox'));
@@ -163,6 +165,8 @@ class DialogueBox extends FlxSpriteGroup
 		dialogue = new Alphabet(0, 80, "", false);
 		// dialogue.x = 90;
 		// add(dialogue);
+
+		// MTODO: NON-ANDROID SKIP BUTTON
 	}
 
 	var dialogueOpened:Bool = false;
@@ -196,7 +200,7 @@ class DialogueBox extends FlxSpriteGroup
 			startDialogue();
 			dialogueStarted = true;
 		}
-		if (PlayerSettings.player1.controls.BACK && isEnding != true)
+		if (#if android FlxG.android.justReleased.BACK || #end PlayerSettings.player1.controls.BACK && isEnding != true)
 		{
 			remove(dialogue);
 			isEnding = true;
@@ -225,7 +229,7 @@ class DialogueBox extends FlxSpriteGroup
 				kill();
 			});
 		}
-		if (PlayerSettings.player1.controls.ACCEPT && dialogueStarted == true)
+		if (FlxG.mouse.justPressed || PlayerSettings.player1.controls.ACCEPT && dialogueStarted == true)
 		{
 			remove(dialogue);
 

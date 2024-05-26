@@ -643,7 +643,7 @@ class FreeplayState extends MusicBeatState
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
-		var accepted = FlxG.keys.justPressed.ENTER && !FlxG.keys.pressed.ALT;
+		var accepted = virtualPad.buttonA.justPressed || FlxG.keys.justPressed.ENTER && !FlxG.keys.pressed.ALT;
 		var charting = FlxG.keys.justPressed.SEVEN;
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)

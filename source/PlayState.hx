@@ -1008,6 +1008,8 @@ class PlayState extends MusicBeatState
 				Debug.logInfo('Succesfully Loaded ' + SONG.songName);
 		}
 
+		addMobileControls(false);
+
 		generateSong(SONG.songId);
 
 		#if FEATURE_LUAMODCHART
@@ -1900,7 +1902,7 @@ class PlayState extends MusicBeatState
 		inCinematic = false;
 		inCutscene = false;
 
-		startedCountdown = true;
+		startedCountdown = mobileControls.visible = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
@@ -3231,7 +3233,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
 
-		if (controls.PAUSE && startedCountdown && canPause && !cannotDie)
+		if (#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE && startedCountdown && canPause && !cannotDie)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -4038,7 +4040,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		camZooming = false;
+		camZooming = mobileControls.visible = false;
 		endingSong = true;
 		inDaPlay = false;
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
