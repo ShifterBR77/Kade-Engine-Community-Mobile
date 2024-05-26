@@ -161,10 +161,8 @@ class Main extends Sprite
 
 		// Finish up loading debug tools.
 		Debug.onGameStart();
-		#if desktop
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
-		#end
 	}
 
 	public function checkInternetConnection()
@@ -193,7 +191,6 @@ class Main extends Sprite
 		http.request();
 	}
 
-	#if desktop
 	function onWindowFocusOut()
 	{
 		focused = false;
@@ -242,7 +239,6 @@ class Main extends Sprite
 		FlxG.drawFramerate = FlxG.save.data.fpsCap;
 		gameContainer.setFPSCap(FlxG.save.data.fpsCap);
 	}
-	#end
 
 	var fpsCounter:KadeEngineFPS;
 

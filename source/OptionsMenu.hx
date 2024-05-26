@@ -189,9 +189,7 @@ class OptionsMenu extends MusicBeatSubstate
 			new OptionCata(345, 40, "Appearance", [
 				new NoteskinOption("Change your Noteskin"),
 				new CPUNoteskinOption("Change the CPU Noteskin"),
-				#if desktop
 				new NotesplashOption("Change your Notesplash"), // new CPUNotesplashOption("Change the CPU Notesplash"),
-				#end
 				new CPUSplash("Allows The Opponent To Do Notesplashes"),
 				new NotesplashesOption("Uses Notesplashes."),
 				new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
@@ -233,15 +231,15 @@ class OptionsMenu extends MusicBeatSubstate
 			]),
 			new OptionCata(50, 104, "Perf", [
 				new FPSOption("Toggle the FPS Counter"),
-				#if desktop
+				#if !html5
 				new FPSCapOption("Change your FPS Cap."), new Memory("Toggle the Memory Counter"),
 				#end
 				new ShowState("Shows The Current Game State In The FPS Counter. Makes Debugging Easier."),
 				new WaterMarkFPS("Shows What Version Of The Game You Are Running In The FPS Counter."),
 				new RainbowFPSOption("Make the FPS Counter flicker through rainbow colors."),
-				#if desktop
+				//#if desktop
 				new Resolution("Change The Resolution The Game Plays In. (Press Enter To Apply.)"),
-				#end
+				//#end
 				new AntialiasingOption("Toggle antialiasing, improving graphics quality at a slight performance penalty."),
 				new GPURendering("Makes All Sprites Load Into VRAM, Reducing Normal RAM Usage. (Not Recommended For ~3GB VRAM)"), // Ill come back to this. I'm tired asf
 				new BackgroundsOption("Toggles Backrounds From Being Visible. (Good Performance Booster.)"),

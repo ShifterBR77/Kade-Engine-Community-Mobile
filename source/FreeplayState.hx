@@ -117,9 +117,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.SONG = null;
 		FlxG.mouse.visible = true;
 
-		#if desktop
 		Application.current.window.title = '${MainMenuState.kecVer} : In the Menus';
-		#end
 
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
@@ -640,17 +638,18 @@ class FreeplayState extends MusicBeatState
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
-			if (FlxG.mouse.wheel != 0)
-			{
+			#if !mobile
+			if (FlxG.mouse.wheel != 0) {
 				#if desktop
 				changeSelection(-FlxG.mouse.wheel);
 				#else
-				if (FlxG.mouse.wheel < 0) // HTML5 BRAIN'T
+				if (FlxG.mouse.wheel < 0)
 					changeSelection(1);
-				else if (FlxG.mouse.wheel > 0)
+				if (FlxG.mouse.wheel > 0)
 					changeSelection(-1);
 				#end
 			}
+			#end
 
 			if (upP)
 			{
@@ -829,7 +828,6 @@ class FreeplayState extends MusicBeatState
 
 	private function dotheMusicThing():Void
 	{
-		#if desktop
 		try
 		{
 			FlxG.sound.music.stop();
@@ -872,7 +870,6 @@ class FreeplayState extends MusicBeatState
 
 			currentSongPlaying = songs[curSelected].songName;
 		}
-		#end
 	}
 
 	function fard(farding:Bool = false)
