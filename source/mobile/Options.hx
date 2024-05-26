@@ -8,12 +8,12 @@ class MobileControlsOption extends Option
 	{
 		super();
 		acceptType = true;
+		description = desc;
 		if (OptionsMenu.isInPause)
 		{
 			blocked = true;
 			description = pauseDesc;
 		}
-		description = desc;
 	}
 
 	public override function press():Bool

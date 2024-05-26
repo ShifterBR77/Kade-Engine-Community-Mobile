@@ -253,7 +253,9 @@ class OptionsMenu extends MusicBeatSubstate
 			]),
 			new OptionCata(345, 104, "Experimental", [
 				new OpenGLStatsOption("In The FPS Display, It Will Display The Draw Calls For The Game."),
+				#if desktop
 				new CacheNow("Cache EVERYTHING."),
+				#end
 			]),
 			new OptionCata(387, 104, "Mobile", [
 				new mobile.Options.MobileControlsOption("Change Mobile Controls Type.")
