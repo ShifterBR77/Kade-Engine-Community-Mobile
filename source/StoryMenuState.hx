@@ -305,12 +305,9 @@ class StoryMenuState extends MusicBeatState
 					changeDifficulty(-1);
 			}
 
-			for (item in grpWeekText.members)
+			if (controls.ACCEPT || FlxG.mouse.justPressed && FlxG.mouse.overlaps(grpWeekText, grpWeekText.camera))
 			{
-				if (controls.ACCEPT || FlxG.mouse.justPressed && FlxG.mouse.overlaps(grpWeekText, grpWeekText.camera) && curWeek == item.ID)
-				{
-					selectWeek();
-				}
+				selectWeek();
 			}
 
 			if (FlxG.mouse.justPressedRight)
