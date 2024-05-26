@@ -237,9 +237,9 @@ class OptionsMenu extends MusicBeatSubstate
 				new ShowState("Shows The Current Game State In The FPS Counter. Makes Debugging Easier."),
 				new WaterMarkFPS("Shows What Version Of The Game You Are Running In The FPS Counter."),
 				new RainbowFPSOption("Make the FPS Counter flicker through rainbow colors."),
-				//#if desktop
+				#if desktop
 				new Resolution("Change The Resolution The Game Plays In. (Press Enter To Apply.)"),
-				//#end
+				#end
 				new AntialiasingOption("Toggle antialiasing, improving graphics quality at a slight performance penalty."),
 				new GPURendering("Makes All Sprites Load Into VRAM, Reducing Normal RAM Usage. (Not Recommended For ~3GB VRAM)"), // Ill come back to this. I'm tired asf
 				new BackgroundsOption("Toggles Backrounds From Being Visible. (Good Performance Booster.)"),

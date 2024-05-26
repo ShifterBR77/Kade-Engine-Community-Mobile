@@ -638,7 +638,6 @@ class FreeplayState extends MusicBeatState
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
-			#if !mobile
 			if (FlxG.mouse.wheel != 0) {
 				#if desktop
 				changeSelection(-FlxG.mouse.wheel);
@@ -649,7 +648,6 @@ class FreeplayState extends MusicBeatState
 					changeSelection(-1);
 				#end
 			}
-			#end
 
 			if (upP)
 			{
