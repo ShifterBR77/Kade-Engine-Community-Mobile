@@ -257,7 +257,7 @@ class OptionsMenu extends MusicBeatSubstate
 				new CacheNow("Cache EVERYTHING."),
 				#end
 			]),
-			new OptionCata(387, 104, "Mobile", [
+			new OptionCata(640, 104, "Mobile", [
 				new mobile.Options.MobileControlsOption("Change Mobile Controls Type.")
 			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
@@ -349,7 +349,7 @@ class OptionsMenu extends MusicBeatSubstate
 
 		for (i in 0...options.length - 1)
 		{
-			if (i > 5) // VERY IMPORTANT.
+			if (i > 6) // VERY IMPORTANT.
 				continue;
 			var cat = options[i];
 			add(cat);
@@ -798,7 +798,7 @@ class OptionsMenu extends MusicBeatSubstate
 		{
 			for (i in 0...options.length - 1)
 			{
-				if (i <= 5)
+				if (i <= 6)
 				{
 					clickedCat = ((FlxG.mouse.overlaps(options[i].titleObject) || FlxG.mouse.overlaps(options[i]))
 						&& FlxG.mouse.justPressed);
