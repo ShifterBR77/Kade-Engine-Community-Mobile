@@ -287,12 +287,12 @@ class StoryMenuState extends MusicBeatState
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT)
+				if (controls.RIGHT || FlxG.mouse.overlaps(rightArrow, rightArrow.camera) && FlxG.mouse.pressed)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (controls.LEFT)
+				if (controls.LEFT || FlxG.mouse.overlaps(leftArrow, leftArrow.camera) && FlxG.mouse.pressed)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
