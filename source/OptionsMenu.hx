@@ -255,6 +255,9 @@ class OptionsMenu extends MusicBeatSubstate
 				new OpenGLStatsOption("In The FPS Display, It Will Display The Draw Calls For The Game."),
 				new CacheNow("Cache EVERYTHING."),
 			]),
+			new OptionCata(387, 104, "Mobile", [
+				new mobile.Options.MobileControlsOption("Change Mobile Controls Type.")
+			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
 				new LeftKeybind("The left note's keybind"),
 				new DownKeybind("The down note's keybind"),
