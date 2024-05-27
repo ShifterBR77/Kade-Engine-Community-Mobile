@@ -55,6 +55,7 @@ class MainMenuState extends MusicBeatState
 		"Are you really reading this thing? (-Bolo)",
 		"I'm not gay, I'm default :trollface: (-Bolo)",
 		"I love men (-HomoKori)",
+		"If someone says \"can we have sex?\", Go for it!! tf u waiting for?? (-Lily)",
 		"Why do I have a pic of Mario with massive tits on my phone? (-Rudy)",
 		"Boner (-Red Radiant)",
 		"My Balls Itch (-TheRealJake_12)",
@@ -68,7 +69,7 @@ class MainMenuState extends MusicBeatState
 		#elseif web
 		"You're On Web. Why The FUCK Are You On Web. You Can't Get Good Easter Eggs. Mother Fucker.",
 		#else
-		'${Sys.environment()["USER"]}! Get down from the tree and put your clothes on, dammit. (-Antonella)',
+		'${#if mobile "Hey" #else Sys.environment()["USER"] #end}! Get down from the tree and put your clothes on, dammit. (-Antonella)',
 		#end
 	];
 

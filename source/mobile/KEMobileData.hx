@@ -1,6 +1,6 @@
 package mobile;
 
-import mobile.flixel.FlxVirtualPad;
+import flixel.util.FlxSave;
 
 class KEMobileData
 {

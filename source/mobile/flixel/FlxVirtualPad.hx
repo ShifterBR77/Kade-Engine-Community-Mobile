@@ -169,52 +169,28 @@ class FlxVirtualPad extends FlxSpriteGroup
 	override public function destroy():Void
 	{
 		super.destroy();
-		buttonLeft = FlxDestroyUtil.destroy(buttonLeft);
-		buttonUp = FlxDestroyUtil.destroy(buttonUp);
-		buttonDown = FlxDestroyUtil.destroy(buttonDown);
-		buttonRight = FlxDestroyUtil.destroy(buttonRight);
-
-		buttonLeft2 = FlxDestroyUtil.destroy(buttonLeft2);
-		buttonUp2 = FlxDestroyUtil.destroy(buttonUp2);
-		buttonDown2 = FlxDestroyUtil.destroy(buttonDown2);
-		buttonRight2 = FlxDestroyUtil.destroy(buttonRight2);
-
-		buttonA = FlxDestroyUtil.destroy(buttonA);
-		buttonB = FlxDestroyUtil.destroy(buttonB);
-		buttonP = FlxDestroyUtil.destroy(buttonP);
-		buttonC = FlxDestroyUtil.destroy(buttonC);
-		buttonD = FlxDestroyUtil.destroy(buttonD);
-		buttonE = FlxDestroyUtil.destroy(buttonE);
-		buttonV = FlxDestroyUtil.destroy(buttonV);
-		buttonX = FlxDestroyUtil.destroy(buttonX);
-		buttonY = FlxDestroyUtil.destroy(buttonY);
-		buttonZ = FlxDestroyUtil.destroy(buttonZ);
+		for (field in Reflect.fields(this))
+			if (Std.isOfType(Reflect.field(this, field), FlxButton))
+				Reflect.setField(this, field, FlxDestroyUtil.destroy(Reflect.field(this, field)));
 	}
 
 	private function createButton(X:Float, Y:Float, Graphic:String, Color:Int = 0xFFFFFF):FlxButton
 	{
 		var graphic:FlxGraphic;
 
-		if (Assets.exists('assets/mobile/virtualpad/${Graphic}.png'))
-			graphic = FlxG.bitmap.add('assets/mobile/virtualpad/${Graphic}.png');
+		if (Assets.exists(Paths.getPath('images/virtualpad/${Graphic}.png', IMAGE, null)))
+			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/${Graphic}.png', IMAGE, null));
 		else
-			graphic = FlxG.bitmap.add('assets/mobile/virtualpad/default.png');
+			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/default.png', IMAGE, null));
 
 		var button:FlxButton = new FlxButton(X, Y);
-		try
-		{
-			button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 3), graphic.height));
-		}
-		catch (e)
-		{
-			trace("Failed to create button(s) " + e.message);
-			return null;
-		}
+		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 3), graphic.height));
 		button.solid = false;
 		button.immovable = true;
+		button.moves = false;
 		button.scrollFactor.set();
 		button.color = Color;
-		button.alpha = 0.5;
+		button.alpha = FlxG.save.data.mobileCAlpha;
 		#if FLX_DEBUG
 		button.ignoreDrawDebug = true;
 		#end

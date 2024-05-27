@@ -26,6 +26,7 @@ import android.os.BatteryManager as AndroidBatteryManager;
 import android.os.Build as AndroidBuild;
 import android.os.Build.VERSION as AndroidVersion;
 #end
+import mobile.MobileControls;
 import mobile.SUtil;
 import mobile.SwipeUtil;
 #end

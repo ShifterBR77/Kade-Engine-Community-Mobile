@@ -56,19 +56,21 @@ class FlxHitbox extends FlxSpriteGroup
 
 	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):FlxButton
 	{
+		final guh:Float = FlxG.save.data.mobileCAlpha >= 0.9 ? FlxG.save.data.mobileCAlpha - 0.2 : FlxG.save.data.mobileCAlpha;
 		var hint:FlxButton = new FlxButton(X, Y);
 		hint.loadGraphic(createHintGraphic(Width, Height, Color));
 		hint.solid = false;
 		hint.multiTouch = true;
 		hint.immovable = true;
+		hint.moves = false;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
 		if (FlxG.save.data.hitboxType != 2)
 		{
 			hint.onDown.callback = hint.onOver.callback = () ->
 			{
-				if (hint.alpha != 0.2)
-					hint.alpha = 0.2;
+				if (hint.alpha != guh)
+					hint.alpha = guh;
 			}
 
 			hint.onUp.callback = hint.onOut.callback = () ->
