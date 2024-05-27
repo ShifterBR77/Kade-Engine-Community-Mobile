@@ -186,7 +186,7 @@ class FreeplayState extends MusicBeatState
 		bottomBG.alpha = 0.6;
 		add(bottomBG);
 
-		final daSpace:String = FlxG.onMobile ? "C" : "SPACE";
+		final daSpace:String = MobileControls.enabled ? "C" : "SPACE";
 
 		var bottomText:String = #if PRELOAD_ALL '  Press $daSpace to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /'
 			+ #else "  Click and scroll through the songs with your MOUSE /"
@@ -238,8 +238,8 @@ class FreeplayState extends MusicBeatState
 
 		add(previewtext);
 
-		final daShift:String = FlxG.onMobile ? "X" : "SHIFT";
-		final daCtrl:String = FlxG.onMobile ? "Y" : "CTRL";
+		final daShift:String = MobileControls.enabled ? "X" : "SHIFT";
+		final daCtrl:String = MobileControls.enabled ? "Y" : "CTRL";
 
 		helpText = new CoolText(scoreText.x, scoreText.y + 200, 18, 18, Paths.bitmapFont('fonts/vcr'));
 		helpText.autoSize = true;
@@ -743,7 +743,7 @@ class FreeplayState extends MusicBeatState
 				if (FlxG.keys.justPressed.RIGHT || controls.RIGHT_P)
 					changeDiff(1);
 
-				if (!FlxG.onMobile && FlxG.mouse.justPressedRight)
+				if (!MobileControls.enabled && FlxG.mouse.justPressedRight)
 				{
 					changeDiff(1);
 				}
@@ -796,7 +796,7 @@ class FreeplayState extends MusicBeatState
 
 			for (item in grpSongs.members)
 				if (accepted
-					|| !FlxG.onMobile
+					|| !MobileControls.enabled
 					&& (((FlxG.mouse.overlaps(item) && item.targetY == curSelected) || (FlxG.mouse.overlaps(iconArray[curSelected])))
 						&& FlxG.mouse.justPressed))
 				{

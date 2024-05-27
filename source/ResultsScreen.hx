@@ -139,7 +139,7 @@ class ResultsScreen extends MusicBeatSubstate
 		var bads = PlayState.isStoryMode ? PlayState.campaignBads : PlayState.bads;
 		var shits = PlayState.isStoryMode ? PlayState.campaignShits : PlayState.shits;
 
-		final blyad:String = FlxG.onMobile ? "" : '\n\n\nF1 - Replay song';
+		final blyad:String = MobileControls.enabled ? "" : '\n\n\nF1 - Replay song';
 
 		comboText.text = 'Judgements:\nMarvs - ${marvs}\nSicks - ${sicks}\nGoods - ${goods}\nBads - ${bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? PlayState.campaignMisses : PlayState.misses)}\nHighest Combo: ${PlayState.highestCombo + 1}\nScore: $score\n${(PlayState.isStoryMode ? 'Average Accuracy' : 'Accuracy')}: ${HelperFunctions.truncateFloat(acc, 2)}% ( ${(FlxG.save.data.accuracyMod == 0 ? 'Accurate' : 'Complex')} )\n\n${Ratings.GenerateComboRank(PlayState.instance.accuracy)} ${Ratings.GenerateLetterRank(PlayState.instance.accuracy)}\nRate: ${HelperFunctions.truncateFloat(PlayState.songMultiplier, 2)}x${blyad}';
 

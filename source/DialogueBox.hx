@@ -131,7 +131,7 @@ class DialogueBox extends FlxSpriteGroup
 		box.updateHitbox();
 		add(box);
 
-		final skipButton:String = #if android "Back" #else FlxG.onMobile ? "X" : "Backspace" #end;
+		final skipButton:String = #if android "Back" #else MobileControls.enabled ? "X" : "Backspace" #end;
 
 		box.screenCenter(X);
 		portraitLeft.screenCenter(X);

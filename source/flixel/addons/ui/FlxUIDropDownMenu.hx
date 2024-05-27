@@ -429,7 +429,7 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 		#if (FLX_MOUSE || FLX_TOUCH)
 		if (dropPanel.visible)
 		{
-			if (FlxG.onMobile)
+			if (MobileControls.enabled)
 			{
 				if (list.length > 1 && canScroll)
 				{

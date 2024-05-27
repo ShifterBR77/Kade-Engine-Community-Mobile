@@ -152,7 +152,7 @@ class PauseSubState extends MusicBeatSubstate
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		}
 
-		if ((controls.ACCEPT && !FlxG.keys.pressed.ALT) || !FlxG.onMobile && FlxG.mouse.pressed)
+		if ((controls.ACCEPT && !FlxG.keys.pressed.ALT) || !MobileControls.enabled && FlxG.mouse.pressed)
 		{
 			var daSelected:String = menuItems[curSelected];
 

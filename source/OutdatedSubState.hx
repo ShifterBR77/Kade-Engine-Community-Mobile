@@ -30,8 +30,8 @@ class OutdatedSubState extends MusicBeatState
 		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 
-		final buttonACCEPT:String = FlxG.onMobile ? "A" : "Space";
-		final buttonBACK:String = FlxG.onMobile ? "B" : MainMenuState.kecVer.contains("PRE-RELEASE") ? "Space/Escape" : "ENTER";
+		final buttonACCEPT:String = MobileControls.enabled ? "A" : "Space";
+		final buttonBACK:String = MobileControls.enabled ? "B" : MainMenuState.kecVer.contains("PRE-RELEASE") ? "Space/Escape" : "ENTER";
 
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"Your KEC Port is outdated!\nYou are on "
