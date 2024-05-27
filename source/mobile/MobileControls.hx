@@ -57,12 +57,12 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function get_mode():String
 	{
-		return FlxG.save.data.controlsMode;
+		return FlxG.save.data.mobileCMode;
 	}
 
 	private static function set_mode(mode:String = 'Hitbox'):String
 	{
-		FlxG.save.data.controlsMode = mode;
+		FlxG.save.data.mobileCMode = mode;
 		FlxG.save.flush();
 
 		return mode;

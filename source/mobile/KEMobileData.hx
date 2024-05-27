@@ -6,8 +6,8 @@ class KEMobileData
 {
 	public static function initSave()
 	{
-		if (FlxG.save.data.controlsMode == null)
-			FlxG.save.data.controlsMode = 'Hitbox';
+		if (FlxG.save.data.mobileCMode == null)
+			FlxG.save.data.mobileCMode = 'Hitbox';
 
 		if (FlxG.save.data.mobileCAlpha == null)
 			FlxG.save.data.mobileCAlpha = 0.6;
