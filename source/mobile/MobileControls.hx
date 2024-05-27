@@ -110,5 +110,6 @@ class MobileControls extends FlxSpriteGroup
 		return virtualPad;
 	}
 
-	private static function get_enabled():Bool return FlxG.save.data.mobileCAlpha >= 0.1;
+	private static function get_enabled():Bool
+		return FlxG.save.data.mobileCAlpha >= 0.1;
 }

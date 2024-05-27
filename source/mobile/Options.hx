@@ -63,8 +63,16 @@ class MobileControlsOpacityOption extends Option
 	public function new(desc:String)
 	{
 		super();
-		description = desc;
-		acceptValues = true;
+		if (OptionsMenu.isInPause)
+		{
+			blocked = true;
+			description = pauseDesc;
+		}
+		else
+		{
+			description = desc;
+			acceptValues = true;
+		}
 	}
 
 	private function check():Void
@@ -78,6 +86,8 @@ class MobileControlsOpacityOption extends Option
 
 	override function right():Bool
 	{
+		if (OptionsMenu.isInPause)
+			return false;
 		FlxG.save.data.mobileCAlpha += 0.1;
 
 		check();
@@ -87,6 +97,8 @@ class MobileControlsOpacityOption extends Option
 
 	override function left():Bool
 	{
+		if (OptionsMenu.isInPause)
+			return false;
 		FlxG.save.data.mobileCAlpha -= 0.1;
 
 		check();
@@ -138,8 +150,13 @@ class HitboxDesignOption extends Option
 		return true;
 	}
 
-	public override function getValue():String
+	override function getValue():String
 	{
-		return "Current Hitbox Design: < " + hintOptions[FlxG.save.data.noteskin] + " >";
+		return updateDisplay();
+	}
+
+	public override function updateDisplay():String
+	{
+		return "Current Hitbox Design: < " + hintOptions[FlxG.save.data.hitboxType] + " >";
 	}
 }
