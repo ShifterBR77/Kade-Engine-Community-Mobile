@@ -56,12 +56,6 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function get_mode():String
 	{
-		if (FlxG.save.data.controlsMode == null)
-		{
-			FlxG.save.data.controlsMode = 'Hitbox';
-			FlxG.save.flush();
-		}
-
 		return FlxG.save.data.controlsMode;
 	}
 
@@ -75,10 +69,6 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function get_customVirtualPad():FlxVirtualPad
 	{
-		var virtualPad:FlxVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
-		if (FlxG.save.data.buttons == null)
-			return virtualPad;
-
 		var tempCount:Int = 0;
 		for (buttons in virtualPad)
 		{
@@ -92,24 +82,12 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function set_customVirtualPad(virtualPad:FlxVirtualPad):FlxVirtualPad
 	{
-		if (FlxG.save.data.buttons == null)
+		var tempCount:Int = 0;
+		for (buttons in virtualPad)
 		{
-			FlxG.save.data.buttons = new Array();
-			for (buttons in virtualPad)
-			{
-				FlxG.save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
-				FlxG.save.flush();
-			}
-		}
-		else
-		{
-			var tempCount:Int = 0;
-			for (buttons in virtualPad)
-			{
-				FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
-				FlxG.save.flush();
-				tempCount++;
-			}
+			FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+			FlxG.save.flush();
+			tempCount++;
 		}
 
 		return virtualPad;
