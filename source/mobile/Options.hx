@@ -21,7 +21,7 @@ class MobileControlsOption extends Option
 	{
 		if (OptionsMenu.isInPause)
 			return false;
-		FlxG.state.openSubState(new mobile.MobileControlsSubState());
+		FlxG.state.openSubState(new mobile.MobileControlsSelectSubState());
 		return true;
 	}
 
