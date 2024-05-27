@@ -89,8 +89,8 @@ class DFJKOption extends Option
 
 	public override function press():Bool
 	{
-		OptionsMenu.instance.selectedCatIndex = 6;
-		OptionsMenu.instance.switchCat(OptionsMenu.instance.options[6], true);
+		OptionsMenu.instance.selectedCatIndex = 7;
+		OptionsMenu.instance.switchCat(OptionsMenu.instance.options[7], true);
 		return false;
 	}
 
