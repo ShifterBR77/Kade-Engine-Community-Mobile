@@ -6,10 +6,6 @@ class KEMobileData
 {
 	public static function initSave()
 	{
-    var virtualPad:FlxVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
-		if (FlxG.save.data.buttons == null)
-			 return virtualPad;
-
     if (FlxG.save.data.controlsMode == null)
 			FlxG.save.data.controlsMode = 'Hitbox';
 
