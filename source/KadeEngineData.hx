@@ -3,6 +3,7 @@ import flixel.input.gamepad.FlxGamepad;
 import openfl.Lib;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import mobile.KEMobileData;
 
 class KadeEngineData
 {
@@ -278,6 +279,8 @@ class KadeEngineData
 
 		if (FlxG.save.data.editorPos == null)
 			FlxG.save.data.editorPos = [0, 420];
+
+		KEMobileData.initSave();
 
 		FlxSprite.defaultAntialiasing = FlxG.save.data.antialiasing;
 
