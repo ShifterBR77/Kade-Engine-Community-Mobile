@@ -594,7 +594,7 @@ class OptionsMenu extends MusicBeatSubstate
 							MusicBeatState.switchState(new MainMenuState());
 						}
 					});
-					FlxTween.tween(virtualPad, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+					if (MobileControls.enabled) FlxTween.tween(virtualPad, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
 				}
 				else
 				{
