@@ -14,6 +14,7 @@ class MobileControls extends FlxSpriteGroup
 {
 	public static var customVirtualPad(get, set):FlxVirtualPad;
 	public static var mode(get, set):String;
+	public static var enabled(get, never):Bool;
 
 	public var virtualPad:FlxVirtualPad;
 	public var hitbox:FlxHitbox;
@@ -108,4 +109,6 @@ class MobileControls extends FlxSpriteGroup
 
 		return virtualPad;
 	}
+
+	private static function get_enabled():Bool return FlxG.save.data.mobileCAlpha >= 0.1;
 }
