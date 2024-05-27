@@ -105,5 +105,7 @@ class MobileControls extends FlxSpriteGroup
 				tempCount++;
 			}
 		}
+
+		return virtualPad;
 	}
 }
