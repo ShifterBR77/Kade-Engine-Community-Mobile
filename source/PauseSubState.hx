@@ -83,9 +83,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		regenMenu();
-
-		addVirtualPad(UP_DOWN, A);
-		addVirtualPadCamera(false);
 	}
 
 	override public function create()
@@ -115,6 +112,10 @@ class PauseSubState extends MusicBeatSubstate
 		regenMenu();
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+
+		addVirtualPad(UP_DOWN, A);
+		addVirtualPadCamera(false);
+
 		super.create();
 	}
 

@@ -21,8 +21,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
-		addVirtualPad(NONE, A_B);
-		addVirtualPadCamera(false);
 	}
 
 	override function create()
@@ -76,6 +74,9 @@ class GameOverSubstate extends MusicBeatSubstate
 			dad.playAnim('firstDeath');
 		else
 			bf.playAnim('firstDeath');
+
+		addVirtualPad(NONE, A_B);
+		addVirtualPadCamera(false);
 
 		super.create();
 	}
