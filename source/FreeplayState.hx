@@ -679,7 +679,11 @@ class FreeplayState extends MusicBeatState
 		previewtext.updateHitbox();
 		previewtext.alpha = 1;
 
-		if (virtualPad.buttonY.justPressed || FlxG.keys.justPressed.CONTROL && !openMod && !MusicBeatState.switchingState && doUpdateText)
+		if (virtualPad.buttonY.justPressed
+			|| FlxG.keys.justPressed.CONTROL
+			&& !openMod
+			&& !MusicBeatState.switchingState
+			&& doUpdateText)
 		{
 			persistentUpdate = false;
 			removeVirtualPad();
@@ -792,7 +796,8 @@ class FreeplayState extends MusicBeatState
 
 			for (item in grpSongs.members)
 				if (accepted
-					|| !FlxG.onMobile && (((FlxG.mouse.overlaps(item) && item.targetY == curSelected) || (FlxG.mouse.overlaps(iconArray[curSelected])))
+					|| !FlxG.onMobile
+					&& (((FlxG.mouse.overlaps(item) && item.targetY == curSelected) || (FlxG.mouse.overlaps(iconArray[curSelected])))
 						&& FlxG.mouse.justPressed))
 				{
 					doUpdateText = false;
