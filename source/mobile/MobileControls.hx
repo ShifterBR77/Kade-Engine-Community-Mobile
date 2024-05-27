@@ -69,6 +69,10 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function get_customVirtualPad():FlxVirtualPad
 	{
+		var virtualPad:FlxVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+		if (FlxG.save.data.buttons == null)
+			return virtualPad;
+
 		var tempCount:Int = 0;
 		for (buttons in virtualPad)
 		{
@@ -82,14 +86,24 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function set_customVirtualPad(virtualPad:FlxVirtualPad):FlxVirtualPad
 	{
-		var tempCount:Int = 0;
-		for (buttons in virtualPad)
+		if (FlxG.save.data.buttons == null)
 		{
-			FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
-			FlxG.save.flush();
-			tempCount++;
+			FlxG.save.data.buttons = new Array();
+			for (buttons in virtualPad)
+			{
+				FlxG.save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
+				FlxG.save.flush();
+			}
 		}
-
-		return virtualPad;
+		else
+		{
+			var tempCount:Int = 0;
+			for (buttons in virtualPad)
+			{
+				FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+				FlxG.save.flush();
+				tempCount++;
+			}
+		}
 	}
 }
