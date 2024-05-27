@@ -171,7 +171,6 @@ class DialogueBox extends FlxSpriteGroup
 
 	var dialogueOpened:Bool = false;
 	var dialogueStarted:Bool = false;
-
 	override function update(elapsed:Float)
 	{
 		// HARD CODING CUZ IM STUPDI
@@ -200,7 +199,9 @@ class DialogueBox extends FlxSpriteGroup
 			startDialogue();
 			dialogueStarted = true;
 		}
-		if (#if android FlxG.android.justReleased.BACK || #end PlayerSettings.player1.controls.BACK && isEnding != true)
+
+		#if !android final vpadBack = @:privateAccess MusicBeatState.instance.virtualPad.buttonP.justPressed; #end
+		if (#if android FlxG.android.justReleased.BACK #else vpadBack #end || PlayerSettings.player1.controls.BACK && isEnding != true)
 		{
 			remove(dialogue);
 			isEnding = true;

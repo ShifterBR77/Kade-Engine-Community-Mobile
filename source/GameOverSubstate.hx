@@ -21,6 +21,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new()
 	{
 		super();
+		addVirtualPad(NONE, A_B);
+		addVirtualPadCamera(false);
 	}
 
 	override function create()

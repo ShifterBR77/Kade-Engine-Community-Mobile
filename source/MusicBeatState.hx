@@ -37,6 +37,8 @@ class MusicBeatState extends FlxTransitionableState
 	private var oldSection:Int = -1;
 	private var curTiming:TimingStruct = null;
 
+	public static var instance:MusicBeatState;
+
 	public static var currentColor = 0;
 	public static var switchingState:Bool = false;
 
@@ -63,7 +65,7 @@ class MusicBeatState extends FlxTransitionableState
 		virtualPad = new FlxVirtualPad(DPad, Action);
 		add(virtualPad);
 
-		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		controls.setVirtualPad(virtualPad, DPad, Action);
 		trackedInputsVirtualPad = controls.trackedInputsUI;
 		controls.trackedInputsUI = [];
 	}
@@ -87,16 +89,16 @@ class MusicBeatState extends FlxTransitionableState
 		switch (MobileControls.mode)
 		{
 			case 'Pad-Right' | 'Pad-Left' | 'Pad-Custom':
-				controls.setVirtualPadNOTES(mobileControls.virtualPad, RIGHT_FULL, NONE);
+				controls.setVirtualPad(mobileControls.virtualPad, RIGHT_FULL, NONE);
 			case 'Pad-Duo':
-				controls.setVirtualPadNOTES(mobileControls.virtualPad, BOTH_FULL, NONE);
+				controls.setVirtualPad(mobileControls.virtualPad, BOTH_FULL, NONE);
 			case 'Hitbox':
-				controls.setHitBox(mobileControls.hitbox);
+				controls.setHitbox(mobileControls.hitbox);
 			case 'Keyboard': // do nothing
 		}
 
-		trackedInputsMobileControls = controls.trackedInputsNOTES;
-		controls.trackedInputsNOTES = [];
+		trackedInputsMobileControls = controls.trackedInputsUI;
+		controls.trackedInputsUI = [];
 
 		var camControls:FlxCamera = new FlxCamera();
 		camControls.bgColor.alpha = 0;
@@ -129,6 +131,7 @@ class MusicBeatState extends FlxTransitionableState
 
 	override function create()
 	{
+		instance = this;
 		destroySubStates = false;
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 

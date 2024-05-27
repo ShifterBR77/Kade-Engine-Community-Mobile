@@ -1006,6 +1006,11 @@ class PlayState extends MusicBeatState
 				Debug.logInfo('Succesfully Loaded ' + SONG.songName);
 		}
 
+		#if !android
+		addVirtualPad(NONE, P);
+		addVirtualPadCamera(false);
+		virtualPad.visible = true;
+		#end
 		addMobileControls(false);
 
 		generateSong(SONG.songId);
@@ -1524,7 +1529,7 @@ class PlayState extends MusicBeatState
 		inCinematic = false;
 		inCutscene = false;
 
-		startedCountdown = mobileControls.visible = true;
+		startedCountdown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
@@ -1918,7 +1923,7 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		startingSong = false;
-		songStarted = true;
+		songStarted = mobileControls.visible = true;
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
@@ -2855,7 +2860,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
 
-		if (#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE && startedCountdown && canPause && !cannotDie)
+		if ((#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE) && startedCountdown && canPause && !cannotDie)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -3662,7 +3667,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		camZooming = mobileControls.visible = false;
+		camZooming = mobileControls.visible = virtualPad.visible = false;
 		endingSong = true;
 		inDaPlay = false;
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
