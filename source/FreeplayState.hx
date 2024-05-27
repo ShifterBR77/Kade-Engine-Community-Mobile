@@ -280,7 +280,7 @@ class FreeplayState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
 			MainMenuState.freakyPlaying = true;
-			Conductor.changeBPM(102, false);
+			Conductor.changeBPM(102);
 		}
 
 		if (!FlxG.sound.music.playing && !MainMenuState.freakyPlaying)
@@ -762,7 +762,7 @@ class FreeplayState extends MusicBeatState
 					if (curBPM != Conductor.bpm)
 					{
 						Debug.logInfo("BPM CHANGE to " + curBPM);
-						Conductor.changeBPM(curBPM, false);
+						Conductor.changeBPM(curBPM);
 					}
 				}
 			}
@@ -1044,7 +1044,7 @@ class FreeplayState extends MusicBeatState
 			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
 			if (hmm != null)
 			{
-				Conductor.changeBPM(hmm.bpm, false);
+				Conductor.changeBPM(hmm.bpm);
 				GameplayCustomizeState.freeplayBf = hmm.player1;
 				GameplayCustomizeState.freeplayDad = hmm.player2;
 				GameplayCustomizeState.freeplayGf = hmm.gfVersion;
