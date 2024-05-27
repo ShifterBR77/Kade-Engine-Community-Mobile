@@ -258,6 +258,11 @@ class OptionsMenu extends MusicBeatSubstate
 				#end
 			]),
 			new OptionCata(640, 104, "Mobile", [
+				new mobile.Options.MobileControlsOpacityOption("How Much Opaque Should Mobile Controls Be?"),
+				new mobile.Options.HitboxDesignOption("How Your Hitbox Should Look Like?"),
+				#if mobile
+				new mobile.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
+				#end
 				new mobile.Options.MobileControlsOption("Change Mobile Controls Type.")
 			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
