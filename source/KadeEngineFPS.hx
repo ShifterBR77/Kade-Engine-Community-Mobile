@@ -140,8 +140,10 @@ class KadeEngineFPS extends TextField
 
 	public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1)
 	{
+		final gameX:Float = (FlxG.game != null) ? FlxG.game.x : 0;
+		final gameY:Float = (FlxG.game != null) ? FlxG.game.y : 0;
 		scaleX = scaleY = #if mobile (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
-		x = FlxG.game.x + X;
-		y = FlxG.game.y + Y;
+		x = gameX + X;
+		y = gameY + Y;
 	}
 }

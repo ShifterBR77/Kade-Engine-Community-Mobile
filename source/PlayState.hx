@@ -3670,7 +3670,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		camZooming = mobileControls.visible = virtualPad.visible = false;
+		camZooming = mobileControls.visible = #if !android virtualPad.visible = #end false;
 		endingSong = true;
 		inDaPlay = false;
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
