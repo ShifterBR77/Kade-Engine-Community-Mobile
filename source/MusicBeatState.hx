@@ -52,6 +52,8 @@ class MusicBeatState extends FlxTransitionableState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	public var vpadCam:FlxCamera;
+	public var mobileControlsCam:FlxCamera;
 	var mobileControls:MobileControls;
 	var virtualPad:FlxVirtualPad;
 	var trackedInputsMobileControls:Array<FlxActionInput> = [];
@@ -77,6 +79,12 @@ class MusicBeatState extends FlxTransitionableState
 
 		if (virtualPad != null)
 			remove(virtualPad);
+
+		if (vpadCam != null)
+		{
+			FlxG.cameras.remove(vpadCam, false);
+			vpadCam = FlxDestroyUtil.destroy(vpadCam);
+		}
 	}
 
 	public function addMobileControls(DefaultDrawTarget:Bool = true):Void
@@ -100,11 +108,11 @@ class MusicBeatState extends FlxTransitionableState
 		trackedInputsMobileControls = controls.trackedInputsUI;
 		controls.trackedInputsUI = [];
 
-		var camControls:FlxCamera = new FlxCamera();
-		camControls.bgColor.alpha = 0;
-		FlxG.cameras.add(camControls, DefaultDrawTarget);
-
-		mobileControls.cameras = [camControls];
+		mobileControlsCam = new FlxCamera();
+		FlxG.cameras.add(mobileControlsCam, DefaultDrawTarget);
+		mobileControlsCam.bgColor.alpha = 0;
+		mobileControls.cameras = [mobileControlsCam];
+	
 		mobileControls.visible = false;
 		add(mobileControls);
 	}
@@ -116,17 +124,23 @@ class MusicBeatState extends FlxTransitionableState
 
 		if (mobileControls != null)
 			remove(mobileControls);
+
+		if (mobileControlsCam != null)
+		{
+			FlxG.cameras.remove(mobileControlsCam, false);
+			mobileControlsCam = FlxDestroyUtil.destroy(mobileControlsCam);
+		}
 	}
 
-	public function addVirtualPadCamera(DefaultDrawTarget:Bool = true):Void
+	public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
 	{
-		if (virtualPad != null)
-		{
-			var camControls:FlxCamera = new FlxCamera();
-			camControls.bgColor.alpha = 0;
-			FlxG.cameras.add(camControls, DefaultDrawTarget);
-			virtualPad.cameras = [camControls];
-		}
+		if (virtualPad == null || vpadCam != null)
+			return;
+
+		vpadCam = new FlxCamera();
+		FlxG.cameras.add(vpadCam, defaultDrawTarget);
+		vpadCam.bgColor.alpha = 0;
+		virtualPad.cameras = [vpadCam];
 	}
 
 	override function create()
