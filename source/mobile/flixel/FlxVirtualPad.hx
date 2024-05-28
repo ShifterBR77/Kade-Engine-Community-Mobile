@@ -11,7 +11,7 @@ import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 
-//MTODO: FIX VPAD DESTROY SPAM
+//MTODO: FIX AFTER VPAD DESTROY CALL SPAM
 
 enum FlxDPadMode
 {
