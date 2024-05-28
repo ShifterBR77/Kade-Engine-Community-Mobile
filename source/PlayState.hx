@@ -1011,7 +1011,7 @@ class PlayState extends MusicBeatState
 		addVirtualPadCamera(false);
 		virtualPad.visible = true;
 		#end
-		addMobileControls(false);
+		addMobileControls(false); //MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
 
 		generateSong(SONG.songId);
 
@@ -2860,7 +2860,10 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
 
-		if ((#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE) && startedCountdown && canPause && !cannotDie)
+		if ((#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE)
+			&& startedCountdown
+			&& canPause
+			&& !cannotDie)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
