@@ -165,8 +165,6 @@ class DialogueBox extends FlxSpriteGroup
 		dialogue = new Alphabet(0, 80, "", false);
 		// dialogue.x = 90;
 		// add(dialogue);
-
-		// MTODO: NON-ANDROID SKIP BUTTON
 	}
 
 	var dialogueOpened:Bool = false;
