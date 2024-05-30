@@ -57,7 +57,7 @@ New And Improved Freeplay By BoloVEVO.
 
 - [PolybiusProxy](https://github.com/polybiusproxy) - The Video Support (Legacy).
 
-- [MAJigsaw77](https://github.com/MAJigsaw77) - The Video Support (Current), And Discord Support.
+- [MAJigsaw77](https://github.com/MAJigsaw77) - The Video Support (Current), Discord Support and Mobile Controls Author.
 
 - [BoloVEVO](https://github.com/BoloVEVO) - Fixed my shit code and improved the chart editor. Made a ton of code improvements. Did the gameplay changers(thanks!!!)
 
