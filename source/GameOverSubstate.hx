@@ -178,6 +178,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
+				if (MobileControls.enabled)
+					FlxTween.tween(virtualPad, {alpha: 0}, 2.7, {ease: FlxEase.smootherStepOut});
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
 					LoadingState.loadAndSwitchState(new PlayState());

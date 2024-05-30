@@ -1006,12 +1006,11 @@ class PlayState extends MusicBeatState
 				Debug.logInfo('Succesfully Loaded ' + SONG.songName);
 		}
 
-		#if !android
 		addVirtualPad(NONE, P);
 		addVirtualPadCamera(false);
-		virtualPad.visible = true;
-		#end
-		addMobileControls(false); //MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
+		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
+		addMobileControls(false); // MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
+		mobileControls.alpha = 0;
 
 		generateSong(SONG.songId);
 
@@ -1529,7 +1528,10 @@ class PlayState extends MusicBeatState
 		inCinematic = false;
 		inCutscene = false;
 
-		startedCountdown = true;
+		startedCountdown = mobileControls.visible = true;
+
+		createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
+
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
@@ -1923,7 +1925,7 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		startingSong = false;
-		songStarted = mobileControls.visible = true;
+		songStarted = true;
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
@@ -2072,10 +2074,12 @@ class PlayState extends MusicBeatState
 			createTween(bar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 		}
 
+		final mafakaKey:String = MobileControls.enabled ? "X" : "Space";
+
 		if (needSkip)
 		{
 			skipActive = true;
-			skipText = new Alphabet(0, 550, "Press Space To Skip Intro.", true);
+			skipText = new Alphabet(0, 550, 'Press $mafakaKey To Skip Intro.', true);
 			skipText.setScale(0.5, 0.5);
 			skipText.changeX = false;
 			skipText.changeY = false;
@@ -2085,6 +2089,9 @@ class PlayState extends MusicBeatState
 			skipText.screenCenter(X);
 			skipText.alpha = 0;
 			createTween(skipText, {alpha: 1}, 0.2);
+			#if android
+			createTween(virtualPad, {alpha: FlxG.save.data.mobileCAlpha}, 0.2);
+			#end
 			skipText.cameras = [camHUD];
 			add(skipText);
 		}
@@ -2858,7 +2865,12 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
 
-		if ((#if android FlxG.android.justReleased.BACK && !inCutscene || #end controls.PAUSE)
+		if ((#if android FlxG.android.justReleased.BACK
+			&& !inCutscene
+			|| #else virtualPad.buttonP.justPressed
+			&& !inCutscene
+			&& !skipActive
+			|| #end controls.PAUSE)
 			&& startedCountdown
 			&& canPause
 			&& !cannotDie)
@@ -2974,10 +2986,13 @@ class PlayState extends MusicBeatState
 		if (skipActive && Conductor.songPosition >= skipTo)
 		{
 			remove(skipText);
+			#if android
+			removeVirtualPad();
+			#end
 			skipActive = false;
 		}
 
-		if (FlxG.keys.justPressed.SPACE && skipActive)
+		if (FlxG.keys.justPressed.SPACE || virtualPad.buttonP.justPressed && skipActive)
 		{
 			inst.pause();
 			if (!SONG.splitVoiceTracks)
@@ -3009,6 +3024,14 @@ class PlayState extends MusicBeatState
 					remove(skipText);
 				}
 			});
+			#if android
+			createTween(virtualPad, {alpha: 0}, 0.2, {
+				onComplete: function(tw)
+				{
+					removeVirtualPad();
+				}
+			});
+			#end
 			skipActive = false;
 		}
 
@@ -3668,7 +3691,8 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		camZooming = mobileControls.visible = #if !android virtualPad.visible = #end false;
+		camZooming = mobileControls.visible = #if !android virtualPad.visible = #end
+		false;
 		endingSong = true;
 		inDaPlay = false;
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
