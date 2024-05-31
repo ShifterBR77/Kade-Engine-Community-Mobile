@@ -43,9 +43,8 @@
     },
     {
       "name": "tjson",
-      "type": "git",
-      "ref": "master",
-      "url": "https://github.com/EliteMasterEric/TJSON.git"
+      "type": "haxelib",
+      "version": null
     },
     {
       "name": "hscript-improved",
@@ -84,14 +83,12 @@
     {
       "name": "hxcpp",
       "type": "git",
-      "dir": null,
       "ref": "master",
       "url": "https://github.com/mcagabe19-stuff/hxcpp" 
     },
     {
       "name": "lime",
       "type": "git",
-      "dir": null,
       "ref": "develop",
       "url": "https://github.com/mcagabe19-stuff/lime"
     },
