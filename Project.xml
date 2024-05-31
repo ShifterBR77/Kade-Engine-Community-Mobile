@@ -192,6 +192,9 @@
 	<haxedef name="openfl_dpi_aware" unless="web" />
 
 	<section if="android">
+			<!-- Do whatever you want I'm tired uninstall and install everytime -->
+			<certificate path="key.keystore" password="kadeenginecommunity" alias="kecport" alias-password="kadeenginecommunity" unless="debug" />
+
 			<!--Target SDK-->
 			<android target-sdk-version="31" />
 
