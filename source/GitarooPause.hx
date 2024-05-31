@@ -59,6 +59,15 @@ class GitarooPause extends MusicBeatState
 		if (controls.LEFT_P || controls.RIGHT_P)
 			changeThing();
 
+		if (FlxG.mouse.overlaps(replayButton) || FlxG.mouse.overlaps(cancelButton))
+		{
+			changeThing(FlxG.mouse.overlaps(cancelButton) ? false : true);
+			if (replaySelect && FlxG.mouse.justPressed)
+				FlxG.switchState(new PlayState());
+			else if (!replaySelect && FlxG.mouse.justPressed)
+				FlxG.switchState(new MainMenuState());
+		}
+
 		if (controls.ACCEPT)
 		{
 			if (replaySelect)
@@ -74,9 +83,12 @@ class GitarooPause extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	function changeThing():Void
+	function changeThing(?daOverlap:Null<Bool>):Void
 	{
-		replaySelect = !replaySelect;
+		if (daOverlap != null)
+			replaySelect = daOverlap;
+		else
+			replaySelect = !replaySelect;
 
 		if (replaySelect)
 		{

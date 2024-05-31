@@ -1010,7 +1010,7 @@ class PlayState extends MusicBeatState
 		addVirtualPadCamera(false);
 		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
 		addMobileControls(false); // MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
-		mobileControls.alpha = 0;
+		if (MobileControls.mode != "Hitbox") mobileControls.alpha = 0;
 
 		generateSong(SONG.songId);
 
@@ -1530,7 +1530,7 @@ class PlayState extends MusicBeatState
 
 		startedCountdown = mobileControls.visible = true;
 
-		createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
+		if (MobileControls.mode != "Hitbox") createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
 
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
