@@ -4,9 +4,10 @@ import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
+import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
-import mobile.flixel.FlxButton;
 
 /**
  * A zone with 4 hint's (A hitbox).
@@ -17,6 +18,9 @@ import mobile.flixel.FlxButton;
 class FlxHitbox extends FlxSpriteGroup
 {
 	public var hints(default, null):Array<FlxButton>;
+
+	public var onHintUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onHintDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
 
 	/**
 	 * Create the zone.
@@ -65,15 +69,19 @@ class FlxHitbox extends FlxSpriteGroup
 		hint.moves = false;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
-		if (FlxG.save.data.hitboxType != 2)
+		hint.onDown.callback = hint.onOver.callback = function()
 		{
-			hint.onDown.callback = hint.onOver.callback = () ->
+			onHintDown.dispatch(hint);
+			if (FlxG.save.data.hitboxType != 2)
 			{
 				if (hint.alpha != guh)
 					hint.alpha = guh;
 			}
-
-			hint.onUp.callback = hint.onOut.callback = () ->
+		}
+		hint.onUp.callback = hint.onOut.callback = function()
+		{
+			onHintUp.dispatch(hint);
+			if (FlxG.save.data.hitboxType != 2)
 			{
 				if (hint.alpha != 0.00001)
 					hint.alpha = 0.00001;

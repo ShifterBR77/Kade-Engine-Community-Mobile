@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
+import mobile.flixel.FlxButton;
 import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
 
@@ -19,6 +21,9 @@ class MobileControls extends FlxSpriteGroup
 	public var virtualPad:FlxVirtualPad;
 	public var hitbox:FlxHitbox;
 
+	public var onInputUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onInputDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+
 	public function new()
 	{
 		super();
@@ -27,18 +32,33 @@ class MobileControls extends FlxSpriteGroup
 		{
 			case 'Pad-Right':
 				virtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+				bindVPadDirections(virtualPad);
+				virtualPad.onButtonUp.add(onInputUp.dispatch);
+				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Pad-Left':
 				virtualPad = new FlxVirtualPad(LEFT_FULL, NONE);
+				bindVPadDirections(virtualPad);
+				virtualPad.onButtonUp.add(onInputUp.dispatch);
+				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Pad-Custom':
 				virtualPad = MobileControls.customVirtualPad;
+				bindVPadDirections(virtualPad);
+				virtualPad.onButtonUp.add(onInputUp.dispatch);
+				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Pad-Duo':
 				virtualPad = new FlxVirtualPad(BOTH_FULL, NONE);
+				bindVPadDirections(virtualPad);
+				virtualPad.onButtonUp.add(onInputUp.dispatch);
+				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Hitbox':
 				hitbox = new FlxHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
+				bindHitboxDirections(hitbox);
+				hitbox.onHintUp.add(onInputUp.dispatch);
+				hitbox.onHintDown.add(onInputDown.dispatch);
 				add(hitbox);
 			case 'Keyboard': // do nothing
 		}
@@ -112,4 +132,20 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function get_enabled():Bool
 		return FlxG.save.data.mobileCAlpha >= 0.1;
+
+	private static function bindVPadDirections(vpad:FlxVirtualPad)
+	{
+		vpad.buttonLeft.bindedDirection = LEFT;
+		vpad.buttonDown.bindedDirection = DOWN;
+		vpad.buttonUp.bindedDirection = UP;
+		vpad.buttonRight.bindedDirection = RIGHT;
+	}
+
+	private static function bindHitboxDirections(hitbox:FlxHitbox)
+	{
+		hitbox.hints[0].bindedDirection = LEFT;
+		hitbox.hints[1].bindedDirection = DOWN;
+		hitbox.hints[2].bindedDirection = UP;
+		hitbox.hints[3].bindedDirection = RIGHT;
+	}
 }

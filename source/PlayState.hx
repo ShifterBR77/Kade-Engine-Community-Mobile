@@ -1,41 +1,15 @@
 package;
 
-import Song.StyleData;
-import Song.Style;
-import lime.utils.Assets as LimeAssets;
-import flixel.group.FlxSpriteGroup;
-import shader.Shaders;
-import shader.RuntimeShader;
-import flixel.addons.display.FlxRuntimeShader;
-import flixel.util.FlxSpriteUtil;
-import openfl.utils.Assets as OpenFlAssets;
-#if FEATURE_LUAMODCHART
-import LuaClass;
-#end
-import openfl.filters.BitmapFilter;
-import lime.media.openal.AL;
-import Song.Event;
-import openfl.media.Sound;
-#if FEATURE_STEPMANIA
-import smTools.SMFile;
-#end
-#if FEATURE_FILESYSTEM
-import sys.io.File;
-import Sys;
-import sys.FileSystem;
-#end
-import openfl.events.Event;
-import openfl.ui.Keyboard;
-import openfl.events.KeyboardEvent;
-import flixel.input.keyboard.FlxKey;
-import openfl.display.BitmapData;
-import openfl.utils.AssetType;
-import flixel.graphics.FlxGraphic;
-import lime.app.Application;
-import openfl.Lib;
+import MusicBeatState.subStates;
+import Ratings.RatingWindow;
 import Section.SwagSection;
+import Song.Event;
 import Song.SongData;
+import Song.Style;
+import Song.StyleData;
 import WiggleEffect.WiggleEffectType;
+import debug.ChartingState;
+import debug.StageDebugState;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -44,13 +18,17 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.display.FlxRuntimeShader;
 import flixel.addons.effects.FlxTrail;
 import flixel.addons.effects.FlxTrailArea;
 import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.graphics.FlxGraphic;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -61,9 +39,40 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import lime.app.Application;
+import lime.media.openal.AL;
+import lime.utils.Assets as LimeAssets;
+import openfl.Lib;
+import openfl.display.BitmapData;
+import openfl.events.Event;
+import openfl.events.KeyboardEvent;
+import openfl.filters.BitmapFilter;
 import openfl.filters.ShaderFilter;
+import openfl.media.Sound;
+import openfl.ui.Keyboard;
+import openfl.utils.AssetType;
+import openfl.utils.Assets as OpenFlAssets;
+import shader.RuntimeShader;
+import shader.Shaders;
+import stages.Stage;
+import stages.TankmenBG;
+
+using StringTools;
+
+#if FEATURE_LUAMODCHART
+import LuaClass;
+#end
+#if FEATURE_STEPMANIA
+import smTools.SMFile;
+#end
+#if FEATURE_FILESYSTEM
+import Sys;
+import sys.FileSystem;
+import sys.io.File;
+#end
 #if FEATURE_DISCORD
 import Discord;
 #end
@@ -73,19 +82,11 @@ import script.ScriptGroup;
 import script.ScriptUtil;
 #end
 // Orginization Imports
-import debug.StageDebugState;
-import debug.ChartingState;
 #if VIDEOS
 import hxvlc.flixel.FlxVideo as VideoHandler;
 import hxvlc.flixel.FlxVideoSprite as VideoSprite;
 import hxvlc.util.Handle;
 #end
-import stages.Stage;
-import stages.TankmenBG;
-import Ratings.RatingWindow;
-import MusicBeatState.subStates;
-
-using StringTools;
 
 class PlayState extends MusicBeatState
 {
@@ -1010,7 +1011,10 @@ class PlayState extends MusicBeatState
 		addVirtualPadCamera(false);
 		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
 		addMobileControls(false); // MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
-		if (MobileControls.mode != "Hitbox") mobileControls.alpha = 0;
+		mobileControls.onInputUp.add(handleMobileInput);
+		mobileControls.onInputDown.add(handleMobileInput);
+		if (MobileControls.mode != "Hitbox")
+			mobileControls.alpha = 0;
 
 		generateSong(SONG.songId);
 
@@ -1530,7 +1534,8 @@ class PlayState extends MusicBeatState
 
 		startedCountdown = mobileControls.visible = true;
 
-		if (MobileControls.mode != "Hitbox") createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
+		if (MobileControls.mode != "Hitbox")
+			createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
 
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
@@ -1775,6 +1780,94 @@ class PlayState extends MusicBeatState
 				return;
 			}
 
+			keys[data] = true;
+
+			var closestNotes:Array<Note> = notes.members.filter(function(aliveNote:Note)
+			{
+				return aliveNote != null && aliveNote.alive && aliveNote.canBeHit && aliveNote.mustPress && !aliveNote.wasGoodHit
+					&& !aliveNote.isSustainNote && aliveNote.noteData == data;
+			});
+
+			var defNotes:Array<Note> = [for (v in closestNotes) v];
+
+			haxe.ds.ArraySort.sort(defNotes, sortByShit);
+
+			if (closestNotes.length != 0)
+			{
+				var coolNote = null;
+				coolNote = defNotes[0];
+
+				if (defNotes.length > 1) // stacked notes or really close ones
+				{
+					for (i in 0...defNotes.length)
+					{
+						if (i == 0) // skip the first note
+							continue;
+
+						var note = defNotes[i];
+
+						if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data)
+						{
+							trace('found a stacked/really close note ' + (note.strumTime - coolNote.strumTime));
+							// just fuckin remove it since it's a stacked note and shouldn't be there
+							destroyNote(note);
+						}
+					}
+				}
+
+				goodNoteHit(coolNote);
+			}
+			else if (!FlxG.save.data.ghost && songStarted)
+			{
+				noteMissPress(data);
+			}
+
+			if (songStarted && !inCutscene && !paused)
+				keyShit();
+		}
+	}
+
+	private function handleMobileInput(button:mobile.flixel.FlxButton):Void
+	{ // this actually handles flxbutton presses
+
+		if (PlayStateChangeables.botPlay || paused || button == null || button.bindedDirection == null)
+			return;
+
+		// checking the button's FlxInput cuz it's faster and more direct :3
+		@:privateAccess
+		if (button.input.justPressed)
+		{
+			var lastConductorTime:Float = Conductor.songPosition;
+
+			Conductor.songPosition = lastConductorTime;
+
+			var data = -1;
+
+			// made direction shit for each button, no idea how i could set these numbers up other than this :/
+			switch (button.bindedDirection) // arrow keys
+			{
+				case LEFT:
+					data = 0;
+				case DOWN:
+					data = 1;
+				case UP:
+					data = 2;
+				case RIGHT:
+					data = 3;
+			}
+
+			if (data == -1)
+			{
+				return;
+			}
+
+			// we can still use the keys array i guess?
+			if (keys[data])
+			{
+				return;
+			}
+
+			// fine by me
 			keys[data] = true;
 
 			var closestNotes:Array<Note> = notes.members.filter(function(aliveNote:Note)
@@ -2865,15 +2958,16 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
 
-		if ((#if android FlxG.android.justReleased.BACK
+		if ((#if android
+			FlxG.android.justReleased.BACK
 			&& !inCutscene
-			|| #else virtualPad.buttonP.justPressed
+			||
+		#else
+			virtualPad.buttonP.justPressed
 			&& !inCutscene
 			&& !skipActive
-			|| #end controls.PAUSE)
-			&& startedCountdown
-			&& canPause
-			&& !cannotDie)
+			||
+		#end controls.PAUSE) && startedCountdown && canPause && !cannotDie)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;

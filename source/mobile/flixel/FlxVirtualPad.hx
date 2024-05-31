@@ -7,11 +7,12 @@ import flixel.graphics.frames.FlxTileFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
+import flixel.util.FlxSignal;
 import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 
-//MTODO: FIX AFTER VPAD DESTROY CALL SPAM
+// MTODO: FIX AFTER VPAD DESTROY CALL SPAM
 
 enum FlxDPadMode
 {
@@ -68,6 +69,9 @@ class FlxVirtualPad extends FlxSpriteGroup
 	public var buttonX:FlxButton = new FlxButton(0, 0);
 	public var buttonY:FlxButton = new FlxButton(0, 0);
 	public var buttonZ:FlxButton = new FlxButton(0, 0);
+
+	public var onButtonUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onButtonDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
 
 	/**
 	 * Create a gamepad.
@@ -193,6 +197,8 @@ class FlxVirtualPad extends FlxSpriteGroup
 		button.scrollFactor.set();
 		button.color = Color;
 		button.alpha = FlxG.save.data.mobileCAlpha;
+		button.onDown.callback = button.onOver.callback = () -> onButtonDown.dispatch(button);
+		button.onUp.callback = button.onOut.callback = () -> onButtonUp.dispatch(button);
 		#if FLX_DEBUG
 		button.ignoreDrawDebug = true;
 		#end

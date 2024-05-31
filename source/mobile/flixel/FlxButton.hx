@@ -11,13 +11,13 @@ import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
+import flixel.util.FlxDestroyUtil;
 #if (flixel >= "5.3.0")
 import flixel.sound.FlxSound;
 #else
 import flixel.system.FlxSound;
 #end
-import flixel.text.FlxText;
-import flixel.util.FlxDestroyUtil;
 
 /**
  * A simple button class that calls a function when clicked by the touch.
@@ -43,6 +43,8 @@ class FlxButton extends FlxTypedButton<FlxText>
 	 * Shortcut to setting label.text
 	 */
 	public var text(get, set):String;
+
+	public var bindedDirection:Null<NoteDirection> = null;
 
 	/**
 	 * Creates a new `FlxButton` object with a gray background
@@ -589,4 +591,12 @@ private class FlxButtonEvent implements IFlxDestroyable
 			sound.play(true);
 		#end
 	}
+}
+
+enum NoteDirection
+{
+	LEFT;
+	DOWN;
+	UP;
+	RIGHT;
 }
