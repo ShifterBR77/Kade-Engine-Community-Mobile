@@ -1010,9 +1010,11 @@ class PlayState extends MusicBeatState
 		addVirtualPad(NONE, P);
 		addVirtualPadCamera(false);
 		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
-		addMobileControls(false); // MTODO: FIX MOBILE CONTROLS FOR PLAYSTATE
+
+		addMobileControls(false);
 		mobileControls.onInputUp.add(handleMobileInput);
-		mobileControls.onInputDown.add(handleMobileInput);
+		mobileControls.onInputDown.add(releaseMobileInput);
+
 		if (MobileControls.mode != "Hitbox")
 			mobileControls.alpha = 0;
 
@@ -1844,7 +1846,7 @@ class PlayState extends MusicBeatState
 			var data = -1;
 
 			// made direction shit for each button, no idea how i could set these numbers up other than this :/
-			switch (button.bindedDirection) // arrow keys
+			switch (button.bindedDirection) // arrow buttons
 			{
 				case LEFT:
 					data = 0;
@@ -1913,6 +1915,34 @@ class PlayState extends MusicBeatState
 			if (songStarted && !inCutscene && !paused)
 				keyShit();
 		}
+	}
+
+	private function releaseMobileInput(button:mobile.flixel.FlxButton):Void // handles releases for mobile controls
+	{
+		if (PlayStateChangeables.botPlay || button == null || button.bindedDirection == null)
+			return;
+
+		var data = -1;
+
+		switch (button.bindedDirection) // arrow buttons
+		{
+			case LEFT:
+				data = 0;
+			case DOWN:
+				data = 1;
+			case UP:
+				data = 2;
+			case RIGHT:
+				data = 3;
+		}
+
+		if (data == -1)
+			return;
+
+		keys[data] = false;
+
+		if (songStarted && !paused)
+			keyShit();
 	}
 
 	private function handleHolds(note:Note)
