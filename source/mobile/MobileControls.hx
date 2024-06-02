@@ -139,6 +139,10 @@ class MobileControls extends FlxSpriteGroup
 		vpad.buttonDown.bindedDirection = DOWN;
 		vpad.buttonUp.bindedDirection = UP;
 		vpad.buttonRight.bindedDirection = RIGHT;
+		vpad.buttonLeft2.bindedDirection = LEFT;
+		vpad.buttonDown2.bindedDirection = DOWN;
+		vpad.buttonUp2.bindedDirection = UP;
+		vpad.buttonRight2.bindedDirection = RIGHT;
 	}
 
 	private static function bindHitboxDirections(hitbox:FlxHitbox)
