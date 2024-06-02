@@ -1012,8 +1012,8 @@ class PlayState extends MusicBeatState
 		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
 
 		addMobileControls(false);
-		mobileControls.onInputUp.add(handleMobileInput);
-		mobileControls.onInputDown.add(releaseMobileInput);
+		mobileControls.onInputUp.add(releaseMobileInput);
+		mobileControls.onInputDown.add(handleMobileInput);
 
 		if (MobileControls.mode != "Hitbox")
 			mobileControls.alpha = 0;
