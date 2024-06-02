@@ -114,7 +114,7 @@ class MobileControlsOpacityOption extends Option
 
 class HitboxDesignOption extends Option
 {
-	final hintOptions:Array<String> = ["Gradient", "No Gradient", "Hidden"];
+	final hintOptions:Array<String> = ["No Gradient", "No Gradient (Old)", "Gradient", "Hidden"];
 
 	public function new(desc:String)
 	{
