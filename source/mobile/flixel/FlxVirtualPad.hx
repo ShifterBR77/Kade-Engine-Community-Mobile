@@ -18,7 +18,6 @@ enum FlxDPadMode
 {
 	UP_DOWN;
 	LEFT_RIGHT;
-	UP_LEFT_RIGHT;
 	LEFT_FULL;
 	RIGHT_FULL;
 	NONE;
@@ -90,10 +89,6 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 			case LEFT_RIGHT:
 				add(buttonLeft = createButton(0, FlxG.height - 135, 'left', 0xFF00FF));
 				add(buttonRight = createButton(127, FlxG.height - 135, 'right', 0xFF0000));
-			case UP_LEFT_RIGHT:
-				add(buttonUp = createButton(105, FlxG.height - 243, 'up', 0x00FF00));
-				add(buttonLeft = createButton(0, FlxG.height - 135, 'left', 0xFF00FF));
-				add(buttonRight = createButton(207, FlxG.height - 135, 'right', 0xFF0000));
 			case LEFT_FULL:
 				add(buttonUp = createButton(105, FlxG.height - 345, 'up', 0x00FF00));
 				add(buttonLeft = createButton(0, FlxG.height - 243, 'left', 0xFF00FF));
