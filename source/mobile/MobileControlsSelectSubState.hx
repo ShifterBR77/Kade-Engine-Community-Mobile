@@ -17,7 +17,7 @@ import openfl.utils.Assets;
 
 class MobileControlsSelectSubState extends FlxSubState
 {
-	private final controlsItems:Array<String> = ['Pad-Right', 'Pad-Left', 'Pad-Custom', 'Pad-Duo', 'Hitbox', 'Keyboard'];
+	private final controlsItems:Array<String> = ['Pad-Right', 'Pad-Left', 'Pad-Custom', 'Hitbox', 'Keyboard'];
 
 	private var virtualPad:FlxVirtualPad;
 	private var hitbox:FlxHitbox;
@@ -63,7 +63,7 @@ class MobileControlsSelectSubState extends FlxSubState
 
 		resetButton = new FlxButton(exitButton.x, exitButton.y + 100, 'Reset', function()
 		{
-			if (controlsItems[Math.floor(curSelected)] == 'Pad-Custom' && resetButton.visible) // being sure about something
+			if (controlsItems[Math.floor(curSelected)] == 'Pad-Custom' && resetButton.visible)
 			{
 				MobileControls.customVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				reloadMobileControls('Pad-Custom');
@@ -75,7 +75,7 @@ class MobileControlsSelectSubState extends FlxSubState
 		resetButton.visible = false;
 		add(resetButton);
 
-		funitext = new FlxText(0, 0, 0, 'No Android Controls!', 32);
+		funitext = new FlxText(0, 0, 0, 'No Mobile Controls!', 32);
 		funitext.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, true);
 		funitext.borderSize = 3;
 		funitext.borderQuality = 1;
@@ -156,14 +156,11 @@ class MobileControlsSelectSubState extends FlxSubState
 				}
 				else
 				{
-					if (virtualPad.buttonUp.justPressed)
-						moveButton(touch, virtualPad.buttonUp);
-					else if (virtualPad.buttonDown.justPressed)
-						moveButton(touch, virtualPad.buttonDown);
-					else if (virtualPad.buttonRight.justPressed)
-						moveButton(touch, virtualPad.buttonRight);
-					else if (virtualPad.buttonLeft.justPressed)
-						moveButton(touch, virtualPad.buttonLeft);
+					virtualPad.forEachAlive((button:FlxButton) ->
+					{
+						if (button.justPressed)
+							moveButton(touch, button);
+					});
 				}
 			}
 		}
@@ -236,10 +233,6 @@ class MobileControlsSelectSubState extends FlxSubState
 			case 'Pad-Custom':
 				removeControls();
 				virtualPad = MobileControls.customVirtualPad;
-				add(virtualPad);
-			case 'Pad-Duo':
-				removeControls();
-				virtualPad = new FlxVirtualPad(BOTH_FULL, NONE);
 				add(virtualPad);
 			case 'Hitbox':
 				removeControls();

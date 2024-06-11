@@ -21,7 +21,6 @@ enum FlxDPadMode
 	UP_LEFT_RIGHT;
 	LEFT_FULL;
 	RIGHT_FULL;
-	BOTH_FULL;
 	NONE;
 }
 
@@ -47,7 +46,7 @@ enum FlxActionMode
  * @author Ka Wing Chin
  * @author Mihai Alexandru (M.A. Jigsaw)
  */
-class FlxVirtualPad extends FlxSpriteGroup
+class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 {
 	public var buttonLeft:FlxButton = new FlxButton(0, 0);
 	public var buttonUp:FlxButton = new FlxButton(0, 0);
@@ -105,15 +104,6 @@ class FlxVirtualPad extends FlxSpriteGroup
 				add(buttonLeft = createButton(FlxG.width - 384, FlxG.height - 309, 'left', 0xFF00FF));
 				add(buttonRight = createButton(FlxG.width - 132, FlxG.height - 309, 'right', 0xFF0000));
 				add(buttonDown = createButton(FlxG.width - 258, FlxG.height - 201, 'down', 0x00FFFF));
-			case BOTH_FULL:
-				add(buttonUp = createButton(105, FlxG.height - 345, 'up', 0x00FF00));
-				add(buttonLeft = createButton(0, FlxG.height - 243, 'left', 0xFF00FF));
-				add(buttonRight = createButton(207, FlxG.height - 243, 'right', 0xFF0000));
-				add(buttonDown = createButton(105, FlxG.height - 135, 'down', 0x00FFFF));
-				add(buttonUp2 = createButton(FlxG.width - 258, FlxG.height - 408, 'up', 0x00FF00));
-				add(buttonLeft2 = createButton(FlxG.width - 384, FlxG.height - 309, 'left', 0xFF00FF));
-				add(buttonRight2 = createButton(FlxG.width - 132, FlxG.height - 309, 'right', 0xFF0000));
-				add(buttonDown2 = createButton(FlxG.width - 258, FlxG.height - 201, 'down', 0x00FFFF));
 			case NONE: // do nothing
 		}
 
@@ -190,10 +180,11 @@ class FlxVirtualPad extends FlxSpriteGroup
 			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/default.png', IMAGE, null));
 
 		var button:FlxButton = new FlxButton(X, Y);
-		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 3), graphic.height));
+		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 2), graphic.height));
 		button.solid = false;
 		button.immovable = true;
 		button.moves = false;
+		button.antialiasing = FlxG.save.data.antialiasing;
 		button.scrollFactor.set();
 		button.color = Color;
 		button.alpha = FlxG.save.data.mobileCAlpha;

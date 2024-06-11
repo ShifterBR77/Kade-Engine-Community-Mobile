@@ -98,8 +98,6 @@ class MusicBeatState extends FlxTransitionableState
 		{
 			case 'Pad-Right' | 'Pad-Left' | 'Pad-Custom':
 				controls.setVirtualPad(mobileControls.virtualPad, RIGHT_FULL, NONE);
-			case 'Pad-Duo':
-				controls.setVirtualPad(mobileControls.virtualPad, BOTH_FULL, NONE);
 			case 'Hitbox':
 				controls.setHitbox(mobileControls.hitbox);
 			case 'Keyboard': // do nothing

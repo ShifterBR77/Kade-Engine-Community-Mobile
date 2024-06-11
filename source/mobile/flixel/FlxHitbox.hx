@@ -68,6 +68,7 @@ class FlxHitbox extends FlxSpriteGroup
 		hint.multiTouch = true;
 		hint.immovable = true;
 		hint.moves = false;
+		hint.antialiasing = FlxG.save.data.antialiasing;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
 		hint.onDown.callback = hint.onOver.callback = function()
