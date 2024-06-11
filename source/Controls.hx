@@ -304,12 +304,12 @@ class Controls extends FlxActionSet
 			case LEFT_RIGHT:
 				inline forEachBound(Control.LEFT, (action, state) -> addButton(action, VirtualPad.buttonLeft, state));
 				inline forEachBound(Control.RIGHT, (action, state) -> addButton(action, VirtualPad.buttonRight, state));
-			case LEFT_FULL | RIGHT_FULL:
+			case NONE: // do nothing
+			default:
 				inline forEachBound(Control.UP, (action, state) -> addButton(action, VirtualPad.buttonUp, state));
 				inline forEachBound(Control.DOWN, (action, state) -> addButton(action, VirtualPad.buttonDown, state));
 				inline forEachBound(Control.LEFT, (action, state) -> addButton(action, VirtualPad.buttonLeft, state));
 				inline forEachBound(Control.RIGHT, (action, state) -> addButton(action, VirtualPad.buttonRight, state));
-			case NONE: // do nothing
 		}
 
 		switch (Action)
@@ -318,12 +318,10 @@ class Controls extends FlxActionSet
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, VirtualPad.buttonA, state));
 			case B:
 				inline forEachBound(Control.BACK, (action, state) -> addButton(action, VirtualPad.buttonB, state));
-			/*case P:
-				inline forEachBound(Control.PAUSE, (action, state) -> addButton(action, VirtualPad.buttonP, state));*/
-			case A_B | A_B_C | A_B_E | A_B_X_Y | A_B_C_X_Y | A_B_C_X_Y_Z | A_B_C_D_V_X_Y_Z:
+			case P | NONE: // do nothing
+			default:
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, VirtualPad.buttonA, state));
 				inline forEachBound(Control.BACK, (action, state) -> addButton(action, VirtualPad.buttonB, state));
-			case P | NONE: // do nothing
 		}
 	}
 
