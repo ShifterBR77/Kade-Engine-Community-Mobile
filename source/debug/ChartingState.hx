@@ -792,11 +792,11 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
-			if (FlxG.keys.justPressed.W && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.ALT)
+			if ((FlxG.keys.justPressed.A || FlxG.keys.justPressed.LEFT) && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.ALT)
 			{
 				goToSection(curSection - 1);
 			}
-			else if (FlxG.keys.justPressed.S && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.ALT)
+			else if ((FlxG.keys.justPressed.D || FlxG.keys.justPressed.RIGHT) && !FlxG.keys.pressed.CONTROL && !FlxG.keys.pressed.ALT)
 			{
 				goToSection(curSection + 1);
 			}
@@ -1162,8 +1162,6 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains.forEachAlive(function(spr:FlxSprite) spr.destroy());
 		curRenderedSustains.clear();
 
-		var curSection = 0;
-
 		for (section in SONG.notes)
 		{
 			if (section != null)
@@ -1173,7 +1171,7 @@ class ChartingState extends MusicBeatState
 					var daNoteInfo = i[1];
 					var daStrumTime = i[0];
 					var daSus = i[2];
-					var daType = i[4];
+					var daType = i[3];
 					var daBeat = TimingStruct.getBeatFromTime(daStrumTime);
 
 					var gottaHitNote:Bool = false;
@@ -1181,6 +1179,9 @@ class ChartingState extends MusicBeatState
 						gottaHitNote = true;
 					else if (daNoteInfo <= 3)
 						gottaHitNote = false;
+
+					if (PlayStateChangeables.opponentMode)
+						gottaHitNote = !gottaHitNote;
 
 					var note:Note = new Note(daStrumTime, daNoteInfo, null, false, true, gottaHitNote, daBeat);
 					note.rawNoteData = daNoteInfo;
@@ -1285,7 +1286,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	private function addNote(?n:Note):Void
+	private function addNote():Void
 	{
 		destroyBoxes();
 
@@ -1315,20 +1316,9 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		if (n != null)
-			section.sectionNotes.push([
-				Math.abs(n.strumTime),
-				n.noteData,
-				n.sustainLength,
-				TimingStruct.getBeatFromTime(n.strumTime),
-				n.noteShit
-			]);
-		else
-			section.sectionNotes.push([noteStrum, noteData, noteSus, TimingStruct.getBeatFromTime(noteStrum), noteShit]);
+		section.sectionNotes.push([Math.abs(noteStrum), noteData, noteSus, noteShit]);
 
 		Debug.logTrace("Note Data : " + noteData + " StrumTime : " + noteStrum + " Section Length : " + section.sectionNotes.length);
-
-		var seg = TimingStruct.getTimingAtTimestamp(noteStrum);
 
 		var gottaHitNote:Bool = false;
 		if (noteData > 3)
@@ -1336,44 +1326,25 @@ class ChartingState extends MusicBeatState
 		else if (noteData <= 3)
 			gottaHitNote = false;
 
-		if (n == null)
-		{
-			var note:Note = new Note(noteStrum, noteData, null, false, true, gottaHitNote, TimingStruct.getBeatFromTime(noteStrum));
-			note.rawNoteData = noteData;
-			note.sustainLength = noteSus;
-			note.noteShit = noteShit;
-			note.setGraphicSize(Math.floor(noteSize), Math.floor(noteSize));
-			note.updateHitbox();
-			note.x = Math.floor(note.rawNoteData * noteSize) + notePos;
+		if (PlayStateChangeables.opponentMode)
+			gottaHitNote = !gottaHitNote;
 
-			if (curSelectedNoteObject != null)
-				curSelectedNoteObject.charterSelected = false;
-			curSelectedNoteObject = note;
+		var note:Note = new Note(noteStrum, noteData, null, false, true, gottaHitNote, TimingStruct.getBeatFromTime(noteStrum));
+		note.rawNoteData = noteData;
+		note.sustainLength = noteSus;
+		note.noteShit = noteShit;
+		note.setGraphicSize(Math.floor(noteSize), Math.floor(noteSize));
+		note.updateHitbox();
+		note.x = Math.floor(note.rawNoteData * noteSize) + notePos;
 
-			curSelectedNoteObject.charterSelected = true;
-			note.y = Math.floor(getYfromStrum(noteStrum) * size);
-			curRenderedNotes.add(note);
-			selectNote(note);
-		}
-		else
-		{
-			var note:Note = new Note(n.strumTime, n.noteData, null, false, true, gottaHitNote, TimingStruct.getBeatFromTime(n.strumTime));
-			note.rawNoteData = n.noteData;
-			note.sustainLength = noteSus;
-			note.noteShit = noteShit;
-			note.setGraphicSize(Math.floor(noteSize), Math.floor(noteSize));
-			note.updateHitbox();
-			note.x = Math.floor(note.rawNoteData * noteSize) + notePos;
+		if (curSelectedNoteObject != null)
+			curSelectedNoteObject.charterSelected = false;
+		curSelectedNoteObject = note;
 
-			if (curSelectedNoteObject != null)
-				curSelectedNoteObject.charterSelected = false;
-			curSelectedNoteObject = note;
-
-			curSelectedNoteObject.charterSelected = true;
-			note.y = Math.floor(getYfromStrum(noteStrum) * size);
-			curRenderedNotes.add(note);
-			selectNote(note);
-		}
+		curSelectedNoteObject.charterSelected = true;
+		note.y = Math.floor(getYfromStrum(noteStrum) * size);
+		curRenderedNotes.add(note);
+		selectNote(note);
 		var thingy = section.sectionNotes[section.sectionNotes.length - 1];
 
 		curSelectedNote = thingy;
@@ -1414,48 +1385,29 @@ class ChartingState extends MusicBeatState
 
 	function deleteNote(note:Note):Void
 	{
-		var section = getSectionByTime(note.strumTime);
-		curSelectedNote = null;
-		strumTime.text = "0";
-
-		Debug.logTrace("Deleted StrumTime : " + note.strumTime);
+		Debug.logTrace("Deleted StrumTime : " + Math.abs(note.strumTime) + " Note Data " + note.noteData);
 
 		var found = false;
 
-		if (section != null)
+		for (i in SONG.notes)
 		{
-			for (i in section.sectionNotes)
-			{
-				if (i[0] == note.strumTime && i[1] == note.noteData)
+			for (n in i.sectionNotes)
+				if (n[0] == Math.abs(note.strumTime) && n[1] == note.noteData)
 				{
-					section.sectionNotes.remove(i);
-					found = true;
+					i.sectionNotes.remove(n);
 					curRenderedNotes.remove(note, true);
-					Debug.logTrace(section.sectionNotes.length);
+					Debug.logTrace("Removed " + i.sectionNotes.length + " Note Data " + [1]);
 					break;
 				}
-			}
-		}
-
-		if (!found) // backup check
-		{
-			for (i in SONG.notes)
-			{
-				for (n in i.sectionNotes)
-					if (n[0] == note.strumTime && n[1] == note.noteData)
-					{
-						i.sectionNotes.remove(n);
-						curRenderedNotes.remove(note, true);
-						Debug.logTrace(i.sectionNotes.length);
-						break;
-					}
-			}
 		}
 
 		if (note.sustainLength > 0)
 			curRenderedSustains.remove(note.noteCharterObject, true);
 
 		destroyBoxes();
+
+		curSelectedNote = null;
+		strumTime.text = "0";
 
 		for (i in 0...selectedBoxes.members.length)
 		{
@@ -1545,6 +1497,9 @@ class ChartingState extends MusicBeatState
 					else if (originalNote.noteData <= 3)
 						gottaHitNote = false;
 
+					if (PlayStateChangeables.opponentMode)
+						gottaHitNote = !gottaHitNote;
+
 					var note:Note = new Note(strum, originalNote.noteData, originalNote.prevNote, false, true, gottaHitNote, originalNote.beat);
 					note.rawNoteData = originalNote.rawNoteData;
 					note.sustainLength = originalNote.sustainLength;
@@ -1618,7 +1573,7 @@ class ChartingState extends MusicBeatState
 					if (ii.startTime <= strum && ii.endTime > strum)
 					{
 						// alright we're in this section lets paste the note here.
-						var newData:Array<Any> = [strum, i[1], i[2], i[3], i[4]];
+						var newData:Array<Any> = [strum, i[1], i[2], i[3]];
 						ii.sectionNotes.push(newData);
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
@@ -1627,10 +1582,13 @@ class ChartingState extends MusicBeatState
 							gottaHitNote = true;
 						else if (i[1] <= 3)
 							gottaHitNote = false;
+
+						if (PlayStateChangeables.opponentMode)
+							gottaHitNote = !gottaHitNote;
 						var note:Note = new Note(strum, newData[1], null, false, true, gottaHitNote, newData[3]);
 						note.rawNoteData = newData[1];
 						note.sustainLength = newData[2];
-						note.noteShit = newData[4];
+						note.noteShit = newData[3];
 						note.setGraphicSize(Math.floor(noteSize), Math.floor(noteSize));
 						note.updateHitbox();
 						note.x = Math.floor(note.rawNoteData * noteSize) + notePos;
@@ -1676,7 +1634,7 @@ class ChartingState extends MusicBeatState
 		return null;
 	}
 
-	function clearSection():Void
+	inline function clearSection():Void
 	{
 		destroyBoxes();
 
@@ -1697,17 +1655,17 @@ class ChartingState extends MusicBeatState
 		updateNotes();
 	}
 
-	function getStrumTime(yPos:Float):Float
+	inline function getStrumTime(yPos:Float):Float
 	{
 		return FlxMath.remapToRange(yPos, 0, 16, 0, 16);
 	}
 
-	function getYfromStrum(strumTime:Float):Float
+	inline function getYfromStrum(strumTime:Float):Float
 	{
 		return FlxMath.remapToRange(strumTime, 0, 16, 0, 16);
 	}
 
-	function getSectionSteps(?section:Null<Int> = null)
+	inline function getSectionSteps(?section:Null<Int> = null)
 	{
 		if (section == null)
 			section = curSection;
@@ -1863,8 +1821,6 @@ class ChartingState extends MusicBeatState
 			meta = autoSaveData.songMeta != null ? cast autoSaveData.songMeta : {};
 		}
 
-		// fard
-
 		PlayState.SONG = Song.parseJSONshit(data.songId, data, meta);
 		LoadingState.loadAndSwitchState(new ChartingState());
 		Lib.clearInterval(id);
@@ -1966,7 +1922,7 @@ class ChartingState extends MusicBeatState
 		});
 	}
 
-	inline function songShit()
+	private function songShit()
 	{
 		try
 		{
@@ -2284,7 +2240,7 @@ class ChartingState extends MusicBeatState
 			{
 				var copiedNote:Array<Dynamic> = [];
 				var newStrumTime:Float = note[0] + addToTime;
-				copiedNote = [newStrumTime, note[1], note[2], note[3], note[4]];
+				copiedNote = [newStrumTime, note[1], note[2], note[3]];
 				SONG.notes[curSection].sectionNotes.push(copiedNote);
 			}
 
@@ -3134,7 +3090,6 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = Song.parseJSONshit(data.songId, data, meta);
 			clean = true;
 			MusicBeatState.switchState(new ChartingState());
-			// doo doo fard
 		}
 
 		file.addComponent(saveSong);

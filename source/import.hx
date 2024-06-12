@@ -1,6 +1,5 @@
 #if !macro
 import Paths;
-import flixel.*;
 import flixel.sound.FlxSound;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
@@ -29,6 +28,12 @@ import android.os.Build.VERSION as AndroidVersion;
 import mobile.MobileControls;
 import mobile.SUtil;
 import mobile.SwipeUtil;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.FlxBasic;
+import flixel.FlxObject;
+import flixel.FlxCamera;
+import flixel.FlxState;
 #end
 
 using StringTools;
