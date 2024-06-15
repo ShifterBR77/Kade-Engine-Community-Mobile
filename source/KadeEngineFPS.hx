@@ -142,7 +142,7 @@ class KadeEngineFPS extends TextField
 	{
 		final gameX:Float = (FlxG.game != null) ? FlxG.game.x : 0;
 		final gameY:Float = (FlxG.game != null) ? FlxG.game.y : 0;
-		scaleX = scaleY = #if mobile (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+		scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
 		x = gameX + X;
 		y = gameY + Y;
 	}
