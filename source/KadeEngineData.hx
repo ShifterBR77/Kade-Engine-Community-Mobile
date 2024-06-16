@@ -274,20 +274,31 @@ class KadeEngineData
 			FlxG.sound.muted = FlxG.save.data.mute;
 		}
 
+		if (FlxG.save.data.noteCamera == null)
+			FlxG.save.data.noteCamera = false;
+
 		if (FlxG.save.data.moveEditor == null)
 			FlxG.save.data.moveEditor = true;
 
 		if (FlxG.save.data.editorPos == null)
 			FlxG.save.data.editorPos = [0, 420];
-
+		
 		KEMobileData.initSave();
 
+		if (FlxG.save.data.showHelp == null)
+			FlxG.save.data.showHelp = true;
+
+		if (FlxG.save.data.chart_metronome == null)
+			FlxG.save.data.chart_metronome = false;
+
+		if (FlxG.save.data.playHitsounds == null)
+			FlxG.save.data.playHitsounds = false;
+
+		if (FlxG.save.data.playHitsoundsE == null)
+			FlxG.save.data.playHitsoundsE = false;
+
 		FlxSprite.defaultAntialiasing = FlxG.save.data.antialiasing;
-
 		FlxObject.defaultMoves = false;
-
-		// if (FlxG.save.data.volume == null)
-		// FlxG.save.data.volume = 1;
 		PlayerSettings.player1.controls.loadKeyBinds();
 
 		Main.watermarks = FlxG.save.data.watermark;

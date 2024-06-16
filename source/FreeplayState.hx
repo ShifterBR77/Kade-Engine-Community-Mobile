@@ -47,7 +47,7 @@ class FreeplayState extends MusicBeatState
 {
 	public var songs:Array<FreeplaySongMetadata> = [];
 
-	private var camGame:SwagCamera;
+	private var camGame:FlxCamera;
 	var lerpSelected:Float = 0;
 
 	public static var rate:Float = 1.0;
@@ -143,8 +143,8 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		camGame = new SwagCamera();
-		FlxG.cameras.reset(new SwagCamera());
+		camGame = new FlxCamera();
+		FlxG.cameras.reset(new FlxCamera());
 
 		persistentUpdate = persistentDraw = true;
 
@@ -261,8 +261,6 @@ class FreeplayState extends MusicBeatState
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
 		PlayStateChangeables.modchart = FlxG.save.data.modcharts;
 		PlayStateChangeables.botPlay = FlxG.save.data.botplay;
@@ -398,30 +396,23 @@ class FreeplayState extends MusicBeatState
 			meta.diffs = diffsThatExist;
 			songs.push(meta);
 		}
-		
-		// trace("FEATURE_STEPMANIA was not specified during build, sm file loading is disabled.");
+
 		#if FEATURE_STEPMANIA
-		// TODO: Refactor this to multiple difficulties.
 		// trace("tryin to load sm files");
 		if (!FileSystem.exists("assets/sm/"))
 			FileSystem.createDirectory("assets/sm/");
 		for (i in FileSystem.readDirectory("assets/sm/"))
 		{
-			// trace(i);
 			if (FileSystem.isDirectory("assets/sm/" + i))
 			{
-				// trace("Reading SM file dir " + i);
 				for (file in FileSystem.readDirectory("assets/sm/" + i))
 				{
 					if (file.contains(" "))
 						FileSystem.rename("assets/sm/" + i + "/" + file, "assets/sm/" + i + "/" + file.replace(" ", "_"));
 					if (file.endsWith(".sm") && !FileSystem.exists("assets/sm/" + i + "/converted.json"))
 					{
-						// trace("reading " + file);
 						var file:SMFile = SMFile.loadFile("assets/sm/" + i + "/" + file.replace(" ", "_"));
 						file.jsonPath = "assets/sm/" + i + "/converted.json";
-
-						// trace("Converting " + file.header.TITLE);
 						var data = file.convertToFNF("assets/sm/" + i + "/converted.json");
 						var meta = new FreeplaySongMetadata(file.header.TITLE, 0, "sm", FlxColor.fromString("#9a9b9c"), file, "assets/sm/" + i);
 						meta.diffs = ['Normal'];
@@ -445,11 +436,8 @@ class FreeplayState extends MusicBeatState
 					}
 					else if (FileSystem.exists("assets/sm/" + i + "/converted.json") && file.endsWith(".sm"))
 					{
-						// trace("reading " + file);
 						var file:SMFile = SMFile.loadFile("assets/sm/" + i + "/" + file.replace(" ", "_"));
 						file.jsonPath = "assets/sm/" + i + "/converted.json";
-
-						// trace("Converting " + file.header.TITLE);
 
 						file.convertToFNF("assets/sm/" + i + "/converted.json");
 						var meta = new FreeplaySongMetadata(file.header.TITLE, 0, "sm", FlxColor.fromString("#9a9b9c"), file, "assets/sm/" + i);

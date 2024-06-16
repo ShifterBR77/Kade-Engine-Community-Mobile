@@ -331,9 +331,6 @@ class ChartingState extends MusicBeatState
 		notetypetext.updateHitbox();
 		notetypetext.scrollFactor.set();
 
-		if (FlxG.save.data.showHelp == null)
-			FlxG.save.data.showHelp = true;
-
 		helpText = new CoolUtil.CoolText(985, 485, 12, 12, Paths.bitmapFont('fonts/vcr'));
 		helpText.autoSize = true;
 		helpText.antialiasing = true;
@@ -823,7 +820,6 @@ class ChartingState extends MusicBeatState
 							i.connectedNote.strumTime,
 							i.connectedNote.rawNoteData,
 							i.connectedNote.sustainLength,
-							i.connectedNote.beat,
 							i.connectedNote.noteShit
 						]);
 					}
@@ -883,7 +879,6 @@ class ChartingState extends MusicBeatState
 						selectedBoxes.members[i].connectedNote.strumTime,
 						selectedBoxes.members[i].connectedNote.rawNoteData,
 						selectedBoxes.members[i].connectedNote.sustainLength,
-						selectedBoxes.members[i].connectedNote.beat,
 						selectedBoxes.members[i].connectedNote.noteShit
 					]);
 					notesToBeDeleted.push(selectedBoxes.members[i].connectedNote);
@@ -1484,7 +1479,6 @@ class ChartingState extends MusicBeatState
 						strum,
 						originalNote.rawNoteData,
 						originalNote.sustainLength,
-						originalNote.beat,
 						originalNote.noteShit
 					];
 					ii.sectionNotes.push(newData);
@@ -2385,7 +2379,7 @@ class ChartingState extends MusicBeatState
 		scrollSpeed = new NumberStepper();
 		scrollSpeed.max = 10;
 		scrollSpeed.min = 0.1;
-		scrollSpeed.precision = 2;
+		scrollSpeed.precision = 3;
 		scrollSpeed.step = 0.1;
 		scrollSpeed.pos = SONG.speed;
 		scrollSpeed.decimalSeparator = ".";
@@ -3110,8 +3104,6 @@ class ChartingState extends MusicBeatState
 
 		metronome = new MenuCheckBox();
 		metronome.text = "Metronome";
-		if (FlxG.save.data.chart_metronome == null)
-			FlxG.save.data.chart_metronome = false;
 		metronome.selected = FlxG.save.data.chart_metronome;
 		metronome.onClick = function(e)
 		{
@@ -3132,8 +3124,6 @@ class ChartingState extends MusicBeatState
 
 		hitsoundsP = new MenuCheckBox();
 		hitsoundsP.text = "Hitsounds (Player)";
-		if (FlxG.save.data.playHitsounds == null)
-			FlxG.save.data.playHitsounds = false;
 		hitsoundsP.selected = FlxG.save.data.playHitsounds;
 		hitsoundsP.onClick = function(e)
 		{
@@ -3142,8 +3132,7 @@ class ChartingState extends MusicBeatState
 
 		hitsoundsE = new MenuCheckBox();
 		hitsoundsE.text = "Hitsounds (Opponent)";
-		if (FlxG.save.data.playHitsoundsE == null)
-			FlxG.save.data.playHitsoundsE = false;
+
 		hitsoundsE.selected = FlxG.save.data.playHitsoundsE;
 		hitsoundsE.onClick = function(e)
 		{
