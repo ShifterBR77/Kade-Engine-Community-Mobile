@@ -354,8 +354,7 @@ class ChartingState extends MusicBeatState
 
 		gridBG = new FlxSprite(notePos, 0).makeGraphic(50 * 8, 50 * 16);
 
-		if (SONG.eventObjects == null || SONG.eventObjects.length == 0)
-			SONG.eventObjects = [new Song.Event("Init BPM", 0, '${SONG.bpm}', "1", "BPM Change")];
+		initEvents();
 
 		var currentIndex = 0;
 
@@ -380,7 +379,7 @@ class ChartingState extends MusicBeatState
 					var data = TimingStruct.AllTimings[currentIndex - 1];
 					data.endBeat = beat;
 					data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-					var step = ((60 / data.bpm) * 1000) / 4;
+					var step = ((60 / data.bpm) * 1000) * 0.25;
 					TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
 					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
 				}
@@ -544,7 +543,7 @@ class ChartingState extends MusicBeatState
 						var data = TimingStruct.AllTimings[currentIndex - 1];
 						data.endBeat = beat;
 						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
+						var step = ((60 / data.bpm) * 1000) * 0.25;
 						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
 						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
 					}
@@ -703,7 +702,7 @@ class ChartingState extends MusicBeatState
 				var time = getStrumTime(FlxG.mouse.y / size);
 
 				var beat = TimingStruct.getBeatFromTime(time);
-				var snap = quantization / 4;
+				var snap = quantization * 0.25;
 				var snapped = Math.round(beat * snap) / snap;
 
 				dummyArrow.y = getYfromStrum(TimingStruct.getTimeFromBeat(snapped)) * size;
@@ -1048,7 +1047,7 @@ class ChartingState extends MusicBeatState
 				{
 					var increase:Float = 0;
 					var beats:Float = 0;
-					var snap = quantization / 4;
+					var snap = quantization * 0.25;
 
 					if (amount < 0)
 					{
@@ -1126,9 +1125,9 @@ class ChartingState extends MusicBeatState
 			+ "\nDifficulty : "
 			+ curDiff
 			+ "\nSong Position : "
-			+ Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+			+ Std.string(FlxMath.roundDecimal(Conductor.songPosition * 0.001, 2))
 			+ " / "
-			+ Std.string(FlxMath.roundDecimal(inst.length / 1000, 2))
+			+ Std.string(FlxMath.roundDecimal(inst.length * 0.001, 2))
 			+ "\nSpeed / Pitch :"
 			+ Std.string(FlxMath.roundDecimal(pitch, 2))
 			+ "\nCur Section : "
@@ -3164,6 +3163,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		personal.addComponent(dragTabs);
+		personal.addComponent(resetPos);
 		box.addComponent(hsv);
 		personal.addComponent(box);
 		personal.addComponent(hitsoundsVol);
@@ -3248,5 +3248,29 @@ class ChartingState extends MusicBeatState
 		};
 
 		return sec;
+	}
+
+	private function initEvents()
+	{
+		var eventObjects:Array<Song.Event> = [];
+
+		if (SONG.eventObjects == null)
+			SONG.eventObjects = [new Song.Event("Init BPM", 0, SONG.bpm, "1", "BPM Change")];
+
+		for (i in SONG.eventObjects)
+		{
+			var name = Reflect.field(i, "name");
+			var type = Reflect.field(i, "type");
+			var pos = Reflect.field(i, "position");
+			var value = Reflect.field(i, "value");
+			var value2 = Reflect.field(i, "value2");
+
+			if (value2 == null)
+				value2 = "1";
+
+			eventObjects.push(new Song.Event(name, pos, value, value2, type));
+		}
+
+		SONG.eventObjects = eventObjects;
 	}
 }
