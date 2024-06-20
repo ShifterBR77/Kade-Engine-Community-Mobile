@@ -3058,7 +3058,7 @@ class ChartingState extends MusicBeatState
 				chartVersion: "KEC1",
 				splitVoiceTracks: true,
 				notes: [],
-				eventObjects: [],
+				eventObjects: [new Song.Event("Init BPM", 0, SONG.bpm, "1", "BPM Change")],
 				bpm: 150,
 				needsVoices: true,
 				player1: 'bf',
@@ -3254,7 +3254,7 @@ class ChartingState extends MusicBeatState
 	{
 		var eventObjects:Array<Song.Event> = [];
 
-		if (SONG.eventObjects == null)
+		if (SONG.eventObjects == null || SONG.eventObjects.length == 0)
 			SONG.eventObjects = [new Song.Event("Init BPM", 0, SONG.bpm, "1", "BPM Change")];
 
 		for (i in SONG.eventObjects)

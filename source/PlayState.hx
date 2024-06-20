@@ -57,8 +57,6 @@ import MusicBeatState.subStates;
 import ui.Rating;
 import ui.IntroSprite;
 
-using StringTools;
-
 class PlayState extends MusicBeatState
 {
 	// PlayState But Static.
@@ -1943,7 +1941,7 @@ class PlayState extends MusicBeatState
 		songName.scrollFactor.set();
 
 		songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength, false) + ')';
-		songName.y = songPosBG.y + (songPosBG.height / 3);
+		songName.y = songPosBG.y + (songPosBG.height * 0.5);
 		songName.alpha = 0;
 		songName.visible = FlxG.save.data.songPosition;
 		uiGroup.add(songName);
@@ -4722,7 +4720,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public function cacheCharacter(newCharacter:String, type:Int)
+	public function cacheChar(newCharacter:String, type:Int)
 	{
 		switch (type)
 		{
@@ -5173,7 +5171,6 @@ class PlayState extends MusicBeatState
 	{
 		for (precaching in Ratings.timingWindows)
 			Paths.image('hud/$styleName/${precaching.name.toLowerCase()}', 'shared');
-
 		for (i in 0...10)
 		{
 			Paths.image('hud/$styleName/num$i', 'shared');
