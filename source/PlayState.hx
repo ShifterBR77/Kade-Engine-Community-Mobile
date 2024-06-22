@@ -2809,7 +2809,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.TWO && songStarted)
+		if (FlxG.keys.justPressed.TWO && songStarted && FlxG.save.data.developer)
 		{
 			if (!usedTimeTravel && Conductor.songPosition + 10000 < inst.length)
 			{
@@ -3332,8 +3332,8 @@ class PlayState extends MusicBeatState
 													for (i in daNote.children)
 													{
 														i.sustainActive = false;
-														health -= (daNote.missHealth * PlayStateChangeables.healthLoss) / daNote.children.length;
 													}
+													health -= (daNote.missHealth * PlayStateChangeables.healthLoss);
 													noteMiss(daNote.noteData, daNote);
 												}
 												else
@@ -3371,8 +3371,8 @@ class PlayState extends MusicBeatState
 									for (i in daNote.parent.children)
 									{
 										i.sustainActive = false;
-										health -= (daNote.missHealth * PlayStateChangeables.healthLoss) / daNote.parent.children.length;
 									}
+									health -= (daNote.missHealth * PlayStateChangeables.healthLoss);
 									noteMiss(daNote.noteData, daNote);
 								}
 							}
@@ -3382,7 +3382,7 @@ class PlayState extends MusicBeatState
 
 		charactersDance();
 
-		if (FlxG.keys.justPressed.ONE)
+		if (FlxG.keys.justPressed.ONE && FlxG.save.data.developer)
 			endSong();
 
 		if (FlxG.save.data.smoothHealthbar)
@@ -5422,11 +5422,12 @@ class PlayState extends MusicBeatState
 		inCutscene = true;
 		inCinematic = true;
 		var diff:String = CoolUtil.getSuffixFromDiff(CoolUtil.difficultyArray[storyDifficulty]);
+		cutscene = new VideoHandler();
 		OpenFlAssets.loadBytes(Paths.video(name)).onComplete(function(bytes:openfl.utils.ByteArray):Void
 		{
 			if (cutscene.load(bytes))
 			{
-				new FlxTimer().start(0.001, function(tmr:FlxTimer):Void
+				FlxTimer.wait(0.001, function():Void
 				{
 					cutscene.play();
 				});
