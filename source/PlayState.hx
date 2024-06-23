@@ -56,6 +56,8 @@ import Ratings.RatingWindow;
 import MusicBeatState.subStates;
 import ui.Rating;
 import ui.IntroSprite;
+import debug.ChartingState;
+import debug.StageDebugState;
 
 class PlayState extends MusicBeatState
 {
