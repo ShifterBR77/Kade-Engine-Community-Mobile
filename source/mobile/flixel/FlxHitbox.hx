@@ -62,6 +62,7 @@ class FlxHitbox extends FlxSpriteGroup
 	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):FlxButton
 	{
 		final guh:Float = FlxG.save.data.mobileCAlpha >= 0.9 ? FlxG.save.data.mobileCAlpha - 0.2 : FlxG.save.data.mobileCAlpha;
+		final guh2:Float = 0.00001;
 		var hint:FlxButton = new FlxButton(X, Y);
 		hint.loadGraphic(createHintGraphic(Width, Height, Color));
 		hint.solid = false;
@@ -71,23 +72,20 @@ class FlxHitbox extends FlxSpriteGroup
 		hint.antialiasing = FlxG.save.data.antialiasing;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
-		hint.onDown.callback = hint.onOver.callback = function()
+		hint.onDown.callback = function()
 		{
-			onHintDown.dispatch(hint);
-			if (FlxG.save.data.hitboxType != 3)
-			{
-				if (hint.alpha != guh)
-					hint.alpha = guh;
-			}
+			if (hint.alpha != guh)
+				hint.alpha = guh;
 		}
-		hint.onUp.callback = hint.onOut.callback = function()
+		hint.onUp.callback = function()
 		{
-			onHintUp.dispatch(hint);
-			if (FlxG.save.data.hitboxType != 3)
-			{
-				if (hint.alpha != 0.00001)
-					hint.alpha = 0.00001;
-			}
+			if (hint.alpha != guh2)
+				hint.alpha = guh2;
+		}
+		hint.onOut.callback = function()
+		{
+			if (hint.alpha != guh2)
+				hint.alpha = guh2;
 		}
 		#if FLX_DEBUG
 		hint.ignoreDrawDebug = true;

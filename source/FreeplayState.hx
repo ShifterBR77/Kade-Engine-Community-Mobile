@@ -168,7 +168,7 @@ class FreeplayState extends MusicBeatState
 		bottomBG.alpha = 0.6;
 		add(bottomBG);
 
-		final daSpace:String = MobileControls.enabled ? "C" : "SPACE";
+		final daSpace:String = MobileControls.enabled ? "X" : "SPACE";
 
 		var bottomText:String = #if PRELOAD_ALL '  Press $daSpace to listen to the Song Instrumental / Click and scroll through the songs with your MOUSE /'
 			+ #else "  Click and scroll through the songs with your MOUSE /"
@@ -220,7 +220,7 @@ class FreeplayState extends MusicBeatState
 
 		add(previewtext);
 
-		final daShift:String = MobileControls.enabled ? "X" : "SHIFT";
+		final daShift:String = MobileControls.enabled ? "C" : "SHIFT";
 		final daCtrl:String = MobileControls.enabled ? "Y" : "CTRL";
 
 		helpText = new CoolText(scoreText.x, scoreText.y + 200, 18, 18, Paths.bitmapFont('fonts/vcr'));
@@ -657,7 +657,7 @@ class FreeplayState extends MusicBeatState
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
-			if (virtualPad.buttonX.pressed || FlxG.keys.pressed.SHIFT) // && songs[curSelected].songName.toLowerCase() != "tutorial")
+			if (virtualPad.buttonC.pressed || FlxG.keys.pressed.SHIFT) // && songs[curSelected].songName.toLowerCase() != "tutorial")
 			{
 				if (FlxG.keys.justPressed.LEFT || controls.LEFT_P)
 				{
@@ -712,7 +712,7 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 
-			if (virtualPad.buttonC.justPressed || FlxG.keys.justPressed.SPACE)
+			if (virtualPad.buttonX.justPressed || FlxG.keys.justPressed.SPACE)
 			{
 				dotheMusicThing();
 			}
