@@ -98,7 +98,7 @@ class ResultsScreen extends MusicBeatSubstate
 		comboText.scrollFactor.set();
 
 		contText = new FlxText(FlxG.width - 525, FlxG.height + 50, 0,
-			MobileControls.enabled ? 'Touch to continue.' : 'Click or Press ${KeyBinds.gamepad ? 'A' : 'ENTER'} to continue.');
+			MobileControls.enabled ? 'Touch to continue.' : 'Click or Press ENTER to continue.');
 		contText.font = Paths.font("vcr.ttf");
 		contText.size = 24;
 		contText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2, 1);

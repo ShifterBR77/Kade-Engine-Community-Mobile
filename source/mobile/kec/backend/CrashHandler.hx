@@ -1,4 +1,4 @@
-package mobile;
+package mobile.kec.backend;
 
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.ErrorEvent;
@@ -9,7 +9,7 @@ import sys.io.File;
 #end
 
 using StringTools;
-using CoolUtil;
+using kec.backend.util.CoolUtil;
 
 /**
  * Crash Handler.

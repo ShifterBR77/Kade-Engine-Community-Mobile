@@ -1,6 +1,7 @@
-package mobile;
+package mobile.kec.backend;
 
-import Options.Option;
+import kec.backend.Options.Option;
+import kec.substates.OptionsMenu;
 
 class MobileControlsOption extends Option
 {
@@ -21,7 +22,7 @@ class MobileControlsOption extends Option
 	{
 		if (OptionsMenu.isInPause)
 			return false;
-		FlxG.state.openSubState(new mobile.MobileControlsSelectSubState());
+		FlxG.state.openSubState(new mobile.kec.substates.MobileControlsSelectSubState());
 		return true;
 	}
 
@@ -108,7 +109,7 @@ class MobileControlsOpacityOption extends Option
 
 	override function getValue():String
 	{
-		return "Mobile Controls Opacity: " + HelperFunctions.truncateFloat(FlxG.save.data.mobileCAlpha, 1);
+		return "Mobile Controls Opacity: " + kec.backend.util.HelperFunctions.truncateFloat(FlxG.save.data.mobileCAlpha, 1);
 	}
 }
 

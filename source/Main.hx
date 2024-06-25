@@ -17,7 +17,6 @@ import lime.app.Application;
 #if VIDEOS
 import hxvlc.util.Handle;
 #end
-import mobile.CrashHandler;
 import openfl.utils.AssetCache;
 
 using StringTools;
@@ -67,7 +66,7 @@ class Main extends Sprite
 		Sys.setCwd(SUtil.getStorageDirectory());
 		#end
 
-		CrashHandler.init();
+		mobile.kec.backend.CrashHandler.init();
 
 		#if windows
 		@:functionCode("

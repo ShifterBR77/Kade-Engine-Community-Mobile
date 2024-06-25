@@ -1,4 +1,4 @@
-package mobile;
+package mobile.kec.substates;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -11,8 +11,8 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSave;
 import mobile.flixel.FlxButton;
-import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.Hitbox;
 import openfl.utils.Assets;
 
 class MobileControlsSelectSubState extends FlxSubState
@@ -20,7 +20,7 @@ class MobileControlsSelectSubState extends FlxSubState
 	private final controlsItems:Array<String> = ['Pad-Right', 'Pad-Left', 'Pad-Custom', 'Hitbox', 'Keyboard'];
 
 	private var virtualPad:FlxVirtualPad;
-	private var hitbox:FlxHitbox;
+	private var hitbox:Hitbox;
 	private var upPosition:FlxText;
 	private var downPosition:FlxText;
 	private var leftPosition:FlxText;
@@ -236,7 +236,7 @@ class MobileControlsSelectSubState extends FlxSubState
 				add(virtualPad);
 			case 'Hitbox':
 				removeControls();
-				hitbox = new FlxHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
+				hitbox = new Hitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
 				add(hitbox);
 			default:
 				removeControls();

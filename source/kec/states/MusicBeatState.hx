@@ -10,7 +10,6 @@ import kec.substates.CustomFadeTransition;
 import kec.states.FreeplayState;
 import kec.backend.PlayerSettings;
 import kec.backend.util.NoteStyleHelper;
-import mobile.MobileControls;
 import mobile.flixel.FlxVirtualPad;
 import flixel.FlxCamera;
 import flixel.input.actions.FlxActionInput;

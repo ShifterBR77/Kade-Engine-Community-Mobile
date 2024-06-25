@@ -1,7 +1,7 @@
 package kec.backend;
 import lime.app.Application;
 import openfl.Lib;
-import mobile.KEMobileData;
+import mobile.kec.backend.KEMobileData;
 
 class KadeEngineData
 {

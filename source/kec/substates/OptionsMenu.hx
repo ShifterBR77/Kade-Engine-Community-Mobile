@@ -1,9 +1,9 @@
 package kec.substates;
 
-import kec.objects.CoolText;
-import kec.backend.Options;
 import kec.backend.Controls.Control;
+import kec.backend.Options;
 import kec.backend.PlayerSettings;
+import kec.objects.CoolText;
 
 class OptionCata extends FlxSprite
 {
@@ -241,12 +241,12 @@ class OptionsMenu extends MusicBeatSubstate
 				#end
 			]),
 			new OptionCata(640, 104, "Mobile", [
-				new mobile.Options.MobileControlsOpacityOption("How Much Opaque Should Mobile Controls Be?"),
-				new mobile.Options.HitboxDesignOption("How Your Hitbox Should Look Like?"),
+				new mobile.kec.backend.Options.MobileControlsOpacityOption("How Much Opaque Should Mobile Controls Be?"),
+				new mobile.kec.backend.Options.HitboxDesignOption("How Your Hitbox Should Look Like?"),
 				#if mobile
-				new mobile.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
+				new mobile.kec.backend.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
 				#end
-				new mobile.Options.MobileControlsOption("Change Mobile Controls Type.")
+				new mobile.kec.backend.Options.MobileControlsOption("Change Mobile Controls Type.")
 			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
 				new LeftKeybind("The left note's keybind"),
@@ -470,8 +470,8 @@ class OptionsMenu extends MusicBeatSubstate
 		up = controls.UP_P || FlxG.keys.justPressed.UP;
 		down = controls.DOWN_P || FlxG.keys.justPressed.DOWN;
 
-		any = FlxG.keys.justPressed.ANY || (gamepad != null ? gamepad.justPressed.ANY : false);
-		escape = virtualPad.buttonB.justPressed || FlxG.keys.justPressed.ESCAPE || (gamepad != null ? gamepad.justPressed.B : false);
+		any = FlxG.keys.justPressed.ANY;
+		escape = virtualPad.buttonB.justPressed || FlxG.keys.justPressed.ESCAPE;
 
 		if (!exiting)
 			virtualPad.alpha = FlxG.save.data.mobileCAlpha;

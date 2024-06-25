@@ -1,4 +1,4 @@
-package mobile.flixel;
+package mobile.kec.objects;
 
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
@@ -16,7 +16,7 @@ import openfl.geom.Matrix;
  *
  * @author Mihai Alexandru (M.A. Jigsaw)
  */
-class FlxHitbox extends FlxSpriteGroup
+class Hitbox extends FlxSpriteGroup
 {
 	public var hints(default, null):Array<FlxButton>;
 

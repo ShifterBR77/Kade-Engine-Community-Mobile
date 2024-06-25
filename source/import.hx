@@ -25,9 +25,8 @@ import android.os.BatteryManager as AndroidBatteryManager;
 import android.os.Build as AndroidBuild;
 import android.os.Build.VERSION as AndroidVersion;
 #end
-import mobile.MobileControls;
-import mobile.SUtil;
-import mobile.SwipeUtil;
+import mobile.kec.objects.MobileControls;
+import mobile.kec.backend.utils.SUtil;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.FlxBasic;

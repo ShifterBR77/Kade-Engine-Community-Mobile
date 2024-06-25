@@ -1,4 +1,4 @@
-package mobile;
+package mobile.kec.objects;
 
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
@@ -6,7 +6,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
 import mobile.flixel.FlxButton;
-import mobile.flixel.FlxHitbox;
+import mobile.kec.objects.Hitbox;
 import mobile.flixel.FlxVirtualPad;
 
 /**
@@ -19,7 +19,7 @@ class MobileControls extends FlxSpriteGroup
 	public static var enabled(get, never):Bool;
 
 	public var virtualPad:FlxVirtualPad;
-	public var hitbox:FlxHitbox;
+	public var hitbox:Hitbox;
 
 	public var onInputUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
 	public var onInputDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
@@ -49,7 +49,7 @@ class MobileControls extends FlxSpriteGroup
 				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Hitbox':
-				hitbox = new FlxHitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
+				hitbox = new Hitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
 				bindHitboxDirections(hitbox);
 				hitbox.onHintUp.add(onInputUp.dispatch);
 				hitbox.onHintDown.add(onInputDown.dispatch);
@@ -139,7 +139,7 @@ class MobileControls extends FlxSpriteGroup
 		vpad.buttonRight2.bindedDirection = RIGHT;
 	}
 
-	private static function bindHitboxDirections(hitbox:FlxHitbox)
+	private static function bindHitboxDirections(hitbox:Hitbox)
 	{
 		hitbox.hints[0].bindedDirection = LEFT;
 		hitbox.hints[1].bindedDirection = DOWN;

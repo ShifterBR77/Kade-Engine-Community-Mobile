@@ -8,8 +8,8 @@ import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.keyboard.FlxKey;
 import mobile.flixel.FlxButton;
-import mobile.flixel.FlxHitbox;
 import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.Hitbox;
 
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
@@ -54,6 +54,7 @@ enum abstract Action(String) to String from String
 	var CHEAT = "cheat";
 }
 #end
+
 enum Device
 {
 	Keys;
@@ -114,7 +115,7 @@ class Controls extends FlxActionSet
 	#else
 	var byName:Map<String, FlxActionDigital> = new Map<String, FlxActionDigital>();
 	#end
-	
+
 	public var keyboardScheme = KeyboardScheme.None;
 
 	public var UP(get, never):Bool;
