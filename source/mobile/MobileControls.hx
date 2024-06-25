@@ -54,7 +54,7 @@ class MobileControls extends FlxSpriteGroup
 				hitbox.onHintUp.add(onInputUp.dispatch);
 				hitbox.onHintDown.add(onInputDown.dispatch);
 				add(hitbox);
-			case 'Keyboard': // do nothing
+			default: // do nothing
 		}
 	}
 

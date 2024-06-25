@@ -262,7 +262,7 @@ class Controls extends FlxActionSet
 	}
 	#end
 
-	public var trackedInputsUI:Array<FlxActionInput> = [];
+	public var trackedInputs:Array<FlxActionInput> = [];
 
 	public function addButton(action:FlxActionDigital, button:FlxButton, state:FlxInputState):Void
 	{
@@ -270,19 +270,8 @@ class Controls extends FlxActionSet
 			return;
 
 		var input:FlxActionInputDigitalIFlxInput = new FlxActionInputDigitalIFlxInput(button, state);
-		trackedInputsUI.push(input);
+		trackedInputs.push(input);
 		action.add(input);
-	}
-
-	public function setHitbox(Hitbox:FlxHitbox):Void
-	{
-		if (Hitbox == null)
-			return;
-
-		inline forEachBound(Control.LEFT, (action, state) -> addButton(action, Hitbox.hints[0], state));
-		inline forEachBound(Control.DOWN, (action, state) -> addButton(action, Hitbox.hints[1], state));
-		inline forEachBound(Control.UP, (action, state) -> addButton(action, Hitbox.hints[2], state));
-		inline forEachBound(Control.RIGHT, (action, state) -> addButton(action, Hitbox.hints[3], state));
 	}
 
 	public function setVirtualPad(VirtualPad:FlxVirtualPad, DPad:FlxDPadMode, Action:FlxActionMode):Void
@@ -312,7 +301,7 @@ class Controls extends FlxActionSet
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, VirtualPad.buttonA, state));
 			case B:
 				inline forEachBound(Control.BACK, (action, state) -> addButton(action, VirtualPad.buttonB, state));
-			case P | NONE: // do nothing
+			case NONE | P: // do nothing
 			default:
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButton(action, VirtualPad.buttonA, state));
 				inline forEachBound(Control.BACK, (action, state) -> addButton(action, VirtualPad.buttonB, state));

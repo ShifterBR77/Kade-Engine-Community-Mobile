@@ -69,8 +69,8 @@ class MusicBeatState extends FlxTransitionableState
 		add(virtualPad);
 
 		controls.setVirtualPad(virtualPad, DPad, Action);
-		trackedInputsVirtualPad = controls.trackedInputsUI;
-		controls.trackedInputsUI = [];
+		trackedInputsVirtualPad = controls.trackedInputs;
+		controls.trackedInputs = [];
 	}
 
 	public function removeVirtualPad():Void
@@ -99,13 +99,11 @@ class MusicBeatState extends FlxTransitionableState
 		{
 			case 'Pad-Right' | 'Pad-Left' | 'Pad-Custom':
 				controls.setVirtualPad(mobileControls.virtualPad, RIGHT_FULL, NONE);
-			case 'Hitbox':
-				controls.setHitbox(mobileControls.hitbox);
-			case 'Keyboard': // do nothing
+			default: // do nothing
 		}
 
-		trackedInputsMobileControls = controls.trackedInputsUI;
-		controls.trackedInputsUI = [];
+		trackedInputsMobileControls = controls.trackedInputs;
+		controls.trackedInputs = [];
 
 		mobileControlsCam = new FlxCamera();
 		FlxG.cameras.add(mobileControlsCam, DefaultDrawTarget);
