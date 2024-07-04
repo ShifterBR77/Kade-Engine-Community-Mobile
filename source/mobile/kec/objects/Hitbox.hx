@@ -72,7 +72,7 @@ class Hitbox extends FlxSpriteGroup
 		hint.antialiasing = FlxG.save.data.antialiasing;
 		hint.scrollFactor.set();
 		hint.alpha = 0.00001;
-		hint.onDown.callback = hint.onOver.callback = function()
+		hint.onDown.callback = function()
 		{
 			onHintDown.dispatch(hint);
 			if (hint.alpha != guh)

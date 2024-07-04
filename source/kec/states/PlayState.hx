@@ -2809,7 +2809,7 @@ class PlayState extends MusicBeatState
 			skipActive = false;
 		}
 
-		if (FlxG.keys.justPressed.SPACE || virtualPad.buttonP.justPressed && skipActive)
+		if ((FlxG.keys.justPressed.SPACE || virtualPad.buttonP.justPressed) && skipActive)
 		{
 			inst.pause();
 			if (!SONG.splitVoiceTracks)
