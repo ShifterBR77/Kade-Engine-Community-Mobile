@@ -296,7 +296,7 @@ class ResultsScreen extends MusicBeatSubstate
 			if (music.volume < 0.5)
 				music.volume += 0.01 * elapsed;
 		#end
-		
+
 		if ((PlayerSettings.player1.controls.ACCEPT && !FlxG.keys.pressed.ALT) || FlxG.mouse.pressed)
 		{
 			if (music != null)

@@ -2521,6 +2521,7 @@ class BackgroundsOption extends Option
 class HitSoundOption extends Option
 {
 	var daHitSound:FlxSound = new FlxSound();
+
 	public function new(desc:String)
 	{
 		super();
@@ -2559,7 +2560,6 @@ class HitSoundOption extends Option
 
 	public override function getValue():String
 	{
-		
 		return "Hitsound Style: < " + HitSounds.getSoundByID(FlxG.save.data.hitSound) + " >";
 	}
 }
@@ -2567,6 +2567,7 @@ class HitSoundOption extends Option
 class HitSoundVolume extends Option
 {
 	var daHitSound:FlxSound = new FlxSound();
+
 	public function new(desc:String)
 	{
 		super();
@@ -2624,7 +2625,7 @@ class HitSoundVolume extends Option
 			daHitSound.loadEmbedded(Paths.sound('hitsounds/${HitSounds.getSoundByID(FlxG.save.data.hitSound).toLowerCase()}', 'shared'));
 			daHitSound.volume = FlxG.save.data.hitVolume;
 			daHitSound.play();
-		}	
+		}
 
 		return true;
 	}
@@ -2926,6 +2927,51 @@ class DeveloperMode extends Option
 	}
 }
 
+class MaxRatingAmountOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		if (OptionsMenu.isInPause)
+		{
+			blocked = true;
+			description = pauseDesc;
+		}
+		else
+			description = desc;
+	}
+
+	public override function right():Bool
+	{
+		if (OptionsMenu.isInPause)
+			return false;
+		if (FlxG.save.data.maxRatings >= 30)
+			FlxG.save.data.maxRatings = 30;
+		else
+			FlxG.save.data.maxRatings++;
+		display = updateDisplay();
+		return true;
+	}
+
+	public override function left():Bool
+	{
+		if (OptionsMenu.isInPause)
+			return false;
+		if (FlxG.save.data.maxRatings > 30)
+			FlxG.save.data.maxRatings = 30;
+		else if (FlxG.save.data.maxRatings < 2)
+			FlxG.save.data.maxRatings = 1;
+		else
+			FlxG.save.data.maxRatings--;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Rating Cap: < " + FlxG.save.data.maxRatings + " >";
+	}
+}
+
 class ResetSettings extends Option
 {
 	var confirm:Bool = false;
@@ -3014,6 +3060,7 @@ class ResetSettings extends Option
 		FlxG.save.data.playHitsounds = null;
 		FlxG.save.data.playHitsoundsE = null;
 		FlxG.save.data.developer = null;
+		FlxG.save.data.maxRatings = null;
 
 		KadeEngineData.initSave();
 		confirm = false;

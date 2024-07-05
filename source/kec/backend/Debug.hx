@@ -1,4 +1,5 @@
 package kec.backend;
+
 import lime.app.Application;
 import flixel.system.debug.log.LogStyle;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
@@ -8,7 +9,7 @@ import haxe.PosInfos;
 import kec.backend.chart.Song.SongData;
 import kec.backend.chart.Song;
 import kec.objects.Character;
-import kec.objects.HealthIcon;
+import kec.objects.ui.HealthIcon;
 import kec.objects.Note;
 
 /**
