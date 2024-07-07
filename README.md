@@ -61,7 +61,7 @@ New And Improved Freeplay By BoloVEVO.
 
 - [BoloVEVO](https://github.com/BoloVEVO) - Fixed my shit code and improved the chart editor. Made a ton of code improvements. Did the gameplay changers(thanks!!!)
 
-- Glowsoony - Pixel Notesplashes, Revamped Notesplash Code, Hscript, The guy does a ton. (Thanks!)
+- Glowsoony - Pixel Notesplashes, Revamped Notesplash Code (Legacy), Hscript (Legacy), The guy does a ton. (Thanks!)
 
 - LunarCleint - Hscript code, like, all of it.
 
@@ -69,12 +69,12 @@ New And Improved Freeplay By BoloVEVO.
 
 - [TposeJank](https://github.com/tposejank) Epic friend that gave me ideas and helped :epicttrooll:
 
-- [gaminbottomtext](https://github.com/gaminbottomtext) also epic fren that helped with notesplashes. He has disappeared.
+- [gaminbottomtext](https://github.com/gaminbottomtext) also epic fren that helped with notesplashes (Legacy). He has disappeared.
 
 - [yakY](https://twitter.com/yak_yyy) person that made the mouse icon specifically for the engine. (epico) (Legacy)
 
 - [!SIG7Ivan](https://github.com/SIG7Pro) person that made the mouse icon. (Current)
 
-- [AhmedxRNMD](https://twitter.com/AhmedxRNMD_) - Made the volume sounds.
+- [AhmedxRNMD](https://twitter.com/AhmedxRNMD_) - Made the volume sounds (Legacy).
 
 - [discord server for this project](https://discord.gg/G2jJ8RfWtm) thanks for joining if you do.
