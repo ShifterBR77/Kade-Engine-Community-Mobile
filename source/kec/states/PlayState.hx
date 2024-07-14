@@ -573,8 +573,17 @@ class PlayState extends MusicBeatState
 			introGroup.add(sprite);
 		}
 
-		numGroup = new FlxTypedGroup<ComboNumber>(Std.int(FlxG.save.data.maxRatings * 3));
-		ratingGroup = new FlxTypedGroup<Rating>(FlxG.save.data.maxRatings);
+		numGroup = new FlxTypedGroup<ComboNumber>();
+		for (i in 0...9)
+		{
+			var num:ComboNumber = new ComboNumber();
+			num.style = STYLE;
+			num.setup();
+			num.loadNum(i);
+			numGroup.add(num);
+			num.kill();
+		}
+		ratingGroup = new FlxTypedGroup<Rating>();
 
 		// fard
 
@@ -1199,12 +1208,12 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.showRating)
 		{
-			insert(members.indexOf(notes),ratingGroup);
+			insert(members.indexOf(notes), ratingGroup);
 		}
 
 		if (FlxG.save.data.showNum)
 		{
-			insert(members.indexOf(notes),numGroup);
+			insert(members.indexOf(notes), numGroup);
 		}
 
 		subStates.push(new PauseSubState());
@@ -3825,7 +3834,7 @@ class PlayState extends MusicBeatState
 		daRating.count++;
 
 		if ((daRating.doNoteSplash && daNote.canNoteSplash)
-			&& (PlayStateChangeables.botPlay && FlxG.save.data.cpuStrums)
+			&& (!PlayStateChangeables.botPlay || FlxG.save.data.cpuStrums)
 			&& FlxG.save.data.notesplashes)
 		{
 			spawnNoteSplashOnNote(daNote);
@@ -4349,10 +4358,20 @@ class PlayState extends MusicBeatState
 			scripts.executeAllFunc("goodNoteHit", [note]);
 			#end
 
-			if (!PlayStateChangeables.botPlay)
-				pressArrow(playerStrums.members[note.noteData], note, Conductor.stepCrochet * 1.25 * 0.0015);
-			else if (FlxG.save.data.cpuStrums)
+			if (PlayStateChangeables.botPlay && FlxG.save.data.cpuStrums)
 				pressArrow(playerStrums.members[note.noteData], note, Conductor.stepCrochet * 1.25 * 0.001);
+			else
+			{	
+				var spr = playerStrums.members[note.noteData];
+				if (spr != null)
+					if (!FlxG.save.data.stepMania)
+						spr.playAnim('confirm', true);
+					else
+					{
+						spr.localAngle = note.originAngle;
+						spr.playAnim('dirCon' + note.originColor, true);
+					}
+			}
 
 			if (!note.isSustainNote)
 			{
@@ -5342,6 +5361,29 @@ class PlayState extends MusicBeatState
 				{
 					cutscene.play();
 				});
+				FlxG.addChildBelowMouse(cutscene);
+			}
+			else
+			{
+				Debug.logWarn("Video File Not Found. Check Your Video Path And Extension.");
+				inCutscene = false;
+				if (atend == true)
+				{
+					if (storyPlaylist.length <= 0)
+						LoadingState.loadAndSwitchState(new StoryMenuState());
+					else
+					{
+						SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase(), diff);
+						LoadingState.loadAndSwitchState(new PlayState());
+					}
+				}
+				else
+				{
+					createTimer(0.5, function(timer)
+					{
+						startCountdown();
+					});
+				}
 			}
 		});
 		inst.stop();
@@ -5367,6 +5409,7 @@ class PlayState extends MusicBeatState
 			}
 
 			cutscene.dispose();
+			FlxG.removeChild(cutscene);
 		});
 		#else
 		FlxG.log.warn("Platform Not Supported.");

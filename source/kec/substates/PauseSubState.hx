@@ -164,6 +164,8 @@ class PauseSubState extends MusicBeatSubstate
 				regenMenu();
 			}
 
+			pauseMusic.pause();
+
 			switch (daSelected)
 			{
 				case "Resume":
@@ -206,7 +208,6 @@ class PauseSubState extends MusicBeatSubstate
 					{
 						MusicBeatState.switchState(new FreeplayState());
 					}
-					pauseMusic.pause();
 			}
 		}
 	}
