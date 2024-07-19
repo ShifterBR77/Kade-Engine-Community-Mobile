@@ -7,14 +7,14 @@
 
 *"Loads Faster Than Uno" - TheRealJake_12*
 
-Hey you!
-Thanks for visiting this Repo!
-Versions Below 1.4 Were Made With Kade Engine 1.7.1 Pre-Release With 0 Modsupport.
-Versions 1.4 And Above Are Made With The Latest (As Of 11/5/21 or 5/11/21) Kade Engine 1.8.
-The goal of this Repo is to make it community focused. If theres a feature just submit a pull request and someone will take a look at it.
+Welcome To Kade Engine Community.
 
-**We are not responsible for maintaining HTML5 builds, as long as it builds sucessfully, it is not our problem. Feel free to fix it if it's broken yourself.**
+**I am not responsible for maintaining HTML5 builds, as long as it builds sucessfully, it is not my problem.**
+**Feel free to use this code for your own projects. Steal it. Borrow it. I don't care.**
 
+### Core Features
+<details>
+  
 ![Main Menu](art/readme/mainmenu.png)
 
 Stylized Main Menu.
@@ -42,13 +42,11 @@ New And Improved Freeplay By BoloVEVO.
 ![Gameplay1](art/readme/gameplay1.png)
 
 ![Gameplay2](art/readme/gameplay2.png)
-
-**Feel free to use this code for your own projects. Steal it. Borrow it. I don't care. As long as you improve, thats totally ok!. Hope you learn something.**
+</details>
 
 ![lime windows](https://user-images.githubusercontent.com/84357907/192084304-397d651c-8f11-4f42-9596-18dcabe79eaf.gif)
-
 ### Shoutouts
-
+<details>
 - [Lily](https://www.youtube.com/@mcagabe19) - Head Porting of KEC
 
 - [TheRealJake_12](https://www.youtube.com/channel/UCYy-RfMjVx-1dYnmNQGB2sw) - *mostly everything.*
@@ -78,3 +76,4 @@ New And Improved Freeplay By BoloVEVO.
 - [AhmedxRNMD](https://twitter.com/AhmedxRNMD_) - Made the volume sounds (Legacy).
 
 - [discord server for this project](https://discord.gg/G2jJ8RfWtm) thanks for joining if you do.
+</details>
