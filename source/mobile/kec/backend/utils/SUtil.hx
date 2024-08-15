@@ -75,7 +75,7 @@ class SUtil
 				FileSystem.createDirectory('saves');
 
 			File.saveContent('saves/' + fileName + fileExtension, fileData);
-			Application.current.window.alert(fileName + " file has been saved.", "Success!");
+			showPopUp("Success!", fileName + " file has been saved.");
 		}
 		catch (e:Exception)
 			trace('File couldn\'t be saved. (${e.message})');
@@ -89,8 +89,8 @@ class SUtil
 		{
 			AndroidPermissions.requestPermission('READ_EXTERNAL_STORAGE');
 			AndroidPermissions.requestPermission('WRITE_EXTERNAL_STORAGE');
-			Application.current.window.alert('If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash'
-				+ '\nPress Ok to see what happens', 'Notice!');
+			showPopUp('Notice!',
+				'If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash' + '\nPress Ok to see what happens');
 			if (!AndroidEnvironment.isExternalStorageManager())
 				AndroidSettings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
 		}
@@ -103,11 +103,24 @@ class SUtil
 			}
 			catch (e:Dynamic)
 			{
-				Application.current.window.alert('Please create folder to\n' + SUtil.getStorageDirectory() + '\nPress OK to close the game', 'Error!');
+				showPopUp('Error!', 'Please create folder to\n' + SUtil.getStorageDirectory() + '\nPress OK to close the game');
 				LimeSystem.exit(1);
 			}
 		}
 	}
 	#end
+
+	public static function showPopUp(message:String, title:String):Void
+	{
+		#if android
+		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#elseif windows
+		kec.backend.cpp.CPPInterface.messageBox(message, title);
+		#elseif (!ios || !iphonesim)
+		lime.app.Application.current.window.alert(message, title);
+		#else
+		trace('$title - $message');
+		#end
+	}
 }
 #end

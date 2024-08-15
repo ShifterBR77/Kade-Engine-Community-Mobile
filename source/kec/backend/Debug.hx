@@ -108,7 +108,7 @@ class Debug
 	 */
 	public static function displayAlert(title:String, description:String):Void
 	{
-		Application.current.window.alert(description, title);
+		SUtil.showPopUp(title, description);
 	}
 
 	/**

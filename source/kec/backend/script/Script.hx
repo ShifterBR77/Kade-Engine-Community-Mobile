@@ -15,9 +15,6 @@ import openfl.Lib;
 import sys.FileSystem;
 import sys.io.File;
 #end
-#if cpp
-import kec.backend.cpp.CPPInterface;
-#end
 
 enum ScriptReturn
 {
@@ -246,11 +243,7 @@ class Script extends FlxBasic
 	public function error(errorMsg:String, ?winTitle:Null<String>)
 	{
 		trace(errorMsg);
-		#if windows
-		CPPInterface.messageBox(errorMsg, winTitle != null ? winTitle : '${name}: Script Error!');
-		#else
-		Lib.application.window.alert(errorMsg, winTitle != null ? winTitle : '${name}: Script Error!');
-		#end
+		SUtil.showPopUp(ewinTitle != null ? winTitle : '${name}: Script Error!', errorMsg);
 	}
 
 	public override function destroy()

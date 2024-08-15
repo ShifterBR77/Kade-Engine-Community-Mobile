@@ -435,7 +435,7 @@ class ModchartState
 
 		if (result != 0)
 		{
-			Application.current.window.alert("LUA COMPILE ERROR:\n" + Lua.tostring(lua, result), "Kade Engine Modcharts");
+			SUtil.showPopUp("Kade Engine Modcharts", "LUA COMPILE ERROR:\n" + Lua.tostring(lua, result));
 			FlxG.log.warn(["LUA COMPILE ERROR:\n" + Lua.tostring(lua, result)]);
 			MusicBeatState.switchState(new FreeplayState());
 			lua = null;

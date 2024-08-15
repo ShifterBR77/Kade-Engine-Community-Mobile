@@ -52,19 +52,19 @@ class SMFile
 
 			if (_fileData.toString().split("#NOTES").length > 2)
 			{
-				Application.current.window.alert("The chart must only have 1 difficulty, this one has "
-					+ (_fileData.toString().split("#NOTES").length - 1),
-					"SM File loading ("
+				SUtil.showPopUp("SM File loading ("
 					+ header.TITLE
-					+ ")");
+					+ ")",
+					"The chart must only have 1 difficulty, this one has "
+					+ (_fileData.toString().split("#NOTES").length - 1));
 				isValid = false;
 				return;
 			}
 
 			if (!StringTools.contains(header.MUSIC.toLowerCase(), "ogg"))
 			{
-				Application.current.window.alert("The music MUST be an OGG File, make sure the sm file has the right music property.",
-					"SM File loading (" + header.TITLE + ")");
+				SUtil.showPopUp("SM File loading (" + header.TITLE + ")",
+					"The music MUST be an OGG File, make sure the sm file has the right music property.");
 				isValid = false;
 				return;
 			}
@@ -73,8 +73,8 @@ class SMFile
 			inc += 3; // skip three lines down
 			if (!StringTools.contains(data[inc], "dance-double:") && !StringTools.contains(data[inc], "dance-single"))
 			{
-				Application.current.window.alert("The file you are loading is neither a Dance Double chart or a Dance Single chart",
-					"SM File loading (" + header.TITLE + ")");
+				SUtil.showPopUp("SM File loading (" + header.TITLE + ")",
+					"The file you are loading is neither a Dance Double chart or a Dance Single chart");
 				isValid = false;
 				return;
 			}
@@ -107,7 +107,7 @@ class SMFile
 		}
 		catch (e:Exception)
 		{
-			Application.current.window.alert("Failure to load file.\n" + e, "SM File loading");
+			SUtil.showPopUp("SM File loading", "Failure to load file.\n" + e);
 		}
 	}
 

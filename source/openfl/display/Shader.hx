@@ -327,7 +327,7 @@ class Shader
 
 		if (hasInfoLog || compileStatus == 0)
 		{
-			final startMessage = '${(compileStatus == 0) ? "Error" : "Info" } ${(type == gl.VERTEX_SHADER) ? "compiling vertex shader" : "compiling fragment shader"}';
+			final startMessage = '${(compileStatus == 0) ? "Error" : "Info"} ${(type == gl.VERTEX_SHADER) ? "compiling vertex shader" : "compiling fragment shader"}';
 			var message = startMessage;
 			message += "\n" + shaderInfoLog;
 			message += "\n" + source;
@@ -346,7 +346,8 @@ class Shader
 			}
 			#end
 			if (compileStatus == 0)
-				#if !ios openfl.Lib.application.window.alert('$startMessage\n$shaderInfoLog', 'Shader Compile Error!') #else Log.error(message) #end;
+				#if (android && !macro) AndroidTools.showAlertDialog("Shader Compile Error!", message, null,
+					null) #elseif !ios openfl.Lib.application.window.alert('$message', 'Shader Compile Error!') #else Log.error(message) #end;
 			else if (hasInfoLog)
 				Log.debug(message);
 		}
@@ -381,11 +382,7 @@ class Shader
 		{
 			var message = "Unable to initialize the shader program";
 			message += "\n" + gl.getProgramInfoLog(program);
-			#if !ios
-			openfl.Lib.application.window.alert('$message', 'Shader Compile Error!');
-			#else
 			Log.error(message);
-			#end
 		}
 
 		return program;

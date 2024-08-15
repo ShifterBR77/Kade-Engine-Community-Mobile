@@ -82,7 +82,7 @@ class CrashHandler
 			trace('Couldn\'t save error message. (${e.message})');
 		#end
 
-		lime.app.Application.current.window.alert('$m\n$stackLabel', "Error!");
+		SUtil.showPopUp("Error!", '$m\n$stackLabel');
 
 		#if html5
 		if (flixel.FlxG.sound.music != null)
