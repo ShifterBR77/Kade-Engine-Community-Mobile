@@ -92,11 +92,7 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-<<<<<<< HEAD
-		if (virtualPad.buttonA.justPressed || FlxG.keys.justPressed.SPACE && !MainMenuState.kecVer.contains("PRE-RELEASE"))
-=======
-		if (FlxG.keys.justPressed.SPACE && !Constants.kecVer.contains("PRE-RELEASE"))
->>>>>>> upstream/master
+		if (virtualPad.buttonA.justPressed ||FlxG.keys.justPressed.SPACE && !Constants.kecVer.contains("PRE-RELEASE"))
 		{
 			fancyOpenURL("https://therealjake12.github.io/Kade-Engine-Community/changelogs/changelog-" + needVer);
 		}
