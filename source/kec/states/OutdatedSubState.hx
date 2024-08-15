@@ -23,11 +23,11 @@ class OutdatedSubState extends MusicBeatState
 		add(bg);
 
 		final buttonACCEPT:String = MobileControls.enabled ? "A" : "Space";
-		final buttonBACK:String = MobileControls.enabled ? "B" : MainMenuState.kecVer.contains("PRE-RELEASE") ? "Space/Escape" : "ENTER";
+		final buttonBACK:String = MobileControls.enabled ? "B" : Constants.kecVer.contains("PRE-RELEASE") ? "Space/Escape" : "ENTER";
 
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
 			"Your KEC Port is outdated!\nYou are on "
-			+ MainMenuState.kecVer
+			+ Constants.kecVer
 			+ "\nwhile the most recent version is "
 			+ needVer
 			+ "."

@@ -243,7 +243,7 @@ class Script extends FlxBasic
 	public function error(errorMsg:String, ?winTitle:Null<String>)
 	{
 		trace(errorMsg);
-		SUtil.showPopUp(ewinTitle != null ? winTitle : '${name}: Script Error!', errorMsg);
+		SUtil.showPopUp(winTitle != null ? winTitle : '${name}: Script Error!', errorMsg);
 	}
 
 	public override function destroy()

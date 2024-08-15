@@ -18,7 +18,7 @@ class SUtil
 	{
 		var daPath:String = '';
 		#if android
-		daPath = AndroidVersion.SDK_INT > 30 ? AndroidContext.getObbDir() : AndroidContext.getExternalFilesDir();
+		daPath = android.os.Build.VERSION.SDK_INT > 30 ? AndroidContext.getObbDir() : AndroidContext.getExternalFilesDir();
 		daPath = haxe.io.Path.addTrailingSlash(daPath);
 		#elseif ios
 		daPath = LimeSystem.documentsDirectory;

@@ -1659,7 +1659,7 @@ class PlayState extends MusicBeatState
 
 			var defNotes:Array<Note> = [for (v in closestNotes) v];
 
-			haxe.ds.ArraySort.sort(defNotes, sortByShit);
+			haxe.ds.ArraySort.sort(defNotes, Sort.sortNotes);
 
 			if (closestNotes.length != 0)
 			{
@@ -1838,6 +1838,7 @@ class PlayState extends MusicBeatState
 
 		addSongTiming();
 
+		#if FEATURE_DISCORD
 		Discord.changePresence(detailsText
 			+ " "
 			+ SONG.songName
@@ -1852,6 +1853,7 @@ class PlayState extends MusicBeatState
 			+ " | Misses: "
 			+ Stats.misses, iconRPC, true,
 			songLengthRPC);
+		#end
 
 		#if FEATURE_HSCRIPT
 		if (ScriptUtil.hasPause(scripts.executeAllFunc("startSong")))
