@@ -14,6 +14,7 @@ import kec.objects.MenuCharacter;
 import kec.backend.chart.Song;
 import kec.backend.util.Highscore;
 import kec.backend.PlayStateChangeables;
+import kec.backend.Stats;
 
 class StoryMenuState extends MusicBeatState
 {
@@ -78,9 +79,9 @@ class StoryMenuState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
 		weeksID = CoolUtil.coolTextFile(Paths.txt('data/weekList'));
 		weeksLoaded = weekData();
-
 		weekUnlocked = unlockWeeks();
 
 		Application.current.window.title = '${Constants.kecVer} : In the Menus';
@@ -102,7 +103,7 @@ class StoryMenuState extends MusicBeatState
 			{
 				FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
 				Constants.freakyPlaying = true;
-				Conductor.changeBPM(102);
+				Conductor.bpm = 102;
 			}
 		}
 
@@ -342,43 +343,42 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
+		if (selectedWeek)
+		{
+			selectedWeek = false;
+			return;
+		}
+
 		if (weekUnlocked[curWeek])
 		{
-			if (stopspamming == false)
-			{
-				FlxG.sound.play(Paths.sound('confirmMenu'));
-
-				grpWeekText.members[curWeek].startFlashing();
-				grpWeekCharacters.members[1].animation.play('confirm');
-				stopspamming = true;
-			}
-
-			PlayState.storyPlaylist = weeksLoaded[curWeek].songs;
-			PlayState.isStoryMode = true;
+			FlxG.sound.play(Paths.sound('confirmMenu'));
+			grpWeekText.members[curWeek].startFlashing();
+			grpWeekCharacters.members[1].animation.play('confirm');
 			selectedWeek = true;
-			PlayState.songMultiplier = 1;
-
-			PlayState.isSM = false;
-
-			var diffString = weeksLoaded[curWeek].difficulties[curDifficulty];
-
-			PlayState.storyDifficulty = CoolUtil.difficultyArray.indexOf(diffString);
-
-			var diff:String = CoolUtil.getSuffixFromDiff(diffString);
-
-			PlayState.marvs = 0;
-			PlayState.sicks = 0;
-			PlayState.bads = 0;
-			PlayState.shits = 0;
-			PlayState.goods = 0;
-			PlayState.campaignMisses = 0;
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0], diff);
-			PlayState.storyWeek = curWeek;
-			PlayState.campaignScore = 0;
-			new FlxTimer().start(1, function(tmr:FlxTimer)
+			try
 			{
-				LoadingState.loadAndSwitchState(new PlayState(), true);
-			});
+				var diffString = weeksLoaded[curWeek].difficulties[curDifficulty];
+				var diff:String = CoolUtil.getSuffixFromDiff(diffString);
+				PlayState.storyPlaylist = weeksLoaded[curWeek].songs;
+				PlayState.isStoryMode = true;
+				Conductor.multiplier = 1;
+				PlayState.isSM = false;
+				PlayState.storyWeek = curWeek;
+				PlayState.storyDifficulty = CoolUtil.difficultyArray.indexOf(diffString);
+
+				Stats.resetStats();
+				Stats.resetCampaignStats();
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0], diff);
+				FlxTimer.wait(1, function()
+				{
+					LoadingState.loadAndSwitchState(new PlayState(), true);
+				});
+			}
+			catch (e)
+			{
+				Debug.logError(e);
+				return;
+			}
 		}
 	}
 
@@ -423,9 +423,6 @@ class StoryMenuState extends MusicBeatState
 		var abDiff = CoolUtil.difficultyArray.indexOf(diffString); // USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
 		sprDifficulty.y = leftArrow.y - 15;
 		intendedScore = Highscore.getWeekScore(curWeek, abDiff, 1);
-		#if !switch
-		intendedScore = Highscore.getWeekScore(curWeek, abDiff, 1);
-		#end
 		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
@@ -494,10 +491,7 @@ class StoryMenuState extends MusicBeatState
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
-
-		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty, 1);
-		#end
 	}
 
 	public static function unlockNextWeek(week:Int):Void

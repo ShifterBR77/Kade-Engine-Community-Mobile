@@ -1,18 +1,18 @@
 package kec.states;
 
-import kec.backend.Controls.KeyboardScheme;
-#if FEATURE_DISCORD
-import kec.backend.Discord;
-#end
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
+import kec.backend.Controls.KeyboardScheme;
+import kec.backend.chart.Song;
 import lime.app.Application;
-import flixel.addons.display.FlxBackdrop;
+#if FEATURE_DISCORD
+import kec.backend.Discord;
+#end
 #if FEATURE_MODCORE
 import polymod.Polymod;
 #end
-import kec.backend.chart.Song;
 
 class MainMenuState extends MusicBeatState
 {
@@ -57,7 +57,7 @@ class MainMenuState extends MusicBeatState
 
 		#if FEATURE_MODCORE
 		if (FlxG.save.data.loadMods)
-			Polymod.loadOnlyMods(kec.backend.modding.ModCore.getAllMods());
+			Polymod.loadOnlyMods(FlxG.save.data.enabledMods);
 		#end
 
 		FlxG.mouse.visible = true;
@@ -67,8 +67,8 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
 			Constants.freakyPlaying = true;
-			Conductor.changeBPM(102);
 		}
+		Conductor.bpm = 102;
 
 		if (!FlxG.save.data.watermark)
 			optionShit.remove('discord');

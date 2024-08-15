@@ -36,6 +36,8 @@
 	<define name="FEATURE_HSCRIPT" />
 	<!-- Defines whether modcore can be used. -->
 	<define name="FEATURE_MODCORE" />
+	<!-- Defines if we can log traces and other stuff to files -->
+	<define name="FEATURE_LOGGING" if="FEATURE_FILESYSTEM"/>
 
 	<define name="CUSTOM_CLASSES" if="FEATURE_HSCRIPT"/>
 	<define name="COMPILE_ALL_CLASSES" if="FEATURE_HSCRIPT"/>
@@ -53,7 +55,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -169,8 +171,6 @@
 
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
-
-	<haxedef name="FLX_NO_POINT_POOL"/>
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />

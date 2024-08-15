@@ -18,14 +18,14 @@ class Init extends MusicBeatState
 
 		FlxG.save.bind('kec' #if (flixel < "5.0.0"), 'therealjake12' #end);
 
-		// Gotta run this before any assets get loaded.
-		kec.backend.modding.ModCore.initialize();
-
 		kec.backend.PlayerSettings.init();
 
 		kec.backend.KadeEngineData.initSave();
 
 		kec.backend.KeyBinds.keyCheck();
+		
+		// Gotta run this before any assets get loaded.
+		kec.backend.modding.ModCore.initialize();
 
 		kec.backend.util.NoteStyleHelper.updateNoteskins();
 		kec.backend.util.NoteStyleHelper.updateNotesplashes();
@@ -52,8 +52,8 @@ class Init extends MusicBeatState
 		FlxG.autoPause = FlxG.save.data.autoPause;
 		FlxG.mouse.visible = true;
 
-		FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, -1), NEW);
-		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, 1), NEW);
+		// FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, -1), NEW);
+		// FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, 1), NEW);
 
 		switch (FlxG.save.data.resolution)
 		{

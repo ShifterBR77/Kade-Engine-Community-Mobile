@@ -302,6 +302,9 @@ class KadeEngineData
 		if (FlxG.save.data.maxRatings == null)
 			FlxG.save.data.maxRatings = 4;
 
+		if (FlxG.save.data.enabledMods == null)
+			FlxG.save.data.enabledMods = [];	
+
 		FlxSprite.defaultAntialiasing = FlxG.save.data.antialiasing;
 		FlxObject.defaultMoves = false;
 		PlayerSettings.player1.controls.loadKeyBinds();

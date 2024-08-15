@@ -6,6 +6,7 @@ import kec.backend.util.DiffCalc;
 import kec.backend.PlayStateChangeables;
 import kec.backend.chart.TimingStruct;
 import openfl.media.Sound;
+import kec.states.MusicBeatState.subStates;
 import flixel.effects.FlxFlicker;
 #if FEATURE_STEPMANIA
 import kec.backend.util.smTools.SMFile;
@@ -108,6 +109,7 @@ class FreeplayState extends MusicBeatState
 		FlxG.mouse.visible = true;
 		alreadyPressed = false;
 		doUpdateText = true;
+		openMod = false;
 
 		Application.current.window.title = '${Constants.kecVer} : In the Menus';
 
@@ -258,32 +260,34 @@ class FreeplayState extends MusicBeatState
 		PlayStateChangeables.practiceMode = FlxG.save.data.practice;
 		PlayStateChangeables.skillIssue = FlxG.save.data.noMisses;
 
-		if (Constants.freakyPlaying)
-		{
-			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
-			Constants.freakyPlaying = true;
-			Conductor.changeBPM(102);
-		}
-
-		if (!FlxG.sound.music.playing && !Constants.freakyPlaying)
-		{
-			dotheMusicThing();
-		}
-
-		updateTexts();
-
 		if (!openMod)
 		{
 			changeSelection();
 			changeDiff();
 		}
 
+		if (!Constants.freakyPlaying)
+		{
+			FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
+			Constants.freakyPlaying = true;
+			Conductor.bpm = 102;
+		}
+
+		updateTexts();
+
 		addVirtualPad(LEFT_FULL, A_B_C_X_Y_Z);
 
 		super.create();
+
+		subStates.push(new kec.substates.FreeplaySubState.ModMenu());
 		Paths.clearUnusedMemory();
 		Debug.logTrace("Took " + Std.string(FlxMath.roundDecimal(haxe.Timer.stamp() - stamp, 3)) + " Seconds To Load Freeplay.");
+	}
+
+	override function closeSubState() {
+		super.closeSubState();
+		persistentUpdate = true;
+		addVirtualPad(LEFT_FULL, A_B_C_X_Y_Z);
 	}
 
 	public static var cached:Bool = false;
@@ -652,7 +656,7 @@ class FreeplayState extends MusicBeatState
 			removeVirtualPad();
 			openMod = true;
 			FlxG.sound.play(Paths.sound('scrollMenu'));
-			openSubState(new kec.substates.FreeplaySubState.ModMenu());
+			openSubState(subStates[0]);
 		}
 
 		if (!openMod && !MusicBeatState.switchingState && doUpdateText)
@@ -715,23 +719,6 @@ class FreeplayState extends MusicBeatState
 			if (virtualPad.buttonX.justPressed || FlxG.keys.justPressed.SPACE)
 			{
 				dotheMusicThing();
-			}
-		}
-
-		if (FlxG.sound.music != null && !Constants.freakyPlaying)
-		{
-			if (FlxG.sound.music.playing)
-			{
-				if (curTiming != null)
-				{
-					var curBPM = curTiming.bpm;
-
-					if (curBPM != Conductor.bpm)
-					{
-						Debug.logInfo("BPM CHANGE to " + curBPM);
-						Conductor.changeBPM(curBPM);
-					}
-				}
 			}
 		}
 
@@ -910,7 +897,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.isSM = false;
 		#end
 
-		PlayState.songMultiplier = rate;
+		Conductor.multiplier = rate;
 		lastRate = rate;
 
 		instance.updateTexts();
@@ -1009,7 +996,6 @@ class FreeplayState extends MusicBeatState
 			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
 			if (hmm != null)
 			{
-				Conductor.changeBPM(hmm.bpm);
 				GameplayCustomizeState.freeplayBf = hmm.player1;
 				GameplayCustomizeState.freeplayDad = hmm.player2;
 				GameplayCustomizeState.freeplayGf = hmm.gfVersion;

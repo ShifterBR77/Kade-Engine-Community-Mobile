@@ -198,16 +198,12 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.luaModchart = null;
 					}
 					#end
+					Constants.freakyPlaying = false;
 
 					if (PlayState.isStoryMode)
-					{
-						GameplayCustomizeState.freeplayNoteStyle = 'normal';
 						MusicBeatState.switchState(new StoryMenuState());
-					}
 					else
-					{
 						MusicBeatState.switchState(new FreeplayState());
-					}
 			}
 		}
 	}
