@@ -51,19 +51,19 @@ class SMFile
 
 			if (_fileData.toString().split("#NOTES").length > 2)
 			{
-				SUtil.showPopUp("SM File loading ("
+				SUtil.showPopUp("The chart must only have 1 difficulty, this one has "
+					+ (_fileData.toString().split("#NOTES").length - 1),
+					"SM File loading ("
 					+ header.TITLE
-					+ ")",
-					"The chart must only have 1 difficulty, this one has "
-					+ (_fileData.toString().split("#NOTES").length - 1));
+					+ ")");
 				isValid = false;
 				return;
 			}
 
 			if (!StringTools.contains(header.MUSIC.toLowerCase(), "ogg"))
 			{
-				SUtil.showPopUp("SM File loading (" + header.TITLE + ")",
-					"The music MUST be an OGG File, make sure the sm file has the right music property.");
+				SUtil.showPopUp("The music MUST be an OGG File, make sure the sm file has the right music property.",
+					"SM File loading (" + header.TITLE + ")");
 				isValid = false;
 				return;
 			}
@@ -72,8 +72,8 @@ class SMFile
 			inc += 3; // skip three lines down
 			if (!StringTools.contains(data[inc], "dance-double:") && !StringTools.contains(data[inc], "dance-single"))
 			{
-				SUtil.showPopUp("SM File loading (" + header.TITLE + ")",
-					"The file you are loading is neither a Dance Double chart or a Dance Single chart");
+				SUtil.showPopUp("The file you are loading is neither a Dance Double chart or a Dance Single chart",
+					"SM File loading (" + header.TITLE + ")");
 				isValid = false;
 				return;
 			}
@@ -99,7 +99,7 @@ class SMFile
 		}
 		catch (e:Exception)
 		{
-			SUtil.showPopUp("SM File loading", "Failure to load file.\n" + e);
+			SUtil.showPopUp("Failure to load file.\n" + e, "SM File loading");
 		}
 	}
 
@@ -136,7 +136,7 @@ class SMFile
 			stage: 'stage',
 			speed: 2.8,
 			validScore: false,
-			splitVoiceTracks:false,
+			splitVoiceTracks: false,
 			chartVersion: Constants.chartVer,
 		};
 
@@ -230,7 +230,12 @@ class SMFile
 					switch (numba)
 					{
 						case 1: // normal
-							section.sectionNotes.push({time : rowTime, data : lane, length: 0, type : nType});
+							section.sectionNotes.push({
+								time: rowTime,
+								data: lane,
+								length: 0,
+								type: nType
+							});
 						case 2: // held head
 							heldNotes[lane] = [rowTime, lane, 0, rowTime];
 						case 3: // held tail

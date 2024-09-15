@@ -1,4 +1,4 @@
-package mobile.kec.backend;
+package backend;
 
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.ErrorEvent;
@@ -9,11 +9,11 @@ import sys.io.File;
 #end
 
 using StringTools;
-using kec.backend.util.CoolUtil;
+using flixel.util.FlxArrayUtil;
 
 /**
  * Crash Handler.
- * @author YoshiCrafter29, Ne_Eo and MAJigsaw77
+ * @author YoshiCrafter29, Ne_Eo, MAJigsaw77 and Lily Ross (mcagabe19)
  */
 class CrashHandler
 {
@@ -73,16 +73,16 @@ class CrashHandler
 		#if sys
 		try
 		{
-			if (!FileSystem.exists('crash'))
-				FileSystem.createDirectory('crash');
+			if (!FileSystem.exists('logs'))
+				FileSystem.createDirectory('logs');
 
-			File.saveContent('logs/Crashlog ' + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', '$m\n$stackLabel');
+			File.saveContent('logs/' + 'Crash - ' + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', '$m\n$stackLabel');
 		}
 		catch (e:haxe.Exception)
 			trace('Couldn\'t save error message. (${e.message})');
 		#end
 
-		SUtil.showPopUp("Error!", '$m\n$stackLabel');
+		SUtil.showPopUp('$m\n$stackLabel', "Error!");
 
 		#if html5
 		if (flixel.FlxG.sound.music != null)
