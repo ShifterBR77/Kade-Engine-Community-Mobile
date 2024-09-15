@@ -57,19 +57,19 @@
       "name": "hxdiscord_rpc",
       "type": "git",
       "ref": "main",
-      "url": "https://github.com/MAJigsaw77/hxdiscord_rpc.git"
+      "url": "https://github.com/MAJigsaw77/hxdiscord_rpc.git--skip-dependencies"
     },
     {
       "name": "haxeui-flixel",
       "type": "git",
       "ref": "master",
-      "url": "https://github.com/haxeui/haxeui-flixel.git"
+      "url": "https://github.com/haxeui/haxeui-flixel.git --skip-dependencies"
     },
     {
       "name": "haxeui-core",
       "type": "git",
       "ref": "master",
-      "url": "https://github.com/haxeui/haxeui-core.git"
+      "url": "https://github.com/haxeui/haxeui-core.git --skip-dependencies"
     },
     {
       "name": "extension-androidtools",
