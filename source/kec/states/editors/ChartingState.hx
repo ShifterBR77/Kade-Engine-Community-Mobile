@@ -33,11 +33,9 @@ import haxe.ui.themes.Theme;
 import haxe.ui.util.Color;
 import kec.backend.HitSounds;
 import kec.backend.PlayStateChangeables;
+import kec.backend.chart.Event;
 import kec.backend.chart.NoteData;
-import kec.backend.chart.Section.SwagSection;
-import kec.backend.chart.Section;
-import kec.backend.chart.Song.Event;
-import kec.backend.chart.Song.SongData;
+import kec.backend.chart.format.Modern;
 import kec.backend.chart.Song;
 import kec.backend.chart.TimingStruct;
 import kec.backend.util.HelperFunctions;
@@ -46,14 +44,15 @@ import kec.backend.util.Sort;
 import kec.backend.util.Sort;
 import kec.objects.Character;
 import kec.objects.CoolText;
-import kec.objects.Note;
+import kec.objects.note.Note;
 import kec.objects.ui.HealthIcon;
 import kec.states.editors.ChartingBox;
-import kec.states.editors.SectionRender;
 import openfl.Lib;
 import openfl.events.Event as OpenFlEvent;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
+import kec.backend.chart.ChartNote;
+import kec.backend.chart.format.Section;
 #if FEATURE_FILESYSTEM
 import sys.FileSystem;
 import sys.io.File;
@@ -149,8 +148,8 @@ class ChartingState extends MusicBeatState
 
 	var noteType:String = "Normal"; // idfk
 
-	public var SONG:SongData;
-	public var lastUpdatedSection:SwagSection = null;
+	public var SONG:Modern;
+	public var lastUpdatedSection:Section = null;
 
 	public static final gridSize:Int = 45; // scale? GRID_SIZE?
 
@@ -170,12 +169,12 @@ class ChartingState extends MusicBeatState
 	public var selectedBoxes:FlxTypedGroup<ChartingBox>;
 	public var curSelectedNoteObject:Note = null;
 
-	public var copiedNotes:Array<Array<Dynamic>> = [];
+	public var copiedNotes:Array<ChartNote> = [];
 	public var pastedNotes:Array<Note> = [];
-	public var deletedNotes:Array<Array<Dynamic>> = [];
+	public var deletedNotes:Array<ChartNote> = [];
 	public var lastAction:String = "";
 
-	var curSelectedNote:Array<Dynamic>;
+	var curSelectedNote:ChartNote;
 	var texts:FlxTypedGroup<FlxText>;
 	var lines:FlxTypedGroup<FlxSprite>;
 
@@ -198,10 +197,6 @@ class ChartingState extends MusicBeatState
 	public static var lengthInSections:Int = 0;
 
 	public var pitch:Float = 1.0;
-
-	var sectionY = 0;
-
-	var currentBPM:Float = 0;
 	var doSnapShit:Bool = true;
 	var defaultSnap:Bool = true;
 
@@ -237,6 +232,7 @@ class ChartingState extends MusicBeatState
 	public static final separatorWidth:Int = 4;
 
 	private var editorArea:EditorArea;
+	private var maxBeat = 0;
 
 	// one does not realize how much flixel-ui is used until one sees an FNF chart editor. 💀
 
@@ -271,19 +267,14 @@ class ChartingState extends MusicBeatState
 		FlxG.mouse.visible = true;
 
 		PlayState.inDaPlay = false;
-
-		TimingStruct.clearTimings();
 		SONG = PlayState.SONG;
-		activeSong = SONG;
-
 		loadSong(SONG.audioFile, false);
+		activeSong = SONG;
+		setInitVars();
 
 		curDiff = CoolUtil.difficultyArray[PlayState.storyDifficulty];
-
+		Conductor.rate = 1;
 		Conductor.bpm = SONG.bpm;
-
-		currentBPM = SONG.bpm;
-
 		Constants.noteskinSprite = NoteStyleHelper.generateNoteskinSprite(FlxG.save.data.noteskin);
 		Constants.cpuNoteskinSprite = NoteStyleHelper.generateNoteskinSprite(FlxG.save.data.cpuNoteskin);
 		Constants.noteskinPixelSprite = NoteStyleHelper.generatePixelSprite(FlxG.save.data.noteskin);
@@ -312,8 +303,8 @@ class ChartingState extends MusicBeatState
 		iconP2 = new HealthIcon(opponent.healthIcon, opponent.iconAnimated, false);
 		iconP1 = new HealthIcon(player.healthIcon, player.iconAnimated, true);
 
-		iconP1.scale.set(0.7, 0.7);
-		iconP2.scale.set(0.7, 0.7);
+		iconP1.size.set(0.75, 0.75);
+		iconP2.size.set(0.75, 0.75);
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
@@ -341,7 +332,7 @@ class ChartingState extends MusicBeatState
 		helpText.antialiasing = true;
 		helpText.text = "Help:" + "\n" + "CTRL-Left/Right : Change playback speed" + "\n" + "Ctrl+Drag Click : Select notes" + "\n" + "Ctrl+C : Copy notes"
 			+ "\n" + "Ctrl+V : Paste notes" + "\n" + "Ctrl+Z : Undo" + "\n" + "Ctrl+BACKSPACE : Delete Selected Notes" + "\n"
-			+ "Alt+Left/Right : Change Quant" + "\n" + "Shift : Disable/Enable Quant" + "\n" + "Click : Place notes" + "\n" + "Up/Down : Move selected notes"
+			+ "Alt+Left/Right : Change Quant" + "\n" + "Tab : Disable/Enable Quant" + "\n" + "Click : Place notes" + "\n" + "Up/Down : Move selected notes"
 			+ "\n" + "Space : Play Song" + "\n" + "W-S : Go To Previous / Next Section" + "\n" + "Q-E : Change Sustain Amount" + "\n"
 			+ "C-V : Change Sustain Change Quant" + "\n" + "Enter : Load Song Into PlayState" + "\n" + "Z/X Change Notetype." + "\n"
 			+ "Press F1 to show/hide help text.";
@@ -352,45 +343,10 @@ class ChartingState extends MusicBeatState
 
 		var currentIndex = 0;
 
-		for (i in SONG.eventObjects)
-		{
-			var name = Reflect.field(i, "name");
-			var type = Reflect.field(i, "type");
-			var pos = Reflect.field(i, "position");
-			var value = Reflect.field(i, "value");
-			var value2 = Reflect.field(i, "value2");
-
-			if (type == "BPM Change")
-			{
-				var beat:Float = pos;
-
-				var endBeat:Float = Math.POSITIVE_INFINITY;
-
-				TimingStruct.addTiming(beat, value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-				if (currentIndex != 0)
-				{
-					var data = TimingStruct.AllTimings[currentIndex - 1];
-					data.endBeat = beat;
-					data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-					var step = ((60 / data.bpm) * 1000) * 0.25;
-					TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-				}
-
-				currentIndex++;
-			}
-		}
-
-		var lastSeg = TimingStruct.AllTimings[TimingStruct.AllTimings.length - 1];
-
-		for (i in 0...TimingStruct.AllTimings.length)
-		{
-			var seg = TimingStruct.AllTimings[i];
-			if (i == TimingStruct.AllTimings.length - 1)
-				lastSeg = seg;
-		}
-		recalculateAllSectionTimes();
+		inst.time = 0;
+		setSongTimings();
+		currentSection = getSectionByTime(0);
+		Song.checkforSections(SONG, inst.length);
 		lengthInBeats = Math.round(TimingStruct.getBeatFromTime(inst.length));
 		lengthInSteps = lengthInBeats * 4;
 		lengthInSections = Std.int(lengthInBeats / 4);
@@ -454,22 +410,26 @@ class ChartingState extends MusicBeatState
 	{
 		if (inst != null)
 		{
-			if (inst.time > inst.length - 85)
+			if (inst.time >= inst.length - 85)
 			{
+				inst.time = 0;
+				Conductor.songPosition = 0;
 				inst.pause();
-				inst.time = inst.length - 85;
 				if (!SONG.splitVoiceTracks)
 				{
+					vocals.time = inst.time;
 					vocals.pause();
-					vocals.time = vocals.length - 85;
 				}
 				else
 				{
+					vocalsP.time = inst.time;
+					vocalsE.time = inst.time;
 					vocalsP.pause();
-					vocalsP.time = vocalsP.length - 85;
 					vocalsE.pause();
-					vocalsE.time = vocalsE.length - 85;
 				}
+
+				setSongTimings();
+				recalculateAllSectionTimes();
 			}
 			if (inst.playing)
 			{
@@ -481,21 +441,15 @@ class ChartingState extends MusicBeatState
 					if (!SONG.splitVoiceTracks)
 					{
 						if (vocals != null && vocals.length > 0)
-						{
 							vocals.pitch = pitch;
-						}
 					}
 					else
 					{
 						if (vocalsP != null && vocalsP.length > 0)
-						{
 							vocalsP.pitch = pitch;
-						}
 
 						if (vocalsE != null && vocalsE.length > 0)
-						{
 							vocalsE.pitch = pitch;
-						}
 					}
 				}
 				catch (e)
@@ -506,46 +460,6 @@ class ChartingState extends MusicBeatState
 			Conductor.songPosition = inst.time;
 		}
 
-		if (updateFrame == 4)
-		{
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in SONG.eventObjects)
-			{
-				if (i.type == "BPM Change")
-				{
-					var beat:Float = i.position;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, i.value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) * 0.25;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-					}
-
-					currentIndex++;
-				}
-			}
-
-			recalculateAllSectionTimes();
-
-			regenerateLines();
-			updateFrame++;
-		}
-		else if (updateFrame != 5)
-			updateFrame++;
-
-		if (curDecimalBeat < 0)
-			curDecimalBeat = 0;
-
 		var currentSeg = TimingStruct.getTimingAtBeat(curDecimalBeat);
 		if (currentSeg != null)
 		{
@@ -555,8 +469,11 @@ class ChartingState extends MusicBeatState
 			{
 				Debug.logInfo("BPM CHANGE to " + timingSegBpm);
 				Conductor.bpm = timingSegBpm;
-				recalculateAllSectionTimes();
-				currentBPM = timingSegBpm;
+				setSongTimings();
+				updateNotes();
+				regenerateLines();
+				Debug.logTrace(currentSeg.endBeat);
+				strumLine.y = getYfromStrum(inst.time); // make it snap
 			}
 		}
 
@@ -571,19 +488,7 @@ class ChartingState extends MusicBeatState
 			if (lastUpdatedSection != getSectionByTime(inst.time))
 			{
 				lastUpdatedSection = weird;
-				playerSection.selected = weird.playerSec;
-			}
-		}
-
-		if (FlxG.keys.justPressed.T)
-		{
-			if (FocusManager.instance.focus != null)
-			{
-				trace("FOCUS", cast(FocusManager.instance.focus, Component).className, cast(FocusManager.instance.focus, Component).id);
-			}
-			else
-			{
-				Debug.logTrace("NO FOCUS");
+				playerSection.selected = weird.mustHitSection;
 			}
 		}
 
@@ -621,16 +526,6 @@ class ChartingState extends MusicBeatState
 				}
 			}
 		}
-
-		var mult:Float = FlxMath.lerp(0.75, iconP1.scale.x, FlxMath.bound(1 - (elapsed * 9 * pitch), 0, 1));
-		if (!FlxG.save.data.motion)
-			iconP1.scale.set(mult, mult);
-		iconP1.updateHitbox();
-
-		var mult:Float = FlxMath.lerp(0.75, iconP2.scale.x, FlxMath.bound(1 - (elapsed * 9 * Conductor.multiplier), 0, 1));
-		if (!FlxG.save.data.motion)
-			iconP2.scale.set(mult, mult);
-		iconP2.updateHitbox();
 
 		var interacting:Bool = Screen.instance.hasComponentUnderPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
 		var mouseX:Float = quantizePos(FlxG.mouse.x - editorArea.x);
@@ -694,9 +589,9 @@ class ChartingState extends MusicBeatState
 				helpText.visible = FlxG.save.data.showHelp;
 			}
 
-			if (FlxG.keys.justPressed.SHIFT)
+			if (FlxG.keys.justPressed.TAB)
 				doSnapShit = !doSnapShit;
-			
+
 			if (FlxG.keys.justPressed.E)
 				changeNoteSustain(Conductor.stepCrochet * sustainQuant);
 			if (FlxG.keys.justPressed.Q)
@@ -729,19 +624,19 @@ class ChartingState extends MusicBeatState
 					copiedNotes = [];
 					selectedBoxes.forEachAlive(function(i:ChartingBox)
 					{
-						copiedNotes.push([
-							i.connectedNote.strumTime,
-							i.connectedNote.rawNoteData,
-							i.connectedNote.sustainLength,
-							i.connectedNote.noteType
-						]);
+						copiedNotes.push({
+							time: i.connectedNote.strumTime,
+							data: i.connectedNote.rawNoteData,
+							length: i.connectedNote.sustainLength,
+							type: i.connectedNote.noteType
+						});
 					});
 
-					var firstNote = copiedNotes[0][0];
+					var firstNote = copiedNotes[0].time;
 
 					for (i in copiedNotes) // normalize the notes
 					{
-						i[0] = i[0] - firstNote;
+						i.time = i.time - firstNote;
 					}
 				}
 			}
@@ -789,16 +684,12 @@ class ChartingState extends MusicBeatState
 
 				selectedBoxes.forEachAlive(function(i:ChartingBox)
 				{
-					deletedNotes.push([
-						{
-							strumTime: i.connectedNote.strumTime,
-							noteData: i.connectedNote.rawNoteData,
-							sustainLength: i.connectedNote.sustainLength,
-							noteType: i.connectedNote.noteType,
-							beat: TimingStruct.getBeatFromTime(i.connectedNote.strumTime),
-							isPlayer: i.connectedNote.mustPress
-						}
-					]);
+					deletedNotes.push({
+						time: i.connectedNote.strumTime,
+						data: i.connectedNote.rawNoteData,
+						length: i.connectedNote.sustainLength,
+						type: i.connectedNote.noteType,
+					});
 					notesToBeDeleted.push(i.connectedNote);
 				});
 
@@ -912,6 +803,7 @@ class ChartingState extends MusicBeatState
 						vocalsE.stop();
 					}
 				}
+				Constants.freakyPlaying = false;
 				MusicBeatState.switchState(new FreeplayState());
 				Lib.clearInterval(id);
 			}
@@ -947,13 +839,10 @@ class ChartingState extends MusicBeatState
 					inst.play();
 				}
 			}
-
-			if (FlxG.mouse.wheel != 0)
-			{
-				if (inst.playing)
+			
+				if (FlxG.mouse.wheel != 0)
 				{
 					inst.pause();
-
 					if (!SONG.splitVoiceTracks)
 						vocals.pause();
 					else
@@ -961,47 +850,98 @@ class ChartingState extends MusicBeatState
 						vocalsP.pause();
 						vocalsE.pause();
 					}
+					if (!doSnapShit)
+					{
+						var leWheel = FlxG.mouse.wheel;
+
+						inst.time -= Std.int(leWheel * 25);
+
+						if (inst.time < 0)
+							inst.time = 0;
+					}
+
+					if (doSnapShit)
+					{
+						final beat:Float = TimingStruct.getBeatFromTime(Conductor.songPosition);
+						final snap:Float = quantization * 0.25;
+						final increase:Float = 1 / snap;
+						final wheelShit = FlxG.mouse.wheel > 0;
+
+						if (wheelShit)
+						{
+							var fuck:Float = (Math.fround(beat * snap) / snap) - increase;
+							if (fuck < 0)
+								fuck = 0;
+							final data = TimingStruct.getTimingAtBeat(fuck);
+							var lastDataIndex = TimingStruct.AllTimings.indexOf(data) - 1;
+							if (lastDataIndex < 0)
+								lastDataIndex = 0;
+
+							final lastData = TimingStruct.AllTimings[lastDataIndex];
+
+							var pog = 0.0;
+							var shitPosition = 0.0;
+
+							if (beat < data.startBeat)
+							{
+								pog = (fuck - lastData.startBeat) / (lastData.bpm / 60);
+								shitPosition = (lastData.startTime + pog) * 1000;
+							}
+							else if (beat > data.startBeat)
+							{
+								pog = (fuck - data.startBeat) / (data.bpm / 60);
+								shitPosition = (data.startTime + pog) * 1000;
+							}
+							else
+							{
+								pog = fuck / (Conductor.bpm / 60);
+								shitPosition = pog * 1000;
+							}
+
+							inst.time = shitPosition;
+						}
+						else
+						{
+							var fuck:Float = (Math.fround(beat * snap) / snap) + increase;
+							if (fuck < 0)
+								fuck = 0;
+							final data = TimingStruct.getTimingAtBeat(fuck);
+							var lastDataIndex = TimingStruct.AllTimings.indexOf(data) - 1;
+							if (lastDataIndex < 0)
+								lastDataIndex = 0;
+
+							final lastData = TimingStruct.AllTimings[lastDataIndex];
+
+							var pog = 0.0;
+							var shitPosition = 0.0;
+							if (beat < data.startBeat)
+							{
+								pog = (fuck - lastData.startBeat) / (lastData.bpm / 60);
+								shitPosition = (lastData.startTime + pog) * 1000;
+							}
+							else if (beat > data.startBeat)
+							{
+								pog = (fuck - data.startBeat) / (data.bpm / 60);
+								shitPosition = (data.startTime + pog) * 1000;
+							}
+							else
+							{
+								pog = fuck / (Conductor.bpm / 60);
+								shitPosition = pog * 1000;
+							}
+
+							inst.time = shitPosition;
+						}
+					}
+
+					if (!SONG.splitVoiceTracks)
+						vocals.time = inst.time;
+					else
+					{
+						vocalsP.time = inst.time;
+						vocalsE.time = inst.time;
+					}
 				}
-
-				var amount = FlxG.mouse.wheel;
-
-				if (amount > 0 && strumLine.y < -100)
-					amount = 0;
-
-				var increase:Float = 0;
-				var beats:Float = 0;
-				var snap = quantization * 0.25;
-
-				if (amount < 0)
-				{
-					increase = 1 / snap;
-					beats = (Math.floor((curDecimalBeat * snap) + 0.001) / snap) + increase;
-				}
-				else
-				{
-					increase = -1 / snap;
-					beats = ((Math.ceil(curDecimalBeat * snap) - 0.001) / snap) + increase;
-				}
-
-				var data = TimingStruct.getTimingAtBeat(beats);
-				if (beats <= 0)
-					inst.time = 0;
-
-				var bpm = data != null ? data.bpm : SONG.bpm;
-
-				if (data != null)
-				{
-					inst.time = (data.startTime + ((beats - data.startBeat) / (bpm / 60))) * 1000;
-				}
-
-				if (!SONG.splitVoiceTracks)
-					vocals.time = inst.time;
-				else
-				{
-					vocalsP.time = inst.time;
-					vocalsE.time = inst.time;
-				}
-			}
 		}
 
 		var playedSound:Array<Bool> = [false, false, false, false, false, false, false, false];
@@ -1061,7 +1001,6 @@ class ChartingState extends MusicBeatState
 
 		// I hate having things run in update all the time but fuck it
 		songShit();
-
 		super.update(elapsed);
 	}
 
@@ -1071,49 +1010,47 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes.clear();
 		curRenderedSustains.forEachAlive(function(spr:FlxSprite) spr.destroy());
 		curRenderedSustains.clear();
-		var noteCounter = 0;
 
-		for (section in SONG.notes)
+		for (sec in SONG.notes)
 		{
-			if (section != null)
-				for (i in 0...section.sectionNotes.length)
+			for (i in 0...sec.sectionNotes.length)
+			{
+				final songNotes:ChartNote = sec.sectionNotes[i];
+				final noteData = songNotes.data;
+				final spawnTime = songNotes.time;
+				final holdLength = songNotes.length;
+				final noteType = songNotes.type;
+				final beat = TimingStruct.getBeatFromTime(spawnTime);
+				var playerNote:Bool = (noteData > 3);
+
+				if (PlayStateChangeables.opponentMode)
+					playerNote = !playerNote;
+
+				var note:Note = new Note(spawnTime, noteData % 4, null, false, true, playerNote, beat);
+				note.rawNoteData = noteData;
+				note.noteType = noteType;
+				note.sustainLength = holdLength;
+
+				note.setGraphicSize(gridSize, gridSize);
+				note.updateHitbox();
+				note.x = editorArea.x + Math.floor(noteData * gridSize) + separatorWidth;
+				if (noteData < 4)
+					note.x -= separatorWidth;
+				note.y = Math.floor(getYfromStrum(spawnTime));
+				curRenderedNotes.add(note);
+
+				if (holdLength > 0)
 				{
-					final songNotes:Array<Dynamic> = section.sectionNotes[i];
-					var noteData = songNotes[1];
-					var spawnTime = songNotes[0];
-					var holdLength = songNotes[2];
-					var noteType = songNotes[3];
-					var beat = TimingStruct.getBeatFromTime(spawnTime);
-					var playerNote:Bool = (songNotes[1] > 3);
+					var sustainVis:FlxSprite = new FlxSprite(note.x + 20, note.y + gridSize).makeGraphic(1, 1);
+					sustainVis.setGraphicSize(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength)) - note.y));
+					note.noteCharterObject = sustainVis;
+					sustainVis.updateHitbox();
 
-					if (PlayStateChangeables.opponentMode)
-						playerNote = !playerNote;
-
-					var note:Note = new Note(spawnTime, noteData % 4, null, false, true, playerNote, beat);
-					note.rawNoteData = noteData;
-					note.noteType = noteType;
-					note.sustainLength = holdLength;
-
-					note.setGraphicSize(gridSize, gridSize);
-					note.updateHitbox();
-					note.x = editorArea.x + Math.floor(noteData * gridSize) + separatorWidth;
-					if (noteData < 4)
-						note.x -= separatorWidth;
-					note.y = Math.floor(getYfromStrum(spawnTime));
-					curRenderedNotes.add(note);
-
-					if (holdLength > 0)
-					{
-						var sustainVis:FlxSprite = new FlxSprite(note.x + 20, note.y + gridSize).makeGraphic(1, 1);
-						sustainVis.setGraphicSize(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength)) - note.y));
-						note.noteCharterObject = sustainVis;
-						sustainVis.updateHitbox();
-
-						curRenderedSustains.add(sustainVis);
-					}
+					curRenderedSustains.add(sustainVis);
 				}
+				curRenderedNotes.sort(FlxSort.byY, FlxSort.ASCENDING);
+			}
 		}
-		curRenderedNotes.sort(FlxSort.byY, FlxSort.ASCENDING);
 	}
 
 	function regenerateLines()
@@ -1145,13 +1082,13 @@ class ChartingState extends MusicBeatState
 
 			for (i in SONG.eventObjects)
 			{
-				var seg = TimingStruct.getTimingAtBeat(i.position);
+				var seg = TimingStruct.getTimingAtBeat(i.beat);
 
 				var posi:Float = 0;
 
 				if (seg != null)
 				{
-					var start:Float = (i.position - seg.startBeat) / (seg.bpm / 60);
+					var start:Float = (i.beat - seg.startBeat) / (seg.bpm / 60);
 
 					posi = seg.startTime + start;
 				}
@@ -1163,7 +1100,7 @@ class ChartingState extends MusicBeatState
 
 				var type = i.type;
 
-				var text = new FlxText(editorArea.x + (gridSize * 8) + separatorWidth, pos, 0, i.name + "\n" + type + "\n" + i.value + "\n" + i.value2, 16);
+				var text = new FlxText(editorArea.x + (gridSize * 8) + separatorWidth, pos, 0, i.name + "\n" + type + "\n" + i.args[0] + "\n" + i.args[1], 16);
 				text.borderStyle = OUTLINE_FAST;
 				text.borderColor = FlxColor.BLACK;
 				text.font = Paths.font("vcr.ttf");
@@ -1180,19 +1117,24 @@ class ChartingState extends MusicBeatState
 		destroyBoxes();
 
 		var strum = getStrumTime(mouseCursor.y);
-		var sec = getSectionByTime(strum);
 		var spawnTime = strum;
 		var noteData:Int = Math.floor((mouseCursor.x - editorArea.x) / gridSize);
 		var holdLength = 0;
 		var noteType = noteTypes[noteShitDrop.selectedIndex];
 		var playerNote:Bool = (noteData > 3);
+		var sec = getSectionByTime(strum);
 
 		if (PlayStateChangeables.opponentMode)
 			playerNote = !playerNote;
 
-		sec.sectionNotes.push([spawnTime, noteData, holdLength, noteType]); // retarded ass note saving
+		sec.sectionNotes.push({
+			time: spawnTime,
+			data: noteData,
+			length: holdLength,
+			type: noteType
+		}); // retarded ass note saving
 
-		Debug.logTrace("Note Data : " + noteData + " StrumTime : " + spawnTime + " Section Length : " + sec.sectionNotes.length);
+		Debug.logTrace("Note Data : " + noteData + " StrumTime : " + spawnTime);
 
 		var note:Note = new Note(spawnTime, noteData % 4, null, false, true, playerNote, TimingStruct.getBeatFromTime(spawnTime));
 		note.rawNoteData = noteData;
@@ -1219,25 +1161,24 @@ class ChartingState extends MusicBeatState
 	{
 		for (sec in SONG.notes)
 		{
-			if (sec != null)
-				for (i in 0...sec.sectionNotes.length)
+			for (i in 0...sec.sectionNotes.length)
+			{
+				final secNote = sec.sectionNotes[i];
+				final time = secNote.time;
+				final data = secNote.data;
+				final type = secNote.type;
+				if (time == note.strumTime && data == note.rawNoteData && type == note.noteType)
 				{
-					final check:Array<Dynamic> = sec.sectionNotes[i];
-					final time = check[0];
-					final data = check[1];
-					final type = check[3];
-					if (time == note.strumTime && data == note.rawNoteData && type == note.noteType)
+					curSelectedNote = secNote;
+					curSelectedNoteObject = note;
+					if (!note.charterSelected)
 					{
-						curSelectedNote = sec.sectionNotes[i];
-						curSelectedNoteObject = note;
-						if (!note.charterSelected)
-						{
-							createBox(note.x, note.y, note);
-							note.charterSelected = true;
-							curSelectedNoteObject.charterSelected = true;
-						}
+						createBox(note.x, note.y, note);
+						note.charterSelected = true;
+						curSelectedNoteObject.charterSelected = true;
 					}
 				}
+			}
 		}
 	}
 
@@ -1248,7 +1189,7 @@ class ChartingState extends MusicBeatState
 		var i:Int = sec.sectionNotes.length;
 		while (--i > -1)
 		{
-			if (sec.sectionNotes[i][0] == existingNote.strumTime && sec.sectionNotes[i][1] == existingNote.rawNoteData)
+			if (sec.sectionNotes[i].time == existingNote.strumTime && sec.sectionNotes[i].data == existingNote.rawNoteData)
 				sec.sectionNotes.remove(sec.sectionNotes[i]);
 		}
 		// thanks Chris(Dimensionscape) from the FNF thread
@@ -1301,22 +1242,21 @@ class ChartingState extends MusicBeatState
 
 	function changeNoteSustain(value:Float):Void
 	{
-		Debug.logTrace(curSelectedNote == null);
 		if (curSelectedNote == null)
 			return;
 
-		curSelectedNote[2] += Math.ceil(value);
-		curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+		curSelectedNote.length += Math.ceil(value);
+		curSelectedNote.length = Math.max(curSelectedNote.length, 0);
 
 		if (curSelectedNoteObject.noteCharterObject != null)
 			curRenderedSustains.remove(curSelectedNoteObject.noteCharterObject, true);
 
-		if (curSelectedNote[2] > 0)
+		if (curSelectedNote.length > 0)
 		{
 			var sustainVis:FlxSprite = new FlxSprite(curSelectedNoteObject.x + 20, curSelectedNoteObject.y + gridSize).makeGraphic(1, 1);
-			sustainVis.setGraphicSize(8, Math.floor((getYfromStrum(curSelectedNoteObject.strumTime + curSelectedNote[2])) - curSelectedNoteObject.y));
+			sustainVis.setGraphicSize(8, Math.floor((getYfromStrum(curSelectedNoteObject.strumTime + curSelectedNote.length)) - curSelectedNoteObject.y));
 			sustainVis.updateHitbox();
-			curSelectedNoteObject.sustainLength = curSelectedNote[2];
+			curSelectedNoteObject.sustainLength = curSelectedNote.length;
 			curSelectedNoteObject.noteCharterObject = sustainVis;
 
 			curRenderedSustains.add(sustainVis);
@@ -1333,13 +1273,12 @@ class ChartingState extends MusicBeatState
 			var originalNote = b.connectedNote;
 			toDelete.push(originalNote);
 			var strum = originalNote.strumTime + offset;
+			var sec = getSectionByTime(strum);
 			if (strum < 0)
 			{
 				Debug.logTrace("New Time Is 0 Or Less, Deleting Note.");
 				return;
 			}
-			var sec = getSectionByTime(strum);
-
 			var note:Note = new Note(strum, originalNote.noteData, originalNote.prevNote, false, true, originalNote.mustPress, originalNote.beat);
 			note.rawNoteData = originalNote.rawNoteData;
 			note.sustainLength = originalNote.sustainLength;
@@ -1354,7 +1293,12 @@ class ChartingState extends MusicBeatState
 			toBeAdded.push(note);
 			curRenderedNotes.add(note);
 
-			sec.sectionNotes.push([note.strumTime, note.rawNoteData, note.sustainLength, note.noteType]);
+			sec.sectionNotes.push({
+				data: note.rawNoteData,
+				time: note.strumTime,
+				length: note.sustainLength,
+				type: note.noteType
+			});
 
 			if (note.sustainLength > 0)
 			{
@@ -1389,7 +1333,7 @@ class ChartingState extends MusicBeatState
 		// actually its broken either way because theres a ghost note after offsetting sometimes. updateGrid anyway.
 	}
 
-	function pasteNotesFromArray(array:Array<Array<Dynamic>>, fromStrum:Bool = true)
+	function pasteNotesFromArray(array:Array<ChartNote>, fromStrum:Bool = true)
 	{
 		if (copiedNotes.length < 0)
 		{
@@ -1399,7 +1343,7 @@ class ChartingState extends MusicBeatState
 		{
 			for (i in array)
 			{
-				var strum:Float = i[0];
+				var strum:Float = i.time;
 				if (fromStrum)
 					strum += Conductor.songPosition;
 				var section = 0;
@@ -1408,23 +1352,27 @@ class ChartingState extends MusicBeatState
 					if (ii.startTime <= strum && ii.endTime > strum)
 					{
 						// alright we're in this section lets paste the note here.
-						var newData = [strum, i[1], i[2], i[3]];
-						ii.sectionNotes.push(newData);
+						ii.sectionNotes.push({
+							time: strum,
+							data: i.data,
+							length: i.length,
+							type: i.type
+						});
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 						var gottaHitNote:Bool = false;
-						if (i[1] > 3)
+						if (i.data > 3)
 							gottaHitNote = true;
-						else if (i[1] <= 3)
+						else if (i.data <= 3)
 							gottaHitNote = false;
 
 						if (PlayStateChangeables.opponentMode)
 							gottaHitNote = !gottaHitNote;
 
-						var note:Note = new Note(strum, Math.floor(i[1] % 4), null, false, true, gottaHitNote, i[3]);
-						note.rawNoteData = i[1];
-						note.sustainLength = i[2];
-						note.noteType = i[3];
+						var note:Note = new Note(strum, i.data % 4, null, false, true, gottaHitNote, TimingStruct.getBeatFromTime(strum));
+						note.rawNoteData = i.data;
+						note.sustainLength = i.length;
+						note.noteType = i.type;
 						note.setGraphicSize(gridSize, gridSize);
 						note.updateHitbox();
 						note.x = editorArea.x + Math.floor(note.rawNoteData * gridSize) + separatorWidth;
@@ -1462,9 +1410,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in events)
 		{
-			var thisName = Reflect.field(i, "name");
-
-			if (thisName == name)
+			if (i.name == name)
 				return i;
 		}
 		return null;
@@ -1478,13 +1424,13 @@ class ChartingState extends MusicBeatState
 		updateNotes();
 	}
 
-	function swapSection(secit:SwagSection)
+	function swapSection(secit:Section)
 	{
 		destroyBoxes();
 		for (i in 0...secit.sectionNotes.length)
 		{
-			var note:Array<Dynamic> = secit.sectionNotes[i];
-			note[1] = (note[1] + 4) % 8;
+			var note = secit.sectionNotes[i];
+			note.data = (note.data + 4) % 8;
 			secit.sectionNotes[i] = note;
 		}
 
@@ -1503,53 +1449,31 @@ class ChartingState extends MusicBeatState
 		// return FlxMath.remapToRange(strumTime, 0, gridSize, 0, Conductor.stepCrochet);
 	}
 
-	inline function getSectionSteps(?section:Null<Int> = null)
-	{
-		if (section == null)
-			section = curSection;
-		var val:Null<Float> = null;
-
-		if (SONG.notes[section] != null)
-			val = SONG.notes[section].lengthInSteps;
-		return val != null ? val : 16;
-	}
-
 	function goToSection(section:Int)
 	{
 		var beat = section * 4;
-		var data = TimingStruct.getTimingAtTimestamp(beat);
+		var data = TimingStruct.getTimingAtBeat(beat);
 
 		if (data == null)
 			return;
-		if (SONG.notes[section] != null && section < lengthInSections)
-		{
-			curSection = section;
-			inst.time = (data.startTime + ((beat - data.startBeat) / (data.bpm / 60))) * 1000;
-			if (inst.time < 0)
-				inst.time = 0;
-			else if (inst.time > inst.length)
-				inst.time = inst.length;
-			if (!SONG.splitVoiceTracks)
-				vocals.time = inst.time;
-			else
-			{
-				vocalsP.time = inst.time;
-				vocalsE.time = inst.time;
-			}
-		}
-	}
 
-	function getSectionStart(add:Int = 0)
-	{
-		var daBPM:Float = Conductor.bpm;
-		Debug.logTrace(Conductor.bpm);
-		var daPos:Float = 0;
-		for (i in 0...curSection + add)
+		inst.time = (data.startTime + ((beat - data.startBeat) / (data.bpm / 60))) * 1000;
+		var sec = getSectionByTime(inst.time);
+		curSection = section;
+		Debug.logTrace("Going too " + inst.time + " | " + section + " | Which is at " + beat + " | Section Index " + sec.index);
+
+		if (inst.time < 0)
+			inst.time = 0;
+		else if (inst.time > inst.length)
+			inst.time = inst.length;
+
+		if (!SONG.splitVoiceTracks)
+			vocals.time = inst.time;
+		else
 		{
-			daPos += 4 * (1000 * 60 / daBPM);
-			Debug.logTrace(daPos);
+			vocalsP.time = inst.time;
+			vocalsE.time = inst.time;
 		}
-		return daPos;
 	}
 
 	function updateNotetypeText()
@@ -1562,11 +1486,7 @@ class ChartingState extends MusicBeatState
 	{
 		if (FlxG.save.data.autoSaving)
 		{
-			FlxG.save.data.autosave = haxe.Json.stringify({
-				"song": SONG,
-			});
-
-			trace('Chart Saved');
+			FlxG.save.data.autosave = haxe.Json.stringify(SONG);
 			FlxG.save.flush();
 		}
 		else
@@ -1641,24 +1561,6 @@ class ChartingState extends MusicBeatState
 			vocalsP.pause();
 			vocalsE.pause();
 		}
-
-		inst.onComplete = function()
-		{
-			if (!SONG.splitVoiceTracks)
-			{
-				vocals.pause();
-				vocals.time = 0;
-			}
-			else
-			{
-				vocalsP.pause();
-				vocalsP.time = 0;
-				vocalsE.pause();
-				vocalsE.time = 0;
-			}
-			inst.pause();
-			inst.time = 0;
-		};
 	}
 
 	function loadAutosave():Void
@@ -1671,7 +1573,7 @@ class ChartingState extends MusicBeatState
 
 		var data:String = haxe.Json.stringify(json, null);
 
-		var data:SongData = cast autoSaveData;
+		var data:Modern = cast autoSaveData;
 		var meta:SongMeta = {};
 		var name:String = data.songId;
 		if (autoSaveData.song != null)
@@ -1711,13 +1613,9 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel()
 	{
-		SONG.chartVersion = Song.latestChart;
+		SONG.chartVersion = Constants.chartVer;
 
-		var json = {
-			"song": SONG
-		};
-
-		var data:String = haxe.Json.stringify(json, null);
+		var data:String = haxe.Json.stringify(SONG, null);
 
 		if ((data != null) && (data.length > 0))
 		{
@@ -1943,7 +1841,7 @@ class ChartingState extends MusicBeatState
 			if (sect == null)
 				return;
 
-			sect.playerSec = playerSection.selected;
+			sect.mustHitSection = playerSection.selected;
 		}
 
 		refreshSec = new Button();
@@ -1955,7 +1853,7 @@ class ChartingState extends MusicBeatState
 			if (section == null)
 				return;
 
-			playerSection.selected = section.playerSec;
+			playerSection.selected = section.mustHitSection;
 
 			updateNotes();
 			destroyBoxes();
@@ -1989,20 +1887,21 @@ class ChartingState extends MusicBeatState
 		duet.text = "Duet Notes";
 		duet.onClick = function(e)
 		{
-			var duetNotes:Array<Array<Dynamic>> = [];
+			var duetNotes:Array<ChartNote> = [];
 			for (note in SONG.notes[curSection].sectionNotes)
 			{
-				var boob = note[1];
+				var boob = note.data;
 				if (boob > 3)
-				{
 					boob -= 4;
-				}
 				else
-				{
 					boob += 4;
-				}
 
-				var copiedNote:Array<Dynamic> = [note[0], boob, note[2], note[3]];
+				var copiedNote:ChartNote = {
+					time: note.time,
+					data: boob,
+					length: note.length,
+					type: note.type
+				};
 				duetNotes.push(copiedNote);
 			}
 
@@ -2018,22 +1917,26 @@ class ChartingState extends MusicBeatState
 		mirror.text = "Mirror Notes";
 		mirror.onClick = function(e)
 		{
-			var duetNotes:Array<Array<Dynamic>> = [];
+			var mirrored:Array<ChartNote> = [];
 			for (note in SONG.notes[curSection].sectionNotes)
 			{
-				var boob = note[1] % 4;
+				var boob = note.data % 4;
 				boob = 3 - boob;
-				if (note[1] > 3)
+				if (note.data > 3)
 					boob += 4;
 
-				note[1] = boob;
-				var copiedNote:Array<Dynamic> = [note[0], boob, note[2], note[3]];
-				// duetNotes.push(copiedNote);
+				var copiedNote:ChartNote = {
+					time: note.time,
+					data: boob,
+					length: note.length,
+					type: note.type
+				};
+				mirrored.push(copiedNote);
 			}
 
-			for (i in duetNotes)
+			for (i in mirrored)
 			{
-				// SONG.notes[curSec].sectionNotes.push(i);
+				SONG.notes[curSection].sectionNotes.push(i);
 			}
 
 			destroyBoxes();
@@ -2052,7 +1955,7 @@ class ChartingState extends MusicBeatState
 			var secit = SONG.notes[curSection];
 			for (i in 0...secit.sectionNotes.length)
 			{
-				var note:Array<Dynamic> = secit.sectionNotes[i];
+				var note:ChartNote = secit.sectionNotes[i];
 				copiedNotes.push(note);
 			}
 		}
@@ -2068,13 +1971,17 @@ class ChartingState extends MusicBeatState
 				return;
 			}
 
-			var addToTime:Float = Conductor.stepCrochet * (getSectionSteps() * (curSection - sectionToCopy));
+			var addToTime:Float = Conductor.stepCrochet * (16 * (curSection - sectionToCopy));
 			// trace('Time to add: ' + addToTime);
 			for (note in copiedNotes)
 			{
-				var copiedNote:Array<Dynamic> = [];
-				var newStrumTime:Float = note[0] + addToTime;
-				copiedNote = [newStrumTime, note[1], note[2], note[3]];
+				var newStrumTime:Float = note.time + addToTime;
+				var copiedNote:ChartNote = {
+					time: newStrumTime,
+					data: note.data,
+					length: note.length,
+					type: note.type
+				};
 				SONG.notes[curSection].sectionNotes.push(copiedNote);
 			}
 
@@ -2159,57 +2066,21 @@ class ChartingState extends MusicBeatState
 		bpm.decimalSeparator = ".";
 		bpm.onChange = function(e)
 		{
-			SONG.bpm = bpm.pos;
-			for (section in SONG.notes)
+			if (SONG.bpm != bpm.pos)
 			{
-				section.bpm = bpm.pos;
+				SONG.bpm = bpm.pos;
+				SONG.eventObjects[0].args[0] = bpm.pos;
+				setSongTimings();
+				recalculateAllSectionTimes();
+				calculateMaxBeat();
+				checkforSections();
+				regenerateLines();
+				updateNotePos();
+				if (SONG.eventObjects[0].type != "BPM Change")
+					lime.app.Application.current.window.alert("i'm crying, first event isn't a bpm change. fuck you");
+				else
+					SONG.eventObjects[0].args[0] = bpm.pos;
 			}
-
-			if (SONG.eventObjects[0].type != "BPM Change")
-				SUtil.showPopUp("i'm crying, first event isn't a bpm change. fuck you", "");
-			else
-			{
-				SONG.eventObjects[0].value = bpm.pos;
-			}
-
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in SONG.eventObjects)
-			{
-				var name = Reflect.field(i, "name");
-				var type = Reflect.field(i, "type");
-				var pos = Reflect.field(i, "position");
-				var value = Reflect.field(i, "value");
-				var value2 = Reflect.field(i, "value2");
-
-				if (type == "BPM Change")
-				{
-					var beat:Float = pos;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-					}
-
-					currentIndex++;
-				}
-			}
-
-			recalculateAllSectionTimes();
-
-			regenerateLines();
-
-			updateNotes();
 		}
 
 		var bpmLabel = new Label();
@@ -2417,16 +2288,16 @@ class ChartingState extends MusicBeatState
 			if (event == null)
 				return;
 
-			savedValue = event.value;
-			savedValue2 = event.value2;
+			savedValue = event.args[0];
+			savedValue2 = event.args[1];
 			savedType = event.type;
 			currentSelectedEventName = event.name;
 			eventName.text = currentSelectedEventName;
-			eventVal1.text = event.value + "";
-			eventVal2.text = event.value2 + "";
-			currentEventPosition = event.position;
+			eventVal1.text = event.args[0] + "";
+			eventVal2.text = event.args[1] + "";
+			currentEventPosition = event.beat;
 			eventPosition.text = Std.string(currentEventPosition);
-			eventVal2.text = event.value2 + "";
+			eventVal2.text = event.args[1] + "";
 			Debug.logTrace('$currentSelectedEventName $savedType $savedValue $savedValue2 $currentEventPosition');
 			eventTypes.selectItemBy(item -> item == savedType, true);
 		});
@@ -2445,8 +2316,12 @@ class ChartingState extends MusicBeatState
 		eventAdd.text = "Add Event";
 		eventAdd.onClick = function(e)
 		{
-			var pog:Event = new Event("New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 2), HelperFunctions.truncateFloat(curDecimalBeat, 3),
-				'${SONG.bpm}', "1", "BPM Change");
+			var pog:Event = {
+				name: "New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 2),
+				beat: HelperFunctions.truncateFloat(curDecimalBeat, 3),
+				args: [SONG.bpm, 1],
+				type: "BPM Change"
+			};
 
 			var obj = containsName(pog.name, SONG.eventObjects);
 
@@ -2454,6 +2329,7 @@ class ChartingState extends MusicBeatState
 				return;
 
 			SONG.eventObjects.push(pog);
+
 			existingEvents.clear();
 			eventList = [];
 			for (event in 0...SONG.eventObjects.length)
@@ -2463,54 +2339,25 @@ class ChartingState extends MusicBeatState
 			}
 
 			eventName.text = pog.name;
-			eventVal1.text = pog.value + "";
-			eventVal2.text = pog.value2 + "";
-			eventPosition.text = pog.position + "";
+			eventVal1.text = pog.args[0] + "";
+			eventVal2.text = pog.args[1] + "";
+			eventPosition.text = pog.beat + "";
 			currentSelectedEventName = pog.name;
-			currentEventPosition = pog.position;
-			savedValue = pog.value;
-			savedValue2 = pog.value2;
+			currentEventPosition = pog.beat;
+			savedValue = pog.args[0];
+			savedValue2 = pog.args[1];
 			savedType = pog.type;
 
 			eventDrop.dataSource = existingEvents;
-
-			Debug.logTrace(currentSelectedEventName);
 			eventDrop.selectItemBy(item -> item == currentSelectedEventName, true);
 			eventTypes.selectItemBy(item -> item == savedType, true);
 
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in SONG.eventObjects)
+			if (pog.type == 'BPM Change')
 			{
-				var name = Reflect.field(i, "name");
-				var type = Reflect.field(i, "type");
-				var pos = Reflect.field(i, "position");
-				var value = Reflect.field(i, "value");
-				var value2 = Reflect.field(i, "value2");
-				if (type == "BPM Change")
-				{
-					var beat:Float = pos;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-					}
-
-					currentIndex++;
-				}
+				setSongTimings();
+				regenerateLines();
+				updateNotePos();
 			}
-
-			recalculateAllSectionTimes();
 			regenerateLines();
 		}
 
@@ -2537,7 +2384,12 @@ class ChartingState extends MusicBeatState
 		eventSave.text = "Save Event";
 		eventSave.onClick = function(e)
 		{
-			var pog:Event = new Event(currentSelectedEventName, currentEventPosition, savedValue, savedValue2, savedType);
+			var pog:Event = {
+				name: currentSelectedEventName,
+				beat: currentEventPosition,
+				args: [savedValue, savedValue2],
+				type: savedType
+			};
 
 			var obj = containsName(pog.name, SONG.eventObjects);
 
@@ -2545,68 +2397,31 @@ class ChartingState extends MusicBeatState
 				return;
 
 			if (obj != null)
-			{
 				SONG.eventObjects.remove(obj);
-				Debug.logTrace("isn't null, removing");
-			}
 
 			SONG.eventObjects.push(pog);
-
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in SONG.eventObjects)
+			SONG.eventObjects.sort(function(a, b)
 			{
-				var name = Reflect.field(i, "name");
-				var type = Reflect.field(i, "type");
-				var pos = Reflect.field(i, "position");
-				var value = Reflect.field(i, "value");
-				var value2 = Reflect.field(i, "value2");
-
-				if (type == "BPM Change")
-				{
-					var beat:Float = pos;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-					}
-
-					currentIndex++;
-				}
-			}
-
-			if (pog.type == "BPM Change")
-			{
-				recalculateAllSectionTimes();
-				updateNotes();
-
-				// may break things, but will improve performance when it isn't a bpm change
-			}
-
-			regenerateLines();
+				if (a.beat < b.beat)
+					return -1
+				else if (a.beat > b.beat)
+					return 1;
+				else
+					return 0;
+			});
 
 			existingEvents.clear();
-			eventList = [];
+			eventList.resize(0);
 			for (event in 0...SONG.eventObjects.length)
 			{
 				existingEvents.add(SONG.eventObjects[event].name);
 				eventList.push(SONG.eventObjects[event]);
 			}
-
 			eventDrop.dataSource = existingEvents;
 			eventIndex = eventList.length - 1;
 			eventDrop.selectItemBy(item -> item == pog.name, true);
 			autosaveSong();
+			regenerateLines();
 
 			Debug.logTrace('$currentSelectedEventName $currentEventPosition $savedType');
 		}
@@ -2626,7 +2441,12 @@ class ChartingState extends MusicBeatState
 
 			if (firstEvent == null)
 			{
-				SONG.eventObjects.push(new Event("Init BPM", 0, '${SONG.bpm}', "1", "BPM Change"));
+				SONG.eventObjects.push({
+					name: "Init BPM",
+					beat: 0,
+					args: [SONG.bpm, 1],
+					type: "BPM Change"
+				});
 				firstEvent = SONG.eventObjects[0];
 			}
 
@@ -2642,52 +2462,19 @@ class ChartingState extends MusicBeatState
 			eventDrop.dataSource = existingEvents;
 
 			eventName.text = firstEvent.name;
-			eventVal1.text = firstEvent.value + "";
-			eventVal2.text = firstEvent.value2 + "";
-			eventPosition.text = firstEvent.position + "";
+			eventVal1.text = firstEvent.args[0] + "";
+			eventVal2.text = firstEvent.args[1] + "";
+			eventPosition.text = firstEvent.beat + "";
 			currentSelectedEventName = firstEvent.name;
-			currentEventPosition = firstEvent.position;
+			currentEventPosition = firstEvent.beat;
 			eventDrop.selectItemBy(item -> item == firstEvent.name, true);
 
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in SONG.eventObjects)
+			if (firstEvent.type == "BPM Change")
 			{
-				var name = Reflect.field(i, "name");
-				var type = Reflect.field(i, "type");
-				var pos = Reflect.field(i, "position");
-				var value = Reflect.field(i, "value");
-				var value2 = Reflect.field(i, "value2");
-
-				if (type == "BPM Change")
-				{
-					var beat:Float = pos;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-					}
-
-					currentIndex++;
-				}
+				setSongTimings();
+				regenerateLines();
+				updateNotePos();
 			}
-
-			if (obj.type == "BPM Change")
-			{
-				recalculateAllSectionTimes();
-				updateNotes();
-			}
-
 			regenerateLines();
 		}
 
@@ -2699,30 +2486,30 @@ class ChartingState extends MusicBeatState
 			if (obj == null)
 				return;
 			currentEventPosition = HelperFunctions.truncateFloat(curDecimalBeat, 3);
-			obj.position = currentEventPosition;
+			obj.beat = currentEventPosition;
 			eventPosition.text = currentEventPosition + "";
 		}
 
 		eventPosition = new TextField();
-		eventPosition.text = Std.string(SONG.eventObjects[0].position);
+		eventPosition.text = Std.string(SONG.eventObjects[0].beat);
 		eventPosition.onChange = function(e)
 		{
 			var obj = containsName(currentSelectedEventName, SONG.eventObjects);
 			if (obj == null)
 				return;
 			currentEventPosition = Std.parseFloat(eventPosition.text);
-			obj.position = currentEventPosition;
+			obj.beat = currentEventPosition;
 		}
 
 		eventVal1 = new TextField();
-		eventVal1.text = SONG.eventObjects[0].value;
+		eventVal1.text = SONG.eventObjects[0].args[0];
 		eventVal1.onChange = function(e)
 		{
 			savedValue = eventVal1.text;
 		}
 
 		eventVal2 = new TextField();
-		eventVal2.text = SONG.eventObjects[0].value2;
+		eventVal2.text = SONG.eventObjects[0].args[1];
 		eventVal2.onChange = function(e)
 		{
 			savedValue2 = eventVal2.text;
@@ -2835,9 +2622,7 @@ class ChartingState extends MusicBeatState
 				loadSong(SONG.audioFile.toLowerCase(), false);
 			}
 			catch (e)
-			{
 				Debug.logTrace(e);
-			}
 			// goofy song overlapping and raping your ears
 		}
 
@@ -2862,6 +2647,11 @@ class ChartingState extends MusicBeatState
 						text: "Clear",
 						callback: (data) ->
 						{
+							for (daSection in SONG.notes)
+							{
+								for (i in 0...daSection.sectionNotes.length)
+									daSection.sectionNotes = [];
+							}
 							updateNotes();
 							NotificationManager.instance.addNotification({
 								title: "Chart Cleared.",
@@ -2882,11 +2672,60 @@ class ChartingState extends MusicBeatState
 			});
 		}
 
+		/*
+			var create = new MenuItem();
+			create.text = "Create Blank Chart";
+			create.onClick = function(e)
+			{
+				var cleaned = {
+					songId: 'test',
+					songName: 'Test',
+					audioFile: 'test',
+					chartVersion: "KEC1",
+					splitVoiceTracks: true,
+					notes: [],
+					bpm: 150,
+					needsVoices: true,
+					player1: 'bf',
+					player2: 'dad',
+					gfVersion: 'gf',
+					style: 'Default',
+					stage: 'stage',
+					speed: 1,
+					validScore: true,
+					eventObjects: [
+						{
+							name: "Init BPM",
+							beat: 0,
+							args: [150],
+							type: "BPM Change"
+						}
+					]
+				};
+
+				var cleanedData = Json.parse(haxe.Json.stringify({
+					"song": cleaned
+				}));
+
+				var data:Modern = cast cleanedData;
+				var meta:SongMeta = {};
+				if (cleanedData.song != null)
+				{
+					meta = cleanedData.songMeta != null ? cast cleanedData.songMeta : {};
+				}
+				PlayState.SONG = Song.parseJSONshit(data.songId, data, meta);
+				clean = true;
+				MusicBeatState.switchState(new ChartingState());
+			}
+			broken for now, smth smth events smh
+		 */
+
 		file.addComponent(saveSong);
 		file.addComponent(reloadChart);
 		file.addComponent(reload);
 		file.addComponent(loadAuto);
 		file.addComponent(cleanSong);
+		// file.addComponent(create);
 
 		var dragTabs = new MenuCheckBox();
 		dragTabs.text = "Drag Tablist";
@@ -3001,14 +2840,6 @@ class ChartingState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		if (!FlxG.save.data.motion && inst.playing && (curBeat % 2 == 0))
-		{
-			iconP1.scale.set(0.7, 0.7);
-			iconP2.scale.set(0.7, 0.7);
-
-			iconP1.updateHitbox();
-			iconP2.updateHitbox();
-		}
 
 		if (FlxG.save.data.chart_metronome)
 			FlxG.sound.play(Paths.sound('Metronome_Tick'));
@@ -3017,37 +2848,11 @@ class ChartingState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-	}
-
-	private function newSection(lengthInSteps:Int = 16, mustHitSection:Bool = false):SwagSection
-	{
-		var daPos:Float = 0;
-
-		var currentSeg = TimingStruct.AllTimings[TimingStruct.AllTimings.length - 1];
-
-		var currentBeat = 4;
-
-		for (i in SONG.notes)
-			currentBeat += 4;
-
-		if (currentSeg == null)
-			return null;
-
-		var start:Float = (currentBeat - currentSeg.startBeat) / (currentSeg.bpm / 60);
-
-		daPos = (currentSeg.startTime + start) * 1000;
-
-		var sec:SwagSection = {
-			startTime: daPos,
-			endTime: Math.POSITIVE_INFINITY,
-			bpm: SONG.bpm,
-			changeBPM: false,
-			lengthInSteps: 16,
-			playerSec: true,
-			sectionNotes: [],
-		};
-
-		return sec;
+		if (inst.playing)
+		{
+			iconP1.onStepHit(curStep);
+			iconP2.onStepHit(curStep);
+		}
 	}
 
 	private function initEvents()
@@ -3055,21 +2860,23 @@ class ChartingState extends MusicBeatState
 		var eventObjects:Array<Event> = [];
 
 		if (SONG.eventObjects == null || SONG.eventObjects.length == 0)
-			SONG.eventObjects = [new Event("Init BPM", 0, SONG.bpm, "1", "BPM Change")];
+			SONG.eventObjects = [
+				{
+					name: "Init BPM",
+					beat: 0,
+					args: [SONG.bpm, 1],
+					type: "BPM Change"
+				}
+			];
 
 		for (i in SONG.eventObjects)
-		{
-			var name = Reflect.field(i, "name");
-			var type = Reflect.field(i, "type");
-			var pos = Reflect.field(i, "position");
-			var value = Reflect.field(i, "value");
-			var value2 = Reflect.field(i, "value2");
+			eventObjects.push({
+				name: i.name,
+				beat: i.beat,
+				args: i.args,
+				type: i.type
+			});
 
-			if (value2 == null)
-				value2 = "1";
-
-			eventObjects.push(new Event(name, pos, value, value2, type));
-		}
 		eventObjects.sort(Sort.sortEvents);
 		SONG.eventObjects = eventObjects;
 	}
@@ -3086,7 +2893,18 @@ class ChartingState extends MusicBeatState
 
 	inline function getMouseY():Float
 	{
-		return (doSnapShit) ? quantizePosWithSnap(FlxG.mouse.y, quantization) : FlxG.mouse.y;
+		var time = 0.0;
+		var rawTime = 0.0;
+		final snap:Float = quantization;
+
+		rawTime = getStrumTime(FlxG.mouse.getWorldPosition(mouseCursor.camera).y);
+		time = rawTime;
+
+		final beat = TimingStruct.getBeatFromTime(time);
+		final snapShit = Math.floor(beat * snap) / snap;
+
+		var newDummyY = getYfromStrum(TimingStruct.getTimeFromBeat(snapShit)) - (gridSize / 2);
+		return (doSnapShit) ? newDummyY : FlxG.mouse.y;
 	}
 
 	public static inline function quantizePos(position:Float):Float
@@ -3094,11 +2912,7 @@ class ChartingState extends MusicBeatState
 		return Math.ffloor(position / gridSize) * gridSize;
 	}
 
-	public static inline function quantizePosWithSnap(position:Float, snap:Int):Float
-	{
-		var mult:Float = gridSize * (16 / snap);
-		return Math.ffloor(position / mult) * mult;
-	}
+	// fard
 
 	private function checkNoteSpawn()
 	{
@@ -3134,5 +2948,95 @@ class ChartingState extends MusicBeatState
 		FlxG.camera.targetOffset.y = 100;
 		add(mouseCursor);
 		add(strumLine);
+	}
+
+	private function setSongTimings()
+	{
+		TimingStruct.clearTimings();
+
+		var currentIndex = 0;
+		for (event in SONG.eventObjects)
+		{
+			switch (event.type)
+			{
+				case 'BPM Change':
+					{
+						final beat:Float = event.beat;
+						final endBeat:Float = Math.POSITIVE_INFINITY;
+						final bpm = event.args[0];
+						TimingStruct.addTiming(beat, bpm, endBeat, 0); // offset in this case = start time since we don't have a offset
+
+						if (currentIndex != 0)
+						{
+							var data = TimingStruct.AllTimings[currentIndex - 1];
+							data.endBeat = beat;
+							data.length = ((data.endBeat - (data.startBeat)) / (data.bpm / 60));
+							var step = ((60 / (data.bpm)) * 1000) / 4;
+							TimingStruct.AllTimings[currentIndex].startStep = Math.floor((((data.endBeat / (data.bpm / 60)) * 1000) / step));
+							TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+						}
+
+						currentIndex++;
+					}
+			}
+		}
+		// sort events by beat
+		if (SONG.eventObjects != null)
+		{
+			SONG.eventObjects.sort(function(a, b)
+			{
+				if (a.beat < b.beat)
+					return -1
+				else if (a.beat > b.beat)
+					return 1;
+				else
+					return 0;
+			});
+		}
+	}
+
+	private function updateNotePos()
+	{
+		for (note in curRenderedNotes)
+		{
+			note.y = getYfromStrum(note.strumTime);
+			if (note.noteCharterObject != null)
+			{
+				note.noteCharterObject.setGraphicSize(8, (getYfromStrum(note.strumTime + note.sustainLength) - note.y));
+				note.noteCharterObject.y = note.y + gridSize;
+			}
+		}
+	}
+
+	function calculateMaxBeat()
+	{
+		maxBeat = Math.round(TimingStruct.getBeatFromTime(inst.length));
+	}
+
+	function checkforSections()
+	{
+		final totalBeats = maxBeat;
+
+		var lastSecBeat = TimingStruct.getBeatFromTime(SONG.notes[SONG.notes.length - 1].endTime);
+
+		while (lastSecBeat < totalBeats)
+		{
+			Debug.logTrace('LastBeat: $lastSecBeat | totalBeats: $totalBeats ');
+			SONG.notes.push(newSection(SONG.notes[SONG.notes.length - 1].lengthInSteps, SONG.notes.length, true));
+			recalculateAllSectionTimes();
+			lastSecBeat = TimingStruct.getBeatFromTime(SONG.notes[SONG.notes.length - 1].endTime);
+		}
+	}
+
+	private function newSection(lengthInSteps:Int = 16, index:Int, mustHitSection:Bool = false):Section
+	{
+		var sec:Section = {
+			bpm: SONG.bpm,
+			mustHitSection: mustHitSection,
+			sectionNotes: [],
+			index: index,
+			lengthInSteps: lengthInSteps
+		};
+		return sec;
 	}
 }

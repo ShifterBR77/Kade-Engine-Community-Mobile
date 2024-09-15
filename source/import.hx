@@ -12,7 +12,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxStringUtil;
-import tjson.TJSON as Json;
+import haxe.Json;
 import flixel.input.keyboard.FlxKey;
 #if android
 import android.content.Context as AndroidContext;
@@ -36,6 +36,7 @@ import kec.backend.chart.Conductor;
 import kec.backend.Debug;
 import kec.backend.util.CoolUtil;
 import kec.backend.Constants;
+import kec.backend.util.Sort;
 #end
 
 using StringTools;

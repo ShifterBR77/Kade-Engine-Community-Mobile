@@ -67,8 +67,10 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
 			Constants.freakyPlaying = true;
+			Conductor.bpm = 102;
+			kec.backend.chart.TimingStruct.clearTimings();
+			curTiming = null;
 		}
-		Conductor.bpm = 102;
 
 		if (!FlxG.save.data.watermark)
 			optionShit.remove('discord');
@@ -181,9 +183,7 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+			FlxG.sound.music.volume = Math.min(FlxG.sound.music.volume + 0.5 * elapsed, 0.8);
 
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
@@ -250,13 +250,9 @@ class MainMenuState extends MusicBeatState
 			if (FlxG.mouse.overlaps(menuItems, FlxG.camera) && FlxG.mouse.justPressed || controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
-				{
 					fancyOpenURL("https://ninja-muffin24.itch.io/funkin");
-				}
 				else if (optionShit[curSelected] == 'discord')
-				{
 					fancyOpenURL("https://discord.gg/TKCzG5rVGf");
-				}
 				else
 				{
 					selectedSomethin = true;
@@ -346,9 +342,8 @@ class MainMenuState extends MusicBeatState
 
 	override function beatHit()
 	{
-		super.beatHit();
-
 		logo.animation.play('bump', true);
+		super.beatHit();
 	}
 
 	function tweenColorShit()

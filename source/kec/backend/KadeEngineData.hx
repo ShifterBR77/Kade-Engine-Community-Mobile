@@ -84,7 +84,7 @@ class KadeEngineData
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
-			FlxG.save.data.cpuStrums = false;
+			FlxG.save.data.cpuStrums = true;
 
 		if (FlxG.save.data.smoothHealthbar == null)
 			FlxG.save.data.smoothHealthbar = true;
@@ -170,7 +170,7 @@ class KadeEngineData
 			FlxG.save.data.oldcharter = false;
 
 		if (FlxG.save.data.motion == null)
-			FlxG.save.data.motion = false;
+			FlxG.save.data.motion = true;
 
 		if (FlxG.save.data.gpuRender == null)
 			FlxG.save.data.gpuRender = false;
@@ -303,7 +303,7 @@ class KadeEngineData
 			FlxG.save.data.maxRatings = 4;
 
 		if (FlxG.save.data.enabledMods == null)
-			FlxG.save.data.enabledMods = [];	
+			FlxG.save.data.enabledMods = [];
 
 		FlxSprite.defaultAntialiasing = FlxG.save.data.antialiasing;
 		FlxObject.defaultMoves = false;

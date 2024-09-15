@@ -39,7 +39,7 @@ class KadeEngineFPS extends TextField
 
 		selectable = false;
 
-		defaultTextFormat = new TextFormat('VCR OSD Mono', 14, inCol);
+		defaultTextFormat = new TextFormat('Monsterrat', 14, inCol);
 
 		text = "FPS: ";
 
@@ -51,7 +51,7 @@ class KadeEngineFPS extends TextField
 
 		addEventListener(Event.ENTER_FRAME, onEnter);
 
-		width = 340;
+		width = 400;
 
 		height = 100;
 	}

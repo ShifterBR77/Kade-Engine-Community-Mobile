@@ -9,8 +9,10 @@ import kec.backend.chart.Song.StyleData;
 class UIComponent extends FlxSprite
 {
 	public var startTime:Float;
+
 	// Conductor Song Position. The Meat And Potatos Of Sorting.
-	public var style:StyleData = null;
+	public static var style:StyleData = null;
+
 	// The Style. Used For Scaling, Antialiasing, And Image Pathing.
 	public var lastName:String = null;
 
@@ -34,7 +36,7 @@ class UIComponent extends FlxSprite
 	public function fadeOut()
 	{
 		PlayState.instance.createTween(this, {alpha: 0}, 0.2, {
-			startDelay: (Conductor.crochet * Math.pow(Conductor.multiplier, 2)) * 0.001,
+			startDelay: Conductor.crochet * 0.001,
 			onComplete: function(t:FlxTween)
 			{
 				kill();

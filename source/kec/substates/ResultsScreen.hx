@@ -9,7 +9,7 @@ import sys.FileSystem;
 #end
 import kec.objects.HitGraph;
 import kec.objects.OFLSprite;
-import kec.objects.Note;
+import kec.objects.note.Note;
 import kec.backend.PlayStateChangeables;
 import kec.backend.Ratings;
 import kec.backend.util.HelperFunctions;
@@ -154,7 +154,7 @@ class ResultsScreen extends MusicBeatSubstate
 		var shits = PlayState.isStoryMode ? Stats.campaignShits : Stats.shits;
 
 		final blyad:String = MobileControls.enabled ? "" : '\n\n\nF1 - Replay song';
-		comboText.text = 'Judgements:\nMarvs - ${marvs}\nSicks - ${sicks}\nGoods - ${goods}\nBads - ${bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? Stats.campaignMisses : Stats.misses)}\nHighest Combo: ${PlayState.highestCombo + 1}\nScore: $score\n${(PlayState.isStoryMode ? 'Average Accuracy' : 'Accuracy')}: ${HelperFunctions.truncateFloat(acc, 2)}% ( ${(FlxG.save.data.accuracyMod == 0 ? 'Accurate' : 'Complex')} )\n\n${Ratings.GenerateComboRank(Stats.accuracy)} ${Ratings.GenerateLetterRank(Stats.accuracy)}\nRate: ${HelperFunctions.truncateFloat(Conductor.multiplier, 2)}x$blyad';
+		comboText.text = 'Judgements:\nMarvs - ${marvs}\nSicks - ${sicks}\nGoods - ${goods}\nBads - ${bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? Stats.campaignMisses : Stats.misses)}\nHighest Combo: ${PlayState.highestCombo + 1}\nScore: $score\n${(PlayState.isStoryMode ? 'Average Accuracy' : 'Accuracy')}: ${HelperFunctions.truncateFloat(acc, 2)}% ( ${(FlxG.save.data.accuracyMod == 0 ? 'Accurate' : 'Complex')} )\n\n${Ratings.GenerateComboRank(Stats.accuracy)} ${Ratings.GenerateLetterRank(Stats.accuracy)}\nRate: ${HelperFunctions.truncateFloat(Conductor.rate, 2)}x$blyad';
 
 		add(comboText);
 
@@ -206,10 +206,10 @@ class ResultsScreen extends MusicBeatSubstate
 
 		if (PlayState.SONG.validScore && superMegaConditionShit)
 		{
-			Highscore.saveScore(PlayState.SONG.songId, Math.round(Stats.songScore), PlayState.storyDifficulty, Conductor.multiplier);
-			Highscore.saveCombo(PlayState.SONG.songId, Ratings.GenerateLetterRank(Stats.accuracy), PlayState.storyDifficulty, Conductor.multiplier);
-			Highscore.saveAcc(PlayState.SONG.songId, HelperFunctions.truncateFloat(Stats.accuracy, 2), PlayState.storyDifficulty, Conductor.multiplier);
-			Highscore.saveLetter(PlayState.SONG.songId, Ratings.GenerateLetterRank(Stats.accuracy), PlayState.storyDifficulty, Conductor.multiplier);
+			Highscore.saveScore(PlayState.SONG.songId, Math.round(Stats.songScore), PlayState.storyDifficulty, Conductor.rate);
+			Highscore.saveCombo(PlayState.SONG.songId, Ratings.GenerateLetterRank(Stats.accuracy), PlayState.storyDifficulty, Conductor.rate);
+			Highscore.saveAcc(PlayState.SONG.songId, HelperFunctions.truncateFloat(Stats.accuracy, 2), PlayState.storyDifficulty, Conductor.rate);
+			Highscore.saveLetter(PlayState.SONG.songId, Ratings.GenerateLetterRank(Stats.accuracy), PlayState.storyDifficulty, Conductor.rate);
 		}
 
 		// Debug.logTrace('$legitTimings ${!PlayState.usedBot} ${!FlxG.save.data.practice} ${PlayStateChangeables.holds} ${!PlayState.wentToChartEditor} ${HelperFunctions.truncateFloat(PlayStateChangeables.healthGain, 2) <= 1} ${HelperFunctions.truncateFloat(PlayStateChangeables.healthLoss, 2) >= 1}');
@@ -266,7 +266,7 @@ class ResultsScreen extends MusicBeatSubstate
 		{
 			var noteRating = note.rating;
 
-			var noteDiff = note.strumTime - Conductor.songPosition;
+			var noteDiff = note.strumTime - (Conductor.songPosition / Conductor.rate);
 
 			if (isMiss)
 				noteDiff = Ratings.timingWindows[0].timingWindow;
@@ -291,18 +291,18 @@ class ResultsScreen extends MusicBeatSubstate
 		#if !cpp
 		if (music != null)
 			if (music.volume < 0.5)
-				music.volume += 0.01 * elapsed;
+				Math.min(music.volume + 0.5 * elapsed, 0.5);
 		#end
 
-		if ((PlayerSettings.player1.controls.ACCEPT && !FlxG.keys.pressed.ALT) || FlxG.mouse.pressed)
+		if ((controls.ACCEPT && !FlxG.keys.pressed.ALT) || FlxG.mouse.pressed)
 		{
 			if (music != null)
 				music.fadeOut(0.3);
 
+			Constants.freakyPlaying = false;
+
 			if (PlayState.isStoryMode)
 			{
-				FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
-				Conductor.bpm = 102;
 				MusicBeatState.switchState(new StoryMenuState());
 				Stats.resetCampaignStats();
 			}
@@ -328,7 +328,7 @@ class ResultsScreen extends MusicBeatSubstate
 
 	override function destroy()
 	{
-		if (FlxG.save.data.inputShow)
+		if (graph != null && graphSprite != null)
 		{
 			graph.destroy();
 			graph = null;

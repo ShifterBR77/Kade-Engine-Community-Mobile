@@ -3,12 +3,13 @@ package kec.objects;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.util.FlxSort;
-import kec.backend.chart.Section.SwagSection;
-import kec.stages.TankmenBG;
-import kec.backend.chart.Song;
-import kec.backend.chart.TimingStruct;
 import kec.backend.PlayStateChangeables;
 import kec.backend.chart.NoteData;
+import kec.backend.chart.Song;
+import kec.backend.chart.TimingStruct;
+import kec.stages.TankmenBG;
+import kec.backend.chart.ChartNote;
+import kec.backend.chart.format.Section;
 
 class Character extends FlxSprite
 {
@@ -43,7 +44,7 @@ class Character extends FlxSprite
 	public var deadChar:String = 'bf-dead';
 	public var flipAnimations:Bool = false;
 
-	public var animationNotes:Array<Dynamic> = [];
+	public var animationNotes:Array<ChartNote> = [];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isGF:Bool = false)
 	{
@@ -157,13 +158,9 @@ class Character extends FlxSprite
 				var flipY = anim.flipY == null ? false : anim.flipY;
 
 				if (anim.frameIndices != null)
-				{
-					animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, "", Std.int(frameRate * Conductor.multiplier), looped, flipX, flipY);
-				}
+					animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, "", Std.int(frameRate * Conductor.rate), looped, flipX, flipY);
 				else
-				{
-					animation.addByPrefix(anim.name, anim.prefix, Std.int(frameRate * Conductor.multiplier), looped, flipX, flipY);
-				}
+					animation.addByPrefix(anim.name, anim.prefix, Std.int(frameRate * Conductor.rate), looped, flipX, flipY);
 
 				animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
 				animInterrupt[anim.name] = anim.interrupt == null ? true : anim.interrupt;
@@ -258,11 +255,9 @@ class Character extends FlxSprite
 			else
 			{
 				if (animation.curAnim.name.startsWith('sing'))
-				{
 					holdTimer += elapsed;
-				}
 
-				if (holdTimer >= Conductor.stepCrochet * 0.0011 * holdLength * Conductor.multiplier)
+				if (holdTimer >= Conductor.stepCrochet * 0.0011 * holdLength * Conductor.rate)
 				{
 					dance();
 
@@ -279,10 +274,10 @@ class Character extends FlxSprite
 			switch (curCharacter)
 			{
 				case 'pico-speaker':
-					if (animationNotes.length > 0 && Conductor.songPosition >= animationNotes[0].strumTime)
+					while(animationNotes.length > 0 && Conductor.songPosition >= animationNotes[0].time)
 					{
 						var noteData:Int = 1;
-						if (2 <= animationNotes[0].noteData)
+						if (2 <= animationNotes[0].data)
 							noteData = 3;
 
 						noteData += FlxG.random.int(0, 1);
@@ -353,75 +348,41 @@ class Character extends FlxSprite
 
 		var daOffset = animOffsets.get(AnimName);
 		if (animOffsets.exists(AnimName))
-		{
 			offset.set(daOffset[0], daOffset[1]);
-		}
 		else
 			offset.set(0, 0);
 
 		if (curCharacter == 'gf')
 		{
 			if (AnimName == 'singLEFT')
-			{
 				danced = true;
-			}
 			else if (AnimName == 'singRIGHT')
-			{
 				danced = false;
-			}
 
 			if (AnimName == 'singUP' || AnimName == 'singDOWN')
-			{
 				danced = !danced;
-			}
 		}
 	}
 
 	public function loadMappedAnims():Void
 	{
-		if (!FlxG.save.data.background)
+		if (!FlxG.save.data.background && !debugMode)
 			return;
-		var noteData:Array<SwagSection> = Song.loadFromJson(PlayState.SONG.songId, 'picospeaker').notes;
-		var notes:Array<NoteData> = [];
-		var noteCounter:Int = 0;
+		final noteData:Array<Section> = Song.loadFromJson(PlayState.SONG.songId, 'picospeaker').notes;
 		for (section in noteData)
 		{
-			for (songNotes in section.sectionNotes)
+			for (i in 0...section.sectionNotes.length)
 			{
-				var gottaHitNote:Bool = false;
-				var daStrumTime:Float = (songNotes[0] - FlxG.save.data.offset - PlayState.SONG.offset) / Conductor.multiplier;
-				if (daStrumTime < 0)
-					daStrumTime = 0;
-				var daBeat = TimingStruct.getBeatFromTime(daStrumTime);
-
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
-				if (songNotes[1] > 3)
-					gottaHitNote = true;
-				else if (songNotes[1] <= 3)
-					gottaHitNote = false;
-
-				notes.push({
-					strumTime: daStrumTime,
-					noteData: daNoteData,
-					sustainLength: songNotes[2] / Conductor.multiplier,
-					noteType: songNotes[3],
-					isPlayer: gottaHitNote,
-					beat: daBeat
-				});
-
-				var note = notes[noteCounter];
-
-				animationNotes.push(note);
-				noteCounter++;
+				animationNotes.push(section.sectionNotes[i]);
 			}
 		}
-		TankmenBG.animationNotes = animationNotes;
 		animationNotes.sort(sortAnims);
+		TankmenBG.animationNotes = animationNotes;
 	}
 
-	function sortAnims(Obj1:NoteData, Obj2:NoteData):Int
+	function sortAnims(Obj1:ChartNote, Obj2:ChartNote):Int
 	{
-		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.time, Obj2.time);
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)

@@ -6,16 +6,15 @@ import kec.backend.util.DiffCalc;
 import kec.backend.PlayStateChangeables;
 import kec.backend.chart.TimingStruct;
 import openfl.media.Sound;
-import kec.states.MusicBeatState.subStates;
 import flixel.effects.FlxFlicker;
-#if FEATURE_STEPMANIA
-import kec.backend.util.smTools.SMFile;
-#end
 #if FEATURE_FILESYSTEM
 import sys.FileSystem;
 import sys.io.File;
 #end
-import kec.backend.chart.Song.SongData;
+#if FEATURE_STEPMANIA
+import kec.backend.util.smTools.SMFile;
+#end
+import kec.backend.chart.format.Modern;
 import lime.app.Application;
 import flash.text.TextField;
 import openfl.utils.Assets as OpenFlAssets;
@@ -85,7 +84,7 @@ class FreeplayState extends MusicBeatState
 
 	public static var icon:HealthIcon;
 
-	public var songData:Map<String, Array<SongData>> = [];
+	public var songData:Map<String, Array<Modern>> = [];
 
 	public static var instance:FreeplayState = null;
 
@@ -97,7 +96,7 @@ class FreeplayState extends MusicBeatState
 	public static var doUpdateText:Bool = true;
 	public static var alreadyPressed:Bool = false;
 
-	function loadDiff(diff:Int, songId:String, array:Array<SongData>)
+	function loadDiff(diff:Int, songId:String, array:Array<Modern>)
 		array.push(Song.loadFromJson(songId, CoolUtil.getSuffixFromDiff(CoolUtil.difficultyArray[diff])));
 
 	public static var list:Array<String> = [];
@@ -260,12 +259,6 @@ class FreeplayState extends MusicBeatState
 		PlayStateChangeables.practiceMode = FlxG.save.data.practice;
 		PlayStateChangeables.skillIssue = FlxG.save.data.noMisses;
 
-		if (!openMod)
-		{
-			changeSelection();
-			changeDiff();
-		}
-
 		if (!Constants.freakyPlaying)
 		{
 			FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
@@ -279,7 +272,12 @@ class FreeplayState extends MusicBeatState
 
 		super.create();
 
-		subStates.push(new kec.substates.FreeplaySubState.ModMenu());
+		pushSub(new kec.substates.FreeplaySubState.ModMenu());
+		if (!openMod)
+		{
+			changeSelection();
+			changeDiff();
+		}
 		Paths.clearUnusedMemory();
 		Debug.logTrace("Took " + Std.string(FlxMath.roundDecimal(haxe.Timer.stamp() - stamp, 3)) + " Seconds To Load Freeplay.");
 	}
@@ -385,7 +383,6 @@ class FreeplayState extends MusicBeatState
 			meta.diffs = diffsThatExist;
 			songs.push(meta);
 		}
-
 		#if FEATURE_STEPMANIA
 		// trace("tryin to load sm files");
 		if (!FileSystem.exists("assets/sm/"))
@@ -790,7 +787,7 @@ class FreeplayState extends MusicBeatState
 		super.stepHit();
 	}
 
-	var playinSong:SongData;
+	var playinSong:Modern;
 
 	private function dotheMusicThing():Void
 	{
@@ -798,18 +795,12 @@ class FreeplayState extends MusicBeatState
 		{
 			FlxG.sound.music.stop();
 
-			activeSong = playinSong;
-
 			if (currentSongPlaying != songs[curSelected].songName)
 			{
 				var songPath:String = null;
 
 				switch (songs[curSelected].songCharacter)
 				{
-					case "sm":
-						#if (FEATURE_FILESYSTEM && FEATURE_STEPMANIA)
-						songPath = FileSystem.absolutePath(songs[curSelected].path + "/" + songs[curSelected].sm.header.MUSIC);
-						#end
 					default:
 						songPath = Paths.inst(songs[curSelected].songName, true);
 				}
@@ -820,14 +811,6 @@ class FreeplayState extends MusicBeatState
 			}
 
 			Constants.freakyPlaying = false;
-
-			TimingStruct.clearTimings();
-
-			curTiming = null;
-
-			var currentIndex = 0;
-			rate = lastRate;
-
 			currentSongPlaying = songs[curSelected].songName;
 		}
 	}
@@ -857,7 +840,7 @@ class FreeplayState extends MusicBeatState
 	public static function loadSongInFreePlay(songName:String, difficulty:Int, isCharting:Bool, reloadSong:Bool = false)
 	{
 		// Make sure song data is initialized first.
-		var currentSongData:SongData = null;
+		var currentSongData:Modern = null;
 		try
 		{
 			switch (instance.songs[curSelected].songCharacter)
@@ -897,7 +880,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.isSM = false;
 		#end
 
-		Conductor.multiplier = rate;
+		Conductor.rate = rate;
 		lastRate = rate;
 
 		instance.updateTexts();
@@ -914,6 +897,7 @@ class FreeplayState extends MusicBeatState
 
 	override function destroy()
 	{
+		clearSubs();
 		super.destroy();
 	}
 
@@ -989,25 +973,6 @@ class FreeplayState extends MusicBeatState
 		}
 
 		updateScoreText();
-
-		var hmm;
-		try
-		{
-			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
-			if (hmm != null)
-			{
-				GameplayCustomizeState.freeplayBf = hmm.player1;
-				GameplayCustomizeState.freeplayDad = hmm.player2;
-				GameplayCustomizeState.freeplayGf = hmm.gfVersion;
-				GameplayCustomizeState.freeplayNoteStyle = hmm.noteStyle;
-				GameplayCustomizeState.freeplayStage = hmm.stage;
-				GameplayCustomizeState.freeplaySong = hmm.songId;
-				GameplayCustomizeState.freeplayWeek = songs[curSelected].week;
-			}
-		}
-		catch (ex)
-		{
-		}
 
 		var bullShit:Int = 0;
 
@@ -1098,7 +1063,6 @@ class FreeplaySongMetadata
 	public var songCharacter:String = "";
 	public var color:Int = -7179779;
 	public var diffs = [];
-
 	#if FEATURE_STEPMANIA
 	public function new(song:String, week:Int, songCharacter:String, ?color:FlxColor, ?sm:SMFile = null, ?path:String = "")
 	{

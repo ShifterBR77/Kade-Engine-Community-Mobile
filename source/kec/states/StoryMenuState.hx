@@ -97,14 +97,11 @@ class StoryMenuState extends MusicBeatState
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
-		if (FlxG.sound.music != null)
+		if (!Constants.freakyPlaying)
 		{
-			if (!FlxG.sound.music.playing)
-			{
-				FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
-				Constants.freakyPlaying = true;
-				Conductor.bpm = 102;
-			}
+			FlxG.sound.playMusic(Paths.music(FlxG.save.data.watermark ? "freakyMenu" : "ke_freakyMenu"));
+			Constants.freakyPlaying = true;
+			Conductor.bpm = 102;
 		}
 
 		persistentUpdate = persistentDraw = true;
@@ -361,7 +358,7 @@ class StoryMenuState extends MusicBeatState
 				var diff:String = CoolUtil.getSuffixFromDiff(diffString);
 				PlayState.storyPlaylist = weeksLoaded[curWeek].songs;
 				PlayState.isStoryMode = true;
-				Conductor.multiplier = 1;
+				Conductor.rate = 1;
 				PlayState.isSM = false;
 				PlayState.storyWeek = curWeek;
 				PlayState.storyDifficulty = CoolUtil.difficultyArray.indexOf(diffString);
