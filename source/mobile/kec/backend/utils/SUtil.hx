@@ -110,13 +110,13 @@ class SUtil
 		}
 		catch (e:Dynamic)
 		{
-			showPopUp('Please create directory to\n' + SUtil.getStorageDirectory(true) + '\nPress OK to close the game', 'Error!');
+			showPopUp('Please create directory to\n' + SUtil.getStorageDirectory() + '\nPress OK to close the game', 'Error!');
 			LimeSystem.exit(1);
 		}
 	}
 	#end
 
-	public static function showPopUp(message:String, title:String):Void
+	public static function showPopUp(message:String, ?title:String):Void
 	{
 		#if android
 		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);

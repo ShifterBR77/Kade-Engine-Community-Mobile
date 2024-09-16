@@ -2077,7 +2077,7 @@ class ChartingState extends MusicBeatState
 				regenerateLines();
 				updateNotePos();
 				if (SONG.eventObjects[0].type != "BPM Change")
-					lime.app.Application.current.window.alert("i'm crying, first event isn't a bpm change. fuck you");
+					SUtil.showPopUp("i'm crying, first event isn't a bpm change. fuck you");
 				else
 					SONG.eventObjects[0].args[0] = bpm.pos;
 			}

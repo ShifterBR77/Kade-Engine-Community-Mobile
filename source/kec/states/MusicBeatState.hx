@@ -1,23 +1,24 @@
 package kec.states;
 
-import kec.backend.chart.format.Section;
+import flixel.FlxCamera;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.input.actions.FlxActionInput;
+import flixel.util.FlxDestroyUtil;
 import kec.backend.Controls;
 import kec.backend.PlayerSettings;
 import kec.backend.chart.TimingStruct;
 import kec.backend.chart.format.Modern;
+import kec.backend.chart.format.Section;
 import kec.backend.util.NoteStyleHelper;
 import kec.states.FreeplayState;
 import kec.substates.CustomFadeTransition;
 import kec.substates.MusicBeatSubstate;
 import mobile.flixel.FlxVirtualPad;
-import flixel.FlxCamera;
-import flixel.input.actions.FlxActionInput;
-import flixel.util.FlxDestroyUtil;
 
 class MusicBeatState extends FlxTransitionableState
 {
 	public static var instance:MusicBeatState;
+
 	private var curStep(default, set):Int = 0;
 	private var curBeat(default, set):Int = 0;
 	private var curSection(default, set):Int = 0;
@@ -45,10 +46,11 @@ class MusicBeatState extends FlxTransitionableState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	public var vpadCam:FlxCamera;
-	public var mobileControlsCam:FlxCamera;
-	var mobileControls:MobileControls;
-	var virtualPad:FlxVirtualPad;
+	public var mobileControls:MobileControls;
+	public var virtualPad:FlxVirtualPad;
+	public var camControls:FlxCamera;
+	public var camVPad:FlxCamera;
+
 	var trackedInputsMobileControls:Array<FlxActionInput> = [];
 	var trackedInputsVirtualPad:Array<FlxActionInput> = [];
 
@@ -60,9 +62,9 @@ class MusicBeatState extends FlxTransitionableState
 		virtualPad = new FlxVirtualPad(DPad, Action);
 		add(virtualPad);
 
-		controls.setVirtualPad(virtualPad, DPad, Action);
-		trackedInputsVirtualPad = controls.trackedInputs;
-		controls.trackedInputs = [];
+		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		trackedInputsVirtualPad = controls.trackedInputsUI;
+		controls.trackedInputsUI = [];
 	}
 
 	public function removeVirtualPad():Void
@@ -72,15 +74,9 @@ class MusicBeatState extends FlxTransitionableState
 
 		if (virtualPad != null)
 			remove(virtualPad);
-
-		if (vpadCam != null)
-		{
-			FlxG.cameras.remove(vpadCam, false);
-			vpadCam = FlxDestroyUtil.destroy(vpadCam);
-		}
 	}
 
-	public function addMobileControls(DefaultDrawTarget:Bool = true):Void
+	public function addMobileControls(DefaultDrawTarget:Bool = false)
 	{
 		if (mobileControls != null)
 			removeMobileControls();
@@ -90,21 +86,20 @@ class MusicBeatState extends FlxTransitionableState
 		switch (MobileControls.mode)
 		{
 			case 'Pad-Right' | 'Pad-Left' | 'Pad-Custom':
-				controls.setVirtualPad(mobileControls.virtualPad, RIGHT_FULL, NONE);
+				controls.setVirtualPadNOTES(mobileControls.virtualPad, RIGHT_FULL, NONE);
 			case 'Hitbox':
 				controls.setHitbox(mobileControls.hitbox);
 			default: // do nothing
 		}
 
-		trackedInputsMobileControls = controls.trackedInputs;
-		controls.trackedInputs = [];
+		trackedInputsMobileControls = controls.trackedInputsNOTES;
+		controls.trackedInputsNOTES = [];
 
-		mobileControlsCam = new FlxCamera();
-		FlxG.cameras.add(mobileControlsCam, DefaultDrawTarget);
-		mobileControlsCam.bgColor.alpha = 0;
-		mobileControls.cameras = [mobileControlsCam];
-	
-		mobileControls.visible = false;
+		camControls = new FlxCamera();
+		camControls.bgColor.alpha = 0;
+		FlxG.cameras.add(camControls, DefaultDrawTarget);
+
+		mobileControls.cameras = [camControls];
 		add(mobileControls);
 	}
 
@@ -115,23 +110,17 @@ class MusicBeatState extends FlxTransitionableState
 
 		if (mobileControls != null)
 			remove(mobileControls);
-
-		if (mobileControlsCam != null)
-		{
-			FlxG.cameras.remove(mobileControlsCam, false);
-			mobileControlsCam = FlxDestroyUtil.destroy(mobileControlsCam);
-		}
 	}
 
-	public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
+	public function addVirtualPadCamera(DefaultDrawTarget:Bool = false):Void
 	{
-		if (virtualPad == null || vpadCam != null)
+		if (virtualPad == null)
 			return;
 
-		vpadCam = new FlxCamera();
-		FlxG.cameras.add(vpadCam, defaultDrawTarget);
-		vpadCam.bgColor.alpha = 0;
-		virtualPad.cameras = [vpadCam];
+		camVPad = new FlxCamera();
+		camVPad.bgColor.alpha = 0;
+		FlxG.cameras.add(camVPad, DefaultDrawTarget);
+		virtualPad.cameras = [camVPad];
 	}
 
 	public function new()
@@ -178,19 +167,26 @@ class MusicBeatState extends FlxTransitionableState
 			transSubstate = null;
 		}
 
+		// Mobile Controls Related
 		if (trackedInputsMobileControls.length > 0)
 			controls.removeVirtualControlsInput(trackedInputsMobileControls);
 
 		if (trackedInputsVirtualPad.length > 0)
 			controls.removeVirtualControlsInput(trackedInputsVirtualPad);
 
-		super.destroy();
-
 		if (virtualPad != null)
 			virtualPad = FlxDestroyUtil.destroy(virtualPad);
 
 		if (mobileControls != null)
 			mobileControls = FlxDestroyUtil.destroy(mobileControls);
+
+		if (camControls != null)
+			camControls = FlxDestroyUtil.destroy(camControls);
+
+		if (camVPad != null)
+			camVPad = FlxDestroyUtil.destroy(camVPad);
+
+		super.destroy();
 	}
 
 	public function fancyOpenURL(schmancy:String)

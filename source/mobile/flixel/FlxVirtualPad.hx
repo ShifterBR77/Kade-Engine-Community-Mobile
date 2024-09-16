@@ -59,10 +59,25 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 
 	public var buttonA:FlxButton = new FlxButton(0, 0);
 	public var buttonB:FlxButton = new FlxButton(0, 0);
-	public var buttonP:FlxButton = new FlxButton(0, 0);
 	public var buttonC:FlxButton = new FlxButton(0, 0);
 	public var buttonD:FlxButton = new FlxButton(0, 0);
 	public var buttonE:FlxButton = new FlxButton(0, 0);
+	public var buttonF:FlxButton = new FlxButton(0, 0);
+	public var buttonG:FlxButton = new FlxButton(0, 0);
+	public var buttonH:FlxButton = new FlxButton(0, 0);
+	public var buttonI:FlxButton = new FlxButton(0, 0);
+	public var buttonJ:FlxButton = new FlxButton(0, 0);
+	public var buttonK:FlxButton = new FlxButton(0, 0);
+	public var buttonL:FlxButton = new FlxButton(0, 0);
+	public var buttonM:FlxButton = new FlxButton(0, 0);
+	public var buttonN:FlxButton = new FlxButton(0, 0);
+	public var buttonO:FlxButton = new FlxButton(0, 0);
+	public var buttonP:FlxButton = new FlxButton(0, 0);
+	public var buttonQ:FlxButton = new FlxButton(0, 0);
+	public var buttonR:FlxButton = new FlxButton(0, 0);
+	public var buttonS:FlxButton = new FlxButton(0, 0);
+	public var buttonT:FlxButton = new FlxButton(0, 0);
+	public var buttonU:FlxButton = new FlxButton(0, 0);
 	public var buttonV:FlxButton = new FlxButton(0, 0);
 	public var buttonX:FlxButton = new FlxButton(0, 0);
 	public var buttonY:FlxButton = new FlxButton(0, 0);
@@ -178,7 +193,7 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 2), graphic.height));
 		button.solid = false;
 		button.immovable = true;
-		button.moves = false;
+		//button.moves = false;
 		button.antialiasing = FlxG.save.data.antialiasing;
 		button.scrollFactor.set();
 		button.color = Color;

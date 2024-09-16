@@ -49,7 +49,7 @@ class MobileControls extends FlxSpriteGroup
 				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Hitbox':
-				hitbox = new Hitbox(4, Std.int(FlxG.width / 4), FlxG.height, [0xFF00FF, 0x00FFFF, 0x00FF00, 0xFF0000]);
+				hitbox = new Hitbox();
 				bindHitboxDirections(hitbox);
 				hitbox.onHintUp.add(onInputUp.dispatch);
 				hitbox.onHintDown.add(onInputDown.dispatch);
@@ -141,9 +141,9 @@ class MobileControls extends FlxSpriteGroup
 
 	private static function bindHitboxDirections(hitbox:Hitbox)
 	{
-		hitbox.hints[0].bindedDirection = LEFT;
-		hitbox.hints[1].bindedDirection = DOWN;
-		hitbox.hints[2].bindedDirection = UP;
-		hitbox.hints[3].bindedDirection = RIGHT;
+		hitbox.buttonLeft.bindedDirection = LEFT;
+		hitbox.buttonDown.bindedDirection = DOWN;
+		hitbox.buttonUp.bindedDirection = UP;
+		hitbox.buttonRight.bindedDirection = RIGHT;
 	}
 }

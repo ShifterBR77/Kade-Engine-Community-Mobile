@@ -1,12 +1,12 @@
 package kec.substates;
 
-import kec.backend.chart.TimingStruct;
-import kec.backend.Controls;
-import kec.backend.PlayerSettings;
-import mobile.flixel.FlxVirtualPad;
 import flixel.FlxCamera;
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
+import kec.backend.Controls;
+import kec.backend.PlayerSettings;
+import kec.backend.chart.TimingStruct;
+import mobile.flixel.FlxVirtualPad;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -20,13 +20,26 @@ class MusicBeatSubstate extends FlxSubState
 		/*Application.current.window.onFocusIn.remove(onWindowFocusOut);
 			Application.current.window.onFocusIn.remove(onWindowFocusIn); */
 
+		// Mobile Controls Related
+		if (trackedInputsMobileControls.length > 0)
+			controls.removeVirtualControlsInput(trackedInputsMobileControls);
+
 		if (trackedInputsVirtualPad.length > 0)
 			controls.removeVirtualControlsInput(trackedInputsVirtualPad);
 
-		super.destroy();
-
 		if (virtualPad != null)
 			virtualPad = FlxDestroyUtil.destroy(virtualPad);
+
+		if (mobileControls != null)
+			mobileControls = FlxDestroyUtil.destroy(mobileControls);
+
+		if (camControls != null)
+			camControls = FlxDestroyUtil.destroy(camControls);
+
+		if (camVPad != null)
+			camVPad = FlxDestroyUtil.destroy(camVPad);
+
+		super.destroy();
 	}
 
 	override function create()
@@ -44,8 +57,14 @@ class MusicBeatSubstate extends FlxSubState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	public var vpadCam:FlxCamera;
-	var virtualPad:FlxVirtualPad;
+	public var mobileControls:MobileControls;
+	public var virtualPad:FlxVirtualPad;
+	public var camControls:FlxCamera;
+	public var camVPad:FlxCamera;
+
+	public static var instance:MusicBeatSubstate;
+
+	var trackedInputsMobileControls:Array<FlxActionInput> = [];
 	var trackedInputsVirtualPad:Array<FlxActionInput> = [];
 
 	public function addVirtualPad(DPad:FlxDPadMode, Action:FlxActionMode):Void
@@ -56,9 +75,9 @@ class MusicBeatSubstate extends FlxSubState
 		virtualPad = new FlxVirtualPad(DPad, Action);
 		add(virtualPad);
 
-		controls.setVirtualPad(virtualPad, DPad, Action);
-		trackedInputsVirtualPad = controls.trackedInputs;
-		controls.trackedInputs = [];
+		controls.setVirtualPadUI(virtualPad, DPad, Action);
+		trackedInputsVirtualPad = controls.trackedInputsUI;
+		controls.trackedInputsUI = [];
 	}
 
 	public function removeVirtualPad():Void
@@ -68,23 +87,54 @@ class MusicBeatSubstate extends FlxSubState
 
 		if (virtualPad != null)
 			remove(virtualPad);
-
-		if (vpadCam != null)
-		{
-			FlxG.cameras.remove(vpadCam, false);
-			vpadCam = FlxDestroyUtil.destroy(vpadCam);
-		}
 	}
 
-	public function addVirtualPadCamera(defaultDrawTarget:Bool = false):Void
+	public function addMobileControls(DefaultDrawTarget:Bool = false):Void
 	{
-		if (virtualPad == null || vpadCam != null)
+		if (mobileControls != null)
+			removeMobileControls();
+
+		mobileControls = new MobileControls();
+
+		switch (MobileControls.mode)
+		{
+			case 'Pad-Right' | 'Pad-Left' | 'Pad-Custom':
+				controls.setVirtualPadNOTES(mobileControls.virtualPad, RIGHT_FULL, NONE);
+			case 'Hitbox':
+				controls.setHitbox(mobileControls.hitbox);
+			default: // do nothing
+		}
+
+		trackedInputsMobileControls = controls.trackedInputsNOTES;
+		controls.trackedInputsNOTES = [];
+
+		camControls = new FlxCamera();
+		camControls.bgColor.alpha = 0;
+		FlxG.cameras.add(camControls, DefaultDrawTarget);
+
+		mobileControls.cameras = [camControls];
+		mobileControls.visible = false;
+		add(mobileControls);
+	}
+
+	public function removeMobileControls()
+	{
+		if (trackedInputsMobileControls.length > 0)
+			controls.removeVirtualControlsInput(trackedInputsMobileControls);
+
+		if (mobileControls != null)
+			remove(mobileControls);
+	}
+
+	public function addVirtualPadCamera(DefaultDrawTarget:Bool = false):Void
+	{
+		if (virtualPad == null)
 			return;
 
-		vpadCam = new FlxCamera();
-		FlxG.cameras.add(vpadCam, defaultDrawTarget);
-		vpadCam.bgColor.alpha = 0;
-		virtualPad.cameras = [vpadCam];
+		camVPad = new FlxCamera();
+		camVPad.bgColor.alpha = 0;
+		FlxG.cameras.add(camVPad, DefaultDrawTarget);
+		virtualPad.cameras = [camVPad];
 	}
 
 	var oldStep:Int = 0;

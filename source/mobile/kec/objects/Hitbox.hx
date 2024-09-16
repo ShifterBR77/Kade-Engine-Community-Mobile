@@ -18,7 +18,10 @@ import openfl.geom.Matrix;
  */
 class Hitbox extends FlxSpriteGroup
 {
-	public var hints(default, null):Array<FlxButton>;
+	public var buttonLeft:FlxButton = new FlxButton(0, 0);
+	public var buttonDown:FlxButton = new FlxButton(0, 0);
+	public var buttonUp:FlxButton = new FlxButton(0, 0);
+	public var buttonRight:FlxButton = new FlxButton(0, 0);
 
 	public var onHintUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
 	public var onHintDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
@@ -31,17 +34,14 @@ class Hitbox extends FlxSpriteGroup
 	 * @param perHintHeight The height that the hints will use.
 	 * @param colors The color per hint.
 	 */
-	public function new(ammo:UInt, perHintWidth:Int, perHintHeight:Int, colors:Array<FlxColor>):Void
+	public function new():Void
 	{
 		super();
 
-		hints = new Array<FlxButton>();
-
-		if (colors == null || (colors != null && colors.length < ammo))
-			colors = [0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF];
-
-		for (i in 0...ammo)
-			add(hints[i] = createHint(i * perHintWidth, 0, perHintWidth, perHintHeight, colors[i]));
+		add(buttonLeft = createHint(0, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFFC24B99));
+		add(buttonDown = createHint(FlxG.width / 4, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFF00FFFF));
+		add(buttonUp = createHint(FlxG.width / 2, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFF12FA05));
+		add(buttonRight = createHint((FlxG.width / 2) + (FlxG.width / 4), 0, Std.int(FlxG.width / 4), FlxG.height, 0xFFF9393F));
 
 		scrollFactor.set();
 	}
@@ -53,10 +53,10 @@ class Hitbox extends FlxSpriteGroup
 	{
 		super.destroy();
 
-		for (i in 0...hints.length)
-			hints[i] = FlxDestroyUtil.destroy(hints[i]);
-
-		hints.splice(0, hints.length);
+		buttonLeft = FlxDestroyUtil.destroy(buttonLeft);
+		buttonDown = FlxDestroyUtil.destroy(buttonDown);
+		buttonUp = FlxDestroyUtil.destroy(buttonUp);
+		buttonRight = FlxDestroyUtil.destroy(buttonRight);
 	}
 
 	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):FlxButton

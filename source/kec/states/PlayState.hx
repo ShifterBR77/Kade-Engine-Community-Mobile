@@ -1755,6 +1755,7 @@ class PlayState extends MusicBeatState
 		startingSong = false;
 		songStarted = true;
 
+		#if FEATURE_DISCORD
 		Discord.changePresence(detailsText
 			+ " "
 			+ SONG.songName
@@ -1769,6 +1770,7 @@ class PlayState extends MusicBeatState
 			+ " | Misses: "
 			+ Stats.misses, iconRPC, true,
 			songLength);
+		#end
 
 		#if FEATURE_HSCRIPT
 		if (ScriptUtil.hasPause(scripts.executeAllFunc("startSong")))
