@@ -30,8 +30,11 @@ class PauseSubState extends MusicBeatSubstate
 
 	var levelInfo:FlxText;
 
+	public static var instance:PauseSubState;
+
 	public function new()
 	{
+		instance = this;
 		Paths.clearUnusedMemory();
 		super();
 
@@ -184,6 +187,7 @@ class PauseSubState extends MusicBeatSubstate
 					regenMenu();
 				case "Options":
 					goToOptions = true;
+					removeVirtualPad();
 					close();
 				case "BACK":
 					menuItems = pauseOG;

@@ -579,6 +579,8 @@ class OptionsMenu extends MusicBeatSubstate
 				else
 				{
 					PauseSubState.goBack = true;
+					PauseSubState.instance.addVirtualPad(UP_DOWN, A);
+					PauseSubState.instance.addVirtualPadCamera(false);
 					PlayState.instance.updateSettings();
 					close();
 				}

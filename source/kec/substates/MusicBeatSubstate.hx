@@ -10,8 +10,10 @@ import mobile.flixel.FlxVirtualPad;
 
 class MusicBeatSubstate extends FlxSubState
 {
+	public static var instance:MusicBeatSubstate;
 	public function new()
 	{
+		instance = this;
 		super();
 	}
 
@@ -61,8 +63,6 @@ class MusicBeatSubstate extends FlxSubState
 	public var virtualPad:FlxVirtualPad;
 	public var camControls:FlxCamera;
 	public var camVPad:FlxCamera;
-
-	public static var instance:MusicBeatSubstate;
 
 	var trackedInputsMobileControls:Array<FlxActionInput> = [];
 	var trackedInputsVirtualPad:Array<FlxActionInput> = [];

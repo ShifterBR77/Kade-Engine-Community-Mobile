@@ -76,6 +76,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			FlxG.sound.music.stop();
 
+			removeVirtualPad();
+
 			if (PlayState.isStoryMode)
 				MusicBeatState.switchState(new StoryMenuState());
 			else
@@ -142,6 +144,7 @@ class GameOverSubstate extends MusicBeatSubstate
 					FlxTween.tween(virtualPad, {alpha: 0}, 2.7, {ease: FlxEase.smootherStepOut});
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
+					removeVirtualPad();
 					LoadingState.loadAndSwitchState(new PlayState());
 				});
 			});
