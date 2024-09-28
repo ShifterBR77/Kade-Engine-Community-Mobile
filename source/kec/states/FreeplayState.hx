@@ -1063,6 +1063,7 @@ class FreeplaySongMetadata
 	public var songCharacter:String = "";
 	public var color:Int = -7179779;
 	public var diffs = [];
+
 	#if FEATURE_STEPMANIA
 	public function new(song:String, week:Int, songCharacter:String, ?color:FlxColor, ?sm:SMFile = null, ?path:String = "")
 	{
