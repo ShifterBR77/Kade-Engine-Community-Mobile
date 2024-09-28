@@ -47,7 +47,7 @@
 	<!-- Clicking outside a dialog should deselect the current focused component. -->
 
 	<!-- Discord Thingy -->
-	<haxedef name="DISCORD_DISABLE_IO_THREAD" />
+	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="FEATURE_DISCORD"/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -97,7 +97,7 @@
 	<library name="weeks"   preload="true" />
 
 	<assets path="assets/fonts"/>
-	<assets path='alsoft.ini' if="windows" />
+	<assets path='alsoft.ini' if="windows"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxedev set='webgl' />
