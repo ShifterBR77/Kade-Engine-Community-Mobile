@@ -97,7 +97,7 @@
 	<library name="weeks"   preload="true" />
 
 	<assets path="assets/fonts"/>
-	<assets path='alsoft.ini'/>
+	<assets path='alsoft.ini' if="windows" />
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxedev set='webgl' />
