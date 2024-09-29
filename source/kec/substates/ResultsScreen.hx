@@ -294,7 +294,7 @@ class ResultsScreen extends MusicBeatSubstate
 				Math.min(music.volume + 0.5 * elapsed, 0.5);
 		#end
 
-		if ((controls.ACCEPT && !FlxG.keys.pressed.ALT) || FlxG.mouse.pressed)
+		if ((controls.ACCEPT && !FlxG.keys.pressed.ALT) || FlxG.mouse.justPressed)
 		{
 			if (music != null)
 				music.fadeOut(0.3);
