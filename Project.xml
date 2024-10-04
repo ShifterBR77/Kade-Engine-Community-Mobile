@@ -40,14 +40,13 @@
 	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="FEATURE_DISCORD"/>
 	<!-- ____________________________ Window Settings ___________________________ -->
 	<!-- These window settings apply to all targets -->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
-	<window antialiasing="0" allow-high-dpi="true"/>
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" antialiasing="0" allow-high-dpi="true"/>
 	<!-- HTML5-specific -->
 	<window if="html5" resizable="true" />
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true" allow-high-dpi="true" />
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true" />
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
 	<!-- _____________________________ Path Settings ____________________________ -->
@@ -67,13 +66,13 @@
 	<assets path="assets/weeks" library="weeks" rename="assets" exclude="*.mp3" unless="web" />
 	<assets path="assets/sm" library="sm" if="FEATURE_STEPMANIA" />
 	<assets path="mods" embed="false" if="FEATURE_MODCORE" />
-	<assets path="art/readme.txt" rename="do NOT readme.txt" />
-	<assets path="LICENSE" rename="LICENSE.txt" />
+	<assets path="art/readme.txt" rename="do NOT readme.txt" unless="mobile" />
+	<assets path="LICENSE" rename="LICENSE.txt" unless="mobile" />
 	<library name="videos" preload="true" if="VIDEOS" />
 	<library name="songs" preload="true" />
 	<library name="weeks" preload="true" />
 	<assets path="assets/fonts" />
-	<assets path="alsoft.ini" />
+	<assets path="alsoft.ini" unless="mobile" />
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxedev set="webgl" />
 	<!-- Flixel -->
