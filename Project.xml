@@ -112,6 +112,7 @@
 	<haxedef name="HXCPP_STACK_TRACE" />
 	<haxedef name="HXCPP_CATCH_SEGV" />
 	<haxedef name="no_deprecation_warnings" />
+	<haxedef name="message.reporting" value="pretty" />
 	<haxeflag name="-D no-traces" unless="debug" />
 	<haxedef name="queue_experimental_optimization" />
 	<haxedef name="haxeui_allow_drag_any_component" value="true" />
