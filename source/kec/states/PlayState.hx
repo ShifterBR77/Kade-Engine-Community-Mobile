@@ -146,9 +146,6 @@ class PlayState extends MusicBeatState
 	var allowedToHeadbang:Bool = true; // Will decide if gf is allowed to headbang depending on the song
 	var allowedToCheer:Bool = false; // Will decide if gf is allowed to cheer depending on the song
 
-	// Note Animation Suffixes.
-	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
-
 	// Tracks The Last Score (I Don't Know What It Does.)
 	public static var lastScore:Array<FlxSprite> = [];
 
@@ -1137,6 +1134,7 @@ class PlayState extends MusicBeatState
 		songPosBar.goesToRight = true;
 		if (PlayStateChangeables.useDownscroll)
 			songPosBar.y = FlxG.height - 37;
+			
 		uiGroup.add(songPosBar);
 		songPosBar.scrollFactor.set();
 		songPosBar.setColors(dad.data.barColor, FlxColor.BLACK);
@@ -1722,15 +1720,14 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.opponentMode)
 			char = dad;
 
-		if (char.animOffsets.exists('sing' + dataSuffix[direction] + 'miss'))
-			char.playAnim('sing' + dataSuffix[direction] + 'miss', true);
+		if (char.animOffsets.exists(Constants.singAnimations[direction] + 'miss'))
+			char.playAnim(Constants.singAnimations[direction] + 'miss', true);
 
 		if (FlxG.save.data.missSounds)
 		{
 			var num = FlxG.random.int(1, 3);
 			FlxG.sound.play(Paths.sound('styles/$styleName/missnote$num'), FlxG.random.float(0.1, 0.2));
 		}
-		boyfriend.playAnim('sing' + dataSuffix[direction] + 'miss', true);
 		if (!SONG.splitVoiceTracks)
 			vocals.volume = 0;
 		else
@@ -2794,7 +2791,7 @@ class PlayState extends MusicBeatState
 									&& daNote.sustainActive
 									&& !daNote.isSustainEnd
 									&& daNote.causesMisses
-									&& !holdArray[Std.int(Math.abs(daNote.noteData))])
+									&& !holdArray[daNote.noteData])
 								{
 									// there should be a ! infront of the wasGoodHit one but it'd cause a miss per every sustain note.
 									// now it just misses on the slightest sustain end for some reason.
@@ -3340,8 +3337,8 @@ class PlayState extends MusicBeatState
 			if (PlayStateChangeables.opponentMode)
 				char = dad;
 
-			if (char.animOffsets.exists('sing' + dataSuffix[direction] + 'miss'))
-				char.playAnim('sing' + dataSuffix[direction] + 'miss', true);
+			if (char.animOffsets.exists(Constants.singAnimations[direction] + 'miss'))
+				char.playAnim(Constants.singAnimations[direction] + 'miss', true);
 
 			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
@@ -3451,7 +3448,7 @@ class PlayState extends MusicBeatState
 
 			if (!daNote.isSustainEnd)
 			{
-				var singData:Int = Std.int(Math.abs(daNote.noteData));
+				final singData:Int = daNote.noteData;
 
 				if (daNote.canPlayAnims)
 				{
@@ -3461,8 +3458,14 @@ class PlayState extends MusicBeatState
 
 					if (daNote.noteType.toLowerCase() == 'gf' && gf != null)
 						char = gf;
-
-					char.playAnim('sing' + dataSuffix[daNote.noteData] + altAnim, true);
+					var animToPlay:String = Constants.singAnimations[daNote.noteData] + altAnim;
+					if (daNote.isSustainNote)
+					{
+						var holdAnim:String = animToPlay + '-hold';
+						if (char.animOffsets.exists(holdAnim))
+							animToPlay = holdAnim;
+					}
+					char.playAnim(animToPlay, true);
 					char.holdTimer = 0;
 				}
 
@@ -3566,7 +3569,6 @@ class PlayState extends MusicBeatState
 							spawnNoteSplashOnNote(note);
 						}
 						Stats.totalPlayed += 1;
-						Stats.totalNotesHit -= 1;
 						note.rating = Ratings.timingWindows[0];
 						health -= 0.8;
 						char.playAnim('hurt');
@@ -3583,7 +3585,14 @@ class PlayState extends MusicBeatState
 					if (note.noteType.toLowerCase() == 'gf' && gf != null)
 						char = gf;
 
-					char.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
+					var animToPlay:String = Constants.singAnimations[note.noteData] + altAnim;
+					if (note.isSustainNote)
+					{
+						var holdAnim:String = animToPlay + '-hold';
+						if (char.animOffsets.exists(holdAnim))
+							animToPlay = holdAnim;
+					}
+					char.playAnim(animToPlay, true);
 					char.holdTimer = 0;
 				}
 
@@ -3948,16 +3957,17 @@ class PlayState extends MusicBeatState
 			uiGroup.remove(i);
 		}
 
+		songName.revive();
+		songPosBar.revive();
+		uiGroup.add(songPosBar);
+		uiGroup.add(songName);
+		songName.visible = FlxG.save.data.songPosition;
+		songPosBar.visible = FlxG.save.data.songPosition;
+
 		if (songStarted)
 		{
-			songName.visible = FlxG.save.data.songPosition;
-			songPosBar.visible = FlxG.save.data.songPosition;
 			if (FlxG.save.data.songPosition)
 			{
-				songName.revive();
-				songPosBar.revive();
-				uiGroup.add(songPosBar);
-				uiGroup.add(songName);
 				songName.alpha = 1;
 				songPosBar.alpha = 1;
 			}
