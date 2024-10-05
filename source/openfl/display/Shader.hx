@@ -346,8 +346,8 @@ class Shader
 			}
 			#end
 			if (compileStatus == 0)
-				#if (android && !macro) AndroidTools.showAlertDialog("Shader Compile Error!", message, null,
-					null) #elseif !ios openfl.Lib.application.window.alert('$message', 'Shader Compile Error!') #else Log.error(message) #end;
+				#if (android && !macro) AndroidTools.showAlertDialog("Shader Compile Error!", message, {name: "OK", func: null},
+					null) #elseif ios openfl.Lib.application.window.alert('$message', 'Shader Compile Error!') #else Log.error(message) #end;
 			else if (hasInfoLog)
 				Log.debug(message);
 		}
