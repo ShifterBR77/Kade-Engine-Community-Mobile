@@ -70,35 +70,48 @@ class CrashHandler
 			}
 		}
 		stackLabel = stackLabelArr.join('\r\n');
-		#if sys
-		try
-		{
-			if (!FileSystem.exists('logs'))
-				FileSystem.createDirectory('logs');
 
-			File.saveContent('logs/' + 'Crash - ' + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', '$m\n$stackLabel');
-		}
-		catch (e:haxe.Exception)
-			trace('Couldn\'t save error message. (${e.message})');
+		#if sys
+		saveErrorMessage('$m\n$stackLabel');
 		#end
 
 		SUtil.showPopUp('$m\n$stackLabel', "Error!");
-
-		#if html5
-		if (flixel.FlxG.sound.music != null)
-			flixel.FlxG.sound.music.stop();
-
-		js.Browser.window.location.reload(true);
-		#else
 		lime.system.System.exit(1);
-		#end
 	}
 
 	#if (cpp || hl)
 	private static function onError(message:Dynamic):Void
 	{
-		SUtil.showPopUp(message, "Critical Error!");
+		final log:Array<String> = [];
+
+		if (message != null && message.length > 0)
+			log.push(message);
+
+		log.push(haxe.CallStack.toString(haxe.CallStack.exceptionStack(true)));
+
+		#if sys
+		saveErrorMessage(log.join('\n'));
+		#end
+
+		SUtil.showPopUp(log.join('\n'), "Critical Error!");
 		lime.system.System.exit(1);
+	}
+	#end
+
+	#if sys
+	private static function saveErrorMessage(message:String):Void
+	{
+		try
+		{
+			if (!FileSystem.exists('logs'))
+				FileSystem.createDirectory('logs');
+
+			File.saveContent('logs/'
+				+ Date.now().toString().replace(' ', '-').replace(':', "'")
+				+ '.txt', message);
+		}
+		catch (e:haxe.Exception)
+			trace('Couldn\'t save error message. (${e.message})');
 	}
 	#end
 }
