@@ -316,7 +316,7 @@ class StoryMenuState extends MusicBeatState
 
 			if (FlxG.mouse.wheel != 0)
 			{
-				#if desktop
+				#if (desktop || mobile)
 				changeWeek(-FlxG.mouse.wheel);
 				#else
 				if (FlxG.mouse.wheel < 0) // HTML5 BRAIN'T

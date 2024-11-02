@@ -47,7 +47,7 @@ class ModMenuState extends MusicBeatState
 
 		if (FlxG.mouse.wheel != 0)
 		{
-			#if desktop
+			#if (desktop || mobile)
 			scroll(-FlxG.mouse.wheel);
 			#else
 			if (FlxG.mouse.wheel < 0) // HTML5 BRAIN'T

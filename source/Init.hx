@@ -15,6 +15,13 @@ class Init extends MusicBeatState
 	{
 		#if windows
 		CPPInterface.darkMode();
+
+		@:functionCode("
+			#include <windows.h>
+			#include <winuser.h>
+			setProcessDPIAware() // allows for more crisp visuals
+			DisableProcessWindowsGhosting() // lets you move the window and such if it's not responding
+		")
 		#end
 
 		Paths.initialize();

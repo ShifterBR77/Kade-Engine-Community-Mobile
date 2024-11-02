@@ -116,8 +116,7 @@ class PauseSubState extends MusicBeatSubstate
 			pauseMusic.volume += 0.01 * elapsed;
 
 		if (FlxG.mouse.wheel != 0)
-		{
-			#if desktop
+			#if (desktop || mobile)
 			changeSelection(-FlxG.mouse.wheel);
 			#else
 			if (FlxG.mouse.wheel < 0)
@@ -125,7 +124,6 @@ class PauseSubState extends MusicBeatSubstate
 			if (FlxG.mouse.wheel > 0)
 				changeSelection(-1);
 			#end
-		}
 
 		if (bg.alpha > 0.6)
 			bg.alpha = 0.6;

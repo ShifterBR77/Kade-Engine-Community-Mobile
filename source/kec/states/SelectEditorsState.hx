@@ -109,7 +109,7 @@ class SelectEditorsState extends MusicBeatState
 
 		if (FlxG.mouse.wheel != 0)
 		{
-			#if desktop
+			#if (desktop || mobile)
 			changeSelection(-FlxG.mouse.wheel);
 			#else
 			if (FlxG.mouse.wheel < 0) // HTML5 BRAIN'T

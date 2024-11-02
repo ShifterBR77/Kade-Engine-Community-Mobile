@@ -385,7 +385,6 @@ class FreeplayState extends MusicBeatState
 			songs.push(meta);
 		}
 		#if FEATURE_STEPMANIA
-		// trace("tryin to load sm files");
 		if (!FileSystem.exists("assets/sm/"))
 			FileSystem.createDirectory("assets/sm/");
 		for (i in FileSystem.readDirectory("assets/sm/"))
@@ -621,12 +620,12 @@ class FreeplayState extends MusicBeatState
 		{
 			if (FlxG.mouse.wheel != 0)
 			{
-				#if desktop
+				#if (desktop || mobile)
 				changeSelection(-FlxG.mouse.wheel);
 				#else
-				if (FlxG.mouse.wheel < 0)
+				if (FlxG.mouse.wheel < 0) // HTML5 BRAIN'T
 					changeSelection(1);
-				if (FlxG.mouse.wheel > 0)
+				else if (FlxG.mouse.wheel > 0)
 					changeSelection(-1);
 				#end
 			}
@@ -644,11 +643,7 @@ class FreeplayState extends MusicBeatState
 		previewtext.updateHitbox();
 		previewtext.alpha = 1;
 
-		if (virtualPad.buttonY.justPressed
-			|| FlxG.keys.justPressed.CONTROL
-			&& !openMod
-			&& !MusicBeatState.switchingState
-			&& doUpdateText)
+		if (virtualPad.buttonY.justPressed || FlxG.keys.justPressed.CONTROL && !openMod && !MusicBeatState.switchingState && doUpdateText)
 		{
 			persistentUpdate = false;
 			removeVirtualPad();

@@ -1,11 +1,11 @@
 package kec.substates;
 
+import kec.backend.chart.TimingStruct;
 import flixel.FlxCamera;
 import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
 import kec.backend.Controls;
 import kec.backend.PlayerSettings;
-import kec.backend.chart.TimingStruct;
 import mobile.flixel.FlxVirtualPad;
 
 class MusicBeatSubstate extends FlxSubState
