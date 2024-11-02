@@ -2,8 +2,9 @@
   "dependencies": [
     {
       "name": "flixel",
-      "type": "haxelib",
-      "version": null
+      "type": "git",
+      "ref": "5.8.0",
+      "url": "https://github.com/MobilePorting/flixel.git"
     },
     {
       "name": "openfl",
