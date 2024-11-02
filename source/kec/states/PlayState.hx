@@ -1460,9 +1460,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private function handleMobileInput(button:mobile.flixel.FlxButton):Void
-	{
-		// this actually handles flxbutton presses
-		
+	{ // this actually handles flxbutton presses
 		if (PlayStateChangeables.botPlay || paused || !songStarted || button == null || button.bindedDirection == null)
 			return;
 
@@ -1503,10 +1501,10 @@ class PlayState extends MusicBeatState
 				key = 3;
 		}
 
-		if (data == -1)
+		if (key == -1)
 			return;
 
-		keys[data] = false;
+		keys[key] = false;
 		keyReleased(data);
 	}
 
