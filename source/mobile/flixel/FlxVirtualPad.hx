@@ -185,9 +185,9 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 		var graphic:FlxGraphic;
 
 		if (Assets.exists(Paths.getPath('images/virtualpad/${Graphic}.png', IMAGE, null)))
-			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/${Graphic}.png', IMAGE, null));
+			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/${Graphic}.png'));
 		else
-			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/default.png', IMAGE, null));
+			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/default.png'));
 
 		var button:FlxButton = new FlxButton(X, Y);
 		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 2), graphic.height));
