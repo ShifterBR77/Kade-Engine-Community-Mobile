@@ -85,7 +85,7 @@
     {
       "name": "lime",
       "type": "git",
-      "ref": "develop",
+      "ref": null,
       "url": "https://github.com/mcagabe19-stuff/lime"
     },
     {
