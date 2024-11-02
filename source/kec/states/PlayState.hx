@@ -1505,7 +1505,7 @@ class PlayState extends MusicBeatState
 			return;
 
 		keys[key] = false;
-		keyReleased(data);
+		keyReleased(key);
 	}
 
 	private function handleHolds(note:Note)
