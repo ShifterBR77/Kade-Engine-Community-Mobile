@@ -83,8 +83,8 @@ class Main extends Sprite
 		#if android FlxG.android.preventDefaultKeys = [BACK]; #end
 
 		FlxG.signals.gameResized.add(function(w, h)
-			if (fpsCounter != null)
-				fpsCounter.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height)));
+			if (frameCounter != null)
+				frameCounter.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height)));
 
 		#if VIDEOS
 		Handle.initAsync();
