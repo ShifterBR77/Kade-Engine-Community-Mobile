@@ -219,13 +219,4 @@ class Main extends Sprite
 
 	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
 		return true;
-
-	public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1)
-	{
-		final gameX:Float = (FlxG.game != null) ? FlxG.game.x : 0;
-		final gameY:Float = (FlxG.game != null) ? FlxG.game.y : 0;
-		scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
-		x = gameX + X;
-		y = gameY + Y;
-	}
 }
