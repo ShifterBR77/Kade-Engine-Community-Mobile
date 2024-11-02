@@ -1,12 +1,9 @@
 package;
 
-import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
-import openfl.Assets;
 import openfl.display.DisplayObject;
-import openfl.display.Bitmap;
 import haxe.ui.Toolkit;
-import kec.objects.KadeEngineFPS;
+import kec.objects.FrameCounter;
 #if FEATURE_DISCORD
 import kec.backend.Discord;
 #end
@@ -24,7 +21,7 @@ using StringTools;
 
 class Main extends Sprite
 {
-	var game = {
+	final game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
 		initialState: Init, // initial game state
@@ -35,8 +32,6 @@ class Main extends Sprite
 	};
 
 	public static var mainClassState:Class<FlxState> = Init; // yoshubs jumpscare (I am aware of *the incident*)
-	public static var gameContainer:Main = null; // Main instance to access when needed.
-	public static var bitmapFPS:Bitmap;
 	public static var focusMusicTween:FlxTween;
 	public static var focused:Bool = true;
 
@@ -45,76 +40,21 @@ class Main extends Sprite
 	var oldVol:Float = 1.0;
 	var newVol:Float = 0.3;
 
-	public static var watermarks = true; // Whether to put Kade Engine literally anywhere
-
 	// You can pretty much ignore everything from here on - your code should go in your states.
 	private var curGame:FlxGame;
 
-	public static function main():Void
-	{
-		// quick checks
+	public static var gameContainer:Main = null; // Main instance to access when needed.
 
-		Lib.current.addChild(new Main());
-	}
+	public var frameCounter:FrameCounter = null;
 
 	public function new()
 	{
 		super();
-
-		#if mobile
-		#if android
-		SUtil.doPermissionsShit();
-		#end
-		Sys.setCwd(SUtil.getStorageDirectory());
-		#end
-
-		mobile.kec.backend.CrashHandler.init();
-
-		#if windows
-		@:functionCode("
-		#include <windows.h>
-		#include <winuser.h>
-		setProcessDPIAware() // allows for more crisp visuals
-		DisableProcessWindowsGhosting() // lets you move the window and such if it's not responding
-		")
-		#end
-
-		if (stage != null)
-		{
-			init();
-		}
-		else
-		{
-			addEventListener(Event.ADDED_TO_STAGE, init);
-		}
-	}
-
-	private function init(?E:Event):Void
-	{
-		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
-			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
-
 		setupGame();
 	}
 
 	private function setupGame():Void
 	{
-		#if !mobile
-		var stageWidth:Int = Lib.current.stage.stageWidth;
-		var stageHeight:Int = Lib.current.stage.stageHeight;
-
-		if (game.zoom == -1.0)
-		{
-			var ratioX:Float = stageWidth / game.width;
-			var ratioY:Float = stageHeight / game.height;
-			game.zoom = Math.min(ratioX, ratioY);
-			game.width = Math.ceil(stageWidth / game.zoom);
-			game.height = Math.ceil(stageHeight / game.zoom);
-		}
-		#end
-
 		gameContainer = this;
 
 		initHaxeUI();
@@ -122,10 +62,7 @@ class Main extends Sprite
 		// Run this first so we can see logs.
 		kec.backend.Debug.onInitProgram();
 
-		fpsCounter = new KadeEngineFPS(10, 3, 0xFFFFFF);
-		bitmapFPS = kec.backend.ImageOutline.renderImage(fpsCounter, 1, 0x000000, true);
-		bitmapFPS.smoothing = true;
-
+		frameCounter = new FrameCounter(10, 3, 0xFFFFFF);
 		game.framerate = 60;
 		curGame = new Game(game.width, game.height, game.initialState, game.framerate, game.skipSplash, game.startFullscreen);
 
@@ -135,8 +72,8 @@ class Main extends Sprite
 
 		FlxG.fixedTimestep = false;
 
-		addChild(fpsCounter);
-		toggleFPS(FlxG.save.data.fps);
+		addChild(frameCounter);
+		fpsVisible(FlxG.save.data.fps);
 
 		#if html5
 		FlxG.autoPause = false;
@@ -158,6 +95,24 @@ class Main extends Sprite
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
 	}
+
+	public function setFPSCap(cap:Int)
+	{
+		FlxG.updateFramerate = cap;
+		FlxG.drawFramerate = FlxG.updateFramerate;
+	}
+
+	public inline function fpsVisible(visible:Bool)
+		return gameContainer.frameCounter.visible = visible;
+
+	public inline function setFPSPos(x:Int, y:Int)
+	{
+		gameContainer.frameCounter.x = x;
+		gameContainer.frameCounter.y = y;
+	}
+
+	public inline function setFPSColor(col:Int)
+		return gameContainer.frameCounter.textColor = col;
 
 	public function checkInternetConnection()
 	{
@@ -225,36 +180,7 @@ class Main extends Sprite
 		focusMusicTween = FlxTween.tween(FlxG.sound, {volume: oldVol}, 0.5);
 
 		// Bring framerate back when focused
-		FlxG.drawFramerate = FlxG.save.data.fpsCap;
 		gameContainer.setFPSCap(FlxG.save.data.fpsCap);
-	}
-
-	var fpsCounter:KadeEngineFPS;
-
-	public function toggleFPS(fpsEnabled:Bool):Void
-	{
-		fpsCounter.visible = fpsEnabled;
-	}
-
-	public function changeFPSColor(color:FlxColor)
-	{
-		fpsCounter.textColor = color;
-	}
-
-	public function setFPSCap(cap:Int)
-	{
-		FlxG.updateFramerate = cap;
-		FlxG.drawFramerate = FlxG.updateFramerate;
-	}
-
-	public function getFPSCap():Float
-	{
-		return openfl.Lib.current.stage.frameRate;
-	}
-
-	public function getFPS():Float
-	{
-		return fpsCounter.currentFPS;
 	}
 
 	function initHaxeUI():Void
@@ -275,4 +201,13 @@ class Main extends Sprite
 
 	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
 		return true;
+
+	public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1)
+	{
+		final gameX:Float = (FlxG.game != null) ? FlxG.game.x : 0;
+		final gameY:Float = (FlxG.game != null) ? FlxG.game.y : 0;
+		scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+		x = gameX + X;
+		y = gameY + Y;
+	}
 }

@@ -122,12 +122,9 @@ class ResultsScreen extends MusicBeatSubstate
 	override function create()
 	{
 		add(background);
-		if (!PlayState.inResults)
-		{
-			music.volume = 0;
-			music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
-			FlxG.sound.list.add(music);
-		}
+		music.volume = 0;
+		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+		FlxG.sound.list.add(music);
 
 		add(activeMods);
 
@@ -204,7 +201,7 @@ class ResultsScreen extends MusicBeatSubstate
 			&& HelperFunctions.truncateFloat(PlayStateChangeables.healthGain, 2) <= 1
 			&& HelperFunctions.truncateFloat(PlayStateChangeables.healthLoss, 2) >= 1;
 
-		if (PlayState.SONG.validScore && superMegaConditionShit)
+		if (superMegaConditionShit)
 		{
 			Highscore.saveScore(PlayState.SONG.songId, Math.round(Stats.songScore), PlayState.storyDifficulty, Conductor.rate);
 			Highscore.saveCombo(PlayState.SONG.songId, Ratings.GenerateLetterRank(Stats.accuracy), PlayState.storyDifficulty, Conductor.rate);
@@ -242,18 +239,18 @@ class ResultsScreen extends MusicBeatSubstate
 
 		add(settingsText);
 
-		FlxTween.tween(background, {alpha: 0.5}, 0.5);
+		createTween(background, {alpha: 0.5}, 0.5);
 		if (!PlayState.isStoryMode)
 		{
-			FlxTween.tween(songText, {y: 65}, 0.5, {ease: FlxEase.expoInOut});
-			FlxTween.tween(activeMods, {y: FlxG.height - 400}, 0.5, {ease: FlxEase.expoInOut});
+			createTween(songText, {y: 65}, 0.5, {ease: FlxEase.expoInOut});
+			createTween(activeMods, {y: FlxG.height - 400}, 0.5, {ease: FlxEase.expoInOut});
 		}
-		FlxTween.tween(text, {y: 20}, 0.5, {ease: FlxEase.expoInOut});
-		FlxTween.tween(comboText, {y: 145}, 0.5, {ease: FlxEase.expoInOut});
-		FlxTween.tween(contText, {y: FlxG.height - 45}, 0.5, {ease: FlxEase.expoInOut});
-		FlxTween.tween(settingsText, {y: FlxG.height - 35}, 0.5, {ease: FlxEase.expoInOut});
+		createTween(text, {y: 20}, 0.5, {ease: FlxEase.expoInOut});
+		createTween(comboText, {y: 145}, 0.5, {ease: FlxEase.expoInOut});
+		createTween(contText, {y: FlxG.height - 45}, 0.5, {ease: FlxEase.expoInOut});
+		createTween(settingsText, {y: FlxG.height - 35}, 0.5, {ease: FlxEase.expoInOut});
 		if (FlxG.save.data.inputShow)
-			FlxTween.tween(graphSprite, {alpha: 1}, 1, {ease: FlxEase.expoInOut});
+			createTween(graphSprite, {alpha: 1}, 1, {ease: FlxEase.expoInOut});
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
@@ -320,7 +317,7 @@ class ResultsScreen extends MusicBeatSubstate
 
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = PlayState.storyDifficulty;
-			LoadingState.loadAndSwitchState(new PlayState());
+			MusicBeatState.switchState(new PlayState());
 		}
 
 		super.update(elapsed);

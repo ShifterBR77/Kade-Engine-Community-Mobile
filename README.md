@@ -54,6 +54,8 @@ New And Improved Freeplay By BoloVEVO.
 
 - [KadeDev](https://github.com/kade-github) - The Original Guy who created Kade Engine.
 
+- [DetectiveBaldi](https://github.com/DetectiveBaldi) - Sound Streaming / Cache Cleanup
+
 - [PolybiusProxy](https://github.com/polybiusproxy) - The Video Support (Legacy).
 
 - [MAJigsaw77](https://github.com/MAJigsaw77) - The Video Support (Current), Discord Support and Mobile Controls Author.

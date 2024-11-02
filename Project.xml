@@ -40,7 +40,8 @@
 	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="FEATURE_DISCORD"/>
 	<!-- ____________________________ Window Settings ___________________________ -->
 	<!-- These window settings apply to all targets -->
-	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" antialiasing="0" allow-high-dpi="true"/>
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window antialiasing="0" allow-high-dpi="true" />
 	<!-- HTML5-specific -->
 	<window if="html5" resizable="true" />
 	<!--Desktop-specific-->
@@ -57,13 +58,9 @@
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL" />
-	<assets path="assets/songs" library="songs" exclude="*.ogg" if="web" />
-	<assets path="assets/songs" library="songs" exclude="*.mp3" unless="web" />
 	<assets path="assets/videos" embed="false" if="VIDEOS" />
 	<assets path="assets/shared" exclude="*.ogg" if="web" />
 	<assets path="assets/shared" exclude="*.mp3" unless="web" />
-	<assets path="assets/weeks" library="weeks" rename="assets" exclude="*.ogg" if="web" />
-	<assets path="assets/weeks" library="weeks" rename="assets" exclude="*.mp3" unless="web" />
 	<assets path="assets/sm" library="sm" if="FEATURE_STEPMANIA" />
 	<assets path="mods" embed="false" if="FEATURE_MODCORE" />
 	<assets path="art/readme.txt" rename="do NOT readme.txt" unless="mobile" />

@@ -12,7 +12,6 @@ class HealthIcon extends FlxSprite
 	var char:String = '';
 	var isPlayer:Bool = false;
 
-	public var isAnimated:Bool = false;
 	public var hasWinningIcon:Bool = false;
 	public var initialWidth:Float = 0;
 	public var initialHeight:Float = 0;
@@ -28,17 +27,18 @@ class HealthIcon extends FlxSprite
 
 	public var allowedToBop:Bool = true;
 	public var size:FlxPoint = new FlxPoint(1, 1);
+	public final animationNames:Array<String> = ['Idle', 'Lose', 'Win'];
 
-	public function new(char:String = 'bf', isAnimated:Bool = false, isPlayer:Bool = false)
+	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
 
 		this.isPlayer = isPlayer;
-		this.isAnimated = isAnimated;
 
 		animOffsets = new Map<String, Array<Dynamic>>();
 
-		changeIcon(char, isAnimated);
+		changeIcon(char);
+		allowedToBop = FlxG.save.data.iconBop;
 		scrollFactor.set();
 	}
 
@@ -54,102 +54,83 @@ class HealthIcon extends FlxSprite
 			changeIcon(PlayState.SONG.player1);
 	}
 
-	public function changeIcon(newChar:String, isAnimated:Bool = false):Void
+	public function changeIcon(newChar:String):Void
 	{
-		if (newChar != 'bf-pixel' && newChar != 'bf-old')
-			newChar = newChar.split('-')[0].trim();
+		if (newChar == char)
+			return;
 
-		if (newChar != char)
+		char = newChar;
+		var name:String = 'icon-' + newChar;
+		switch (Paths.fileExists('images/icons/animated/' + name + '.png'))
 		{
-			if (isAnimated)
-			{
-				offset.set(0, 0);
+			case true:
+				frames = Paths.getSparrowAtlas('icons/animated/$name');
+				for (i in animationNames)
+					animation.addByPrefix(i, i, 24, false, isPlayer);
 
-				frames = Paths.getSparrowAtlas('icons/animated/${newChar}', null);
-				animation.addByPrefix('Idle', 'Idle', 24, false, isPlayer);
-				animation.addByPrefix('Lose', 'Lose', 24, false, isPlayer);
-
-				addOffset('Idle', 0, 0);
-				addOffset('Lose', 0, 0);
-			}
-			else
-			{
-				if (animation.getByName(newChar) == null)
-				{
-					final name:String = 'icons/icon-' + newChar;
-					var file:Dynamic = null;
-					if (Paths.fileExists('images/$name.png', IMAGE, 'shared'))
-						file = Paths.image(name, null);
-					else
-						file = Paths.image('icons/icon-face', null);
-
-					loadGraphic(file); // Load stupidly first for getting the file size
-					if (width == 450)
-						hasWinningIcon = true;
-					loadGraphic(file, true, 150, 150); // Then load it fr
-					updateHitbox();
-					animation.add('Idle', [0], 0, false, isPlayer);
-					animation.add('Lose', [1], 0, false, isPlayer);
-					if (hasWinningIcon)
-						animation.add('Win', [2], 0, false, isPlayer);
-				}
-			}
-
-			if (char.endsWith('-pixel') || char.startsWith('senpai') || char.startsWith('spirit'))
-				antialiasing = false
-			else
-				antialiasing = FlxG.save.data.antialiasing;
-
-			char = newChar;
-			animation.play('Idle');
-
-			scrollFactor.set();
+			case false:
+				if (!Paths.fileExists('images/icons/$name.png'))
+					name = 'icon-face';
+				final graphic = Paths.image('icons/$name');
+				final iSize:Float = Math.round(graphic.width / graphic.height);
+				loadGraphic(graphic, true, Math.floor(graphic.width / iSize), Math.floor(graphic.height));
+				updateHitbox();
+				for (i in 0...frames.frames.length)
+					animation.add(animationNames[i], [i], 0, false, isPlayer);
 		}
+		animation.play('Idle');
+
+		if (char.endsWith('-pixel') || char.startsWith('senpai') || char.startsWith('spirit'))
+			antialiasing = false
+		else
+			antialiasing = FlxG.save.data.antialiasing;
+
+		scrollFactor.set();
 		playAnimation('Idle');
 		initTargetSize();
 	}
 
 	public function onStepHit(step:Int)
 	{
-		if ((FlxG.save.data.motion && allowedToBop) && step % stepsBetween == 0)
-		{
-			// Make the icon increase in size (the update function causes them to lerp back down).
-			if (this.width > this.height)
-				setGraphicSize(Std.int(this.width + (defaultSize * this.size.x * sizeMult)), 0);
-			else
-				setGraphicSize(0, Std.int(this.height + (defaultSize * this.size.y * sizeMult)));
-			this.updateHitbox();
-		}
+		if (!allowedToBop)
+			return;
+
+		if (step % stepsBetween != 0)
+			return;
+		// Make the icon increase in size (the update function causes them to lerp back down).
+		if (this.width > this.height)
+			setGraphicSize(Std.int(this.width + (defaultSize * this.size.x * sizeMult)), 0);
+		else
+			setGraphicSize(0, Std.int(this.height + (defaultSize * this.size.y * sizeMult)));
+		this.updateHitbox();
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.save.data.motion && allowedToBop)
-		{
-			if (this.width > this.height)
-			{
-				// Apply linear interpolation while accounting for frame rate.
-				var targetSize:Int = Std.int(CoolUtil.coolLerp(this.width, defaultSize * this.size.x, 0.15));
-				setGraphicSize(targetSize, 0);
-			}
-			else
-			{
-				var targetSize:Int = Std.int(CoolUtil.coolLerp(this.height, defaultSize * this.size.y, 0.15));
-				setGraphicSize(0, targetSize);
-			}
-			this.updateHitbox();
-		}
-
 		if (sprTracker != null)
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
+
+		if (!allowedToBop)
+			return;
+
+		if (this.width > this.height)
+		{
+			// Apply linear interpolation while accounting for frame rate.
+			var targetSize:Int = Std.int(CoolUtil.coolLerp(this.width, defaultSize * this.size.x, 0.15));
+			setGraphicSize(targetSize, 0);
+		}
+		else
+		{
+			var targetSize:Int = Std.int(CoolUtil.coolLerp(this.height, defaultSize * this.size.y, 0.15));
+			setGraphicSize(0, targetSize);
+		}
+		this.updateHitbox();
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
-	{
 		animOffsets[name] = [x, y];
-	}
 
 	inline function initTargetSize():Void
 	{
@@ -221,16 +202,15 @@ class HealthIcon extends FlxSprite
 
 	public function playAnimation(newAnim:String)
 	{
-		if (hasAnimation(newAnim) && finishedAnim())
-		{
-			this.animation.play(newAnim, true, false);
-			var daOffset = animOffsets.get(newAnim);
-
-			if (animOffsets.exists(newAnim))
-				offset.set(daOffset[0], daOffset[1]);
-			else
-				offset.set(0, 0);
+		if (!hasAnimation(newAnim) && !finishedAnim())
 			return;
-		}
+		this.animation.play(newAnim, false, false);
+		var daOffset = animOffsets.get(newAnim);
+
+		if (animOffsets.exists(newAnim))
+			offset.set(daOffset[0], daOffset[1]);
+		else
+			offset.set(0, 0);
+		return;
 	}
 }

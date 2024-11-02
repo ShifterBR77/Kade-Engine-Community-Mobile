@@ -1,5 +1,6 @@
 package;
 
+import kec.backend.util.FilterUtils;
 #if cpp
 import kec.backend.cpp.CPPInterface;
 #end
@@ -16,6 +17,8 @@ class Init extends MusicBeatState
 		CPPInterface.darkMode();
 		#end
 
+		Paths.initialize();
+
 		FlxG.save.bind('kec' #if (flixel < "5.0.0"), 'therealjake12' #end);
 
 		kec.backend.PlayerSettings.init();
@@ -23,6 +26,9 @@ class Init extends MusicBeatState
 		kec.backend.KadeEngineData.initSave();
 
 		kec.backend.KeyBinds.keyCheck();
+		FilterUtils.initializeFilters();
+
+		FilterUtils.setColorBlindess(FlxG.save.data.colorblind);
 
 		// Gotta run this before any assets get loaded.
 		kec.backend.modding.ModCore.initialize();
@@ -41,19 +47,12 @@ class Init extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0);
 
-		Paths.setCurrentLevel('shared');
-
-		FlxG.mouse.load(Paths.oldImage('curser'));
-
-		kec.states.MusicBeatState.initSave = true;
+		FlxG.mouse.load('assets/shared/images/curser.png');
 
 		kec.backend.util.Highscore.load();
 
 		FlxG.autoPause = FlxG.save.data.autoPause;
 		FlxG.mouse.visible = true;
-
-		// FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, -1), NEW);
-		// FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.4, FlxPoint.weak(0, 1), NEW);
 
 		switch (FlxG.save.data.resolution)
 		{

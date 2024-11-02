@@ -185,7 +185,7 @@ class OptionsMenu extends MusicBeatSubstate
 				new HealthBarOption("Toggles health bar visibility"),
 				new Colour("The Healthbar Color For Each Character."),
 				new SmoothHealthOption("Should The Healthbar Change Smoothly (Cosmetic Only)"),
-				new LowMotion("Makes The Icons Not Bump On The Healthbar."),
+				new IconBump("Makes The Icons Not Bump On The Healthbar."),
 				new JudgementCounter("Show your judgements that you've gotten in the song"),
 				new AccuracyOption("Display accuracy information on the info bar."),
 				new RoundAccuracy("Round your accuracy to the nearest whole number for the score text (cosmetic only)."),
@@ -193,6 +193,7 @@ class OptionsMenu extends MusicBeatSubstate
 			]),
 			new OptionCata(640, 40, "Misc", [
 				new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
+				new ColorBlindOption("What Color Filter Will The Game Use For Color Blind Users."),
 				new AutoPauseOption("Makes The Game Stop Updating/Running When Tabbed Out Of The Game."),
 				new WatermarkOption("Enable and disable all watermarks from the engine."),
 				new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."),
@@ -227,18 +228,11 @@ class OptionsMenu extends MusicBeatSubstate
 				new QualityOption("Toggle If Extra Stage Background Assets Get Loaded (And Other Distractions)"),
 				// not working rn new MaxRatingAmountOption("How Many Ratings / Combo Numbers Can Be Visible At A Time? (Combo Numbers * 3)"),
 				new Shaders("Should Shaders Be Enabled? (High GPU and CPU Usage.)"),
-				#if desktop
-				new UnloadSongs("Toggle If Assets Get Unloaded. Off Will Have Higher Memory Usage But With Better Reload Times."),
-				new UnloadNow("Clears All Cache We Can Remove."),
-				#end
 
 			]),
 			new OptionCata(345, 104, "Experimental", [
 				new DeveloperMode('Enables Some "Cheaty" Tools To Assist With Developing. Also Disables Update Screen.'),
 				new OpenGLStatsOption("In The FPS Display, It Will Display The Draw Calls For The Game."),
-				#if desktop
-				new CacheNow("Cache EVERYTHING."),
-				#end
 			]),
 			new OptionCata(640, 104, "Mobile", [
 				new mobile.kec.backend.Options.MobileControlsOpacityOption("How Much Opaque Should Mobile Controls Be?"),
@@ -247,7 +241,6 @@ class OptionsMenu extends MusicBeatSubstate
 				new mobile.kec.backend.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
 				#end
 				new mobile.kec.backend.Options.MobileControlsOption("Change Mobile Controls Type.")
-			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
 				new LeftKeybind("The left note's keybind"),
 				new DownKeybind("The down note's keybind"),
@@ -553,18 +546,18 @@ class OptionsMenu extends MusicBeatSubstate
 				{
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					exiting = true;
-					FlxTween.tween(background, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+					createTween(background, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
 					for (i in 0...selectedCat.optionObjects.length)
 					{
-						FlxTween.tween(selectedCat.optionObjects.members[i], {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+						createTween(selectedCat.optionObjects.members[i], {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
 					}
 					for (i in 0...options.length - 1)
 					{
-						FlxTween.tween(options[i].titleObject, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
-						FlxTween.tween(options[i], {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+						createTween(options[i].titleObject, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+						createTween(options[i], {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
 					}
-					FlxTween.tween(descText, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
-					FlxTween.tween(descBack, {alpha: 0}, 0.5, {
+					createTween(descText, {alpha: 0}, 0.5, {ease: FlxEase.smootherStepInOut});
+					createTween(descBack, {alpha: 0}, 0.5, {
 						ease: FlxEase.smootherStepInOut,
 						onComplete: function(twn:FlxTween)
 						{

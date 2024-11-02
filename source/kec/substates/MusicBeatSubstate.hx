@@ -11,17 +11,21 @@ import mobile.flixel.FlxVirtualPad;
 class MusicBeatSubstate extends FlxSubState
 {
 	public static var instance:MusicBeatSubstate;
+
+	// Tween And Timer Manager. Don't Mess With These.
+	public var tweenManager:FlxTweenManager;
+	public var timerManager:FlxTimerManager;
+
 	public function new()
 	{
-		instance = this;
+		// Setup The Tween / Timer Manager.
+		tweenManager = new FlxTweenManager();
+		timerManager = new FlxTimerManager();
 		super();
 	}
 
 	override function destroy()
 	{
-		/*Application.current.window.onFocusIn.remove(onWindowFocusOut);
-			Application.current.window.onFocusIn.remove(onWindowFocusIn); */
-
 		// Mobile Controls Related
 		if (trackedInputsMobileControls.length > 0)
 			controls.removeVirtualControlsInput(trackedInputsMobileControls);
@@ -41,6 +45,9 @@ class MusicBeatSubstate extends FlxSubState
 		if (camVPad != null)
 			camVPad = FlxDestroyUtil.destroy(camVPad);
 
+		timerManager.clear();
+		tweenManager.clear();
+
 		super.destroy();
 	}
 
@@ -48,8 +55,6 @@ class MusicBeatSubstate extends FlxSubState
 	{
 		FlxG.mouse.enabled = true;
 		super.create();
-		/*Application.current.window.onFocusIn.add(onWindowFocusIn);
-			Application.current.window.onFocusOut.add(onWindowFocusOut); */
 	}
 
 	private var curStep:Int = 0;
@@ -143,6 +148,10 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
+		// DO NOT COMMENT THIS OUT.
+		tweenManager.update(elapsed);
+		timerManager.update(elapsed);
+
 		curDecimalBeat = (((Conductor.songPosition / 1000))) * (Conductor.bpm / 60);
 		curBeat = Math.floor(curDecimalBeat);
 		curStep = Math.floor(curDecimalBeat * 4);
@@ -172,5 +181,26 @@ class MusicBeatSubstate extends FlxSubState
 	public function beatHit():Void
 	{
 		// do literally nothing dumbass
+	}
+
+	public function createTween(Object:Dynamic, Values:Dynamic, Duration:Float, ?Options:TweenOptions):FlxTween
+	{
+		var tween:FlxTween = tweenManager.tween(Object, Values, Duration, Options);
+		tween.manager = tweenManager;
+		return tween;
+	}
+
+	public function createTweenNum(FromValue:Float, ToValue:Float, Duration:Float = 1, ?Options:TweenOptions, ?TweenFunction:Float->Void):FlxTween
+	{
+		var tween:FlxTween = tweenManager.num(FromValue, ToValue, Duration, Options, TweenFunction);
+		tween.manager = tweenManager;
+		return tween;
+	}
+
+	public function createTimer(Time:Float = 1, ?OnComplete:FlxTimer->Void, Loops:Int = 1):FlxTimer
+	{
+		var timer:FlxTimer = new FlxTimer();
+		timer.manager = timerManager;
+		return timer.start(Time, OnComplete, Loops);
 	}
 }

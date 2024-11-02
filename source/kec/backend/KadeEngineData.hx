@@ -11,9 +11,6 @@ class KadeEngineData
 		if (FlxG.save.data.weekUnlocked == null)
 			FlxG.save.data.weekUnlocked = 7;
 
-		if (FlxG.save.data.newInput == null)
-			FlxG.save.data.newInput = true;
-
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;
 
@@ -56,9 +53,6 @@ class KadeEngineData
 		if (FlxG.save.data.accuracyMod == null)
 			FlxG.save.data.accuracyMod = 1;
 
-		if (FlxG.save.data.watermark == null)
-			FlxG.save.data.watermark = true;
-
 		if (FlxG.save.data.ghost == null)
 			FlxG.save.data.ghost = true;
 
@@ -98,23 +92,14 @@ class KadeEngineData
 		if (FlxG.save.data.inputShow == null)
 			FlxG.save.data.inputShow = false;
 
-		if (FlxG.save.data.optimize == null)
-			FlxG.save.data.optimize = false;
-
 		if (FlxG.save.data.cacheImages == null)
 			FlxG.save.data.cacheImages = false;
 
 		if (FlxG.save.data.healthBar == null)
 			FlxG.save.data.healthBar = true;
 
-		if (FlxG.save.data.popup == null)
-			FlxG.save.data.popup = true;
-
 		if (FlxG.save.data.middleScroll == null)
 			FlxG.save.data.middleScroll = false;
-
-		if (FlxG.save.data.editorBG == null)
-			FlxG.save.data.editor = false;
 
 		if (FlxG.save.data.noteskin == null)
 			FlxG.save.data.noteskin = 0;
@@ -156,15 +141,6 @@ class KadeEngineData
 
 		if (FlxG.save.data.cpuNoteskin == null)
 			FlxG.save.data.cpuNoteskin = 0;
-
-		if (FlxG.save.data.cacheSounds == null)
-			FlxG.save.data.cacheSounds = false;
-
-		if (FlxG.save.data.unload == null)
-			FlxG.save.data.unload = true;
-
-		if (FlxG.save.data.oldcharter == null)
-			FlxG.save.data.oldcharter = false;
 
 		if (FlxG.save.data.motion == null)
 			FlxG.save.data.motion = true;
@@ -237,9 +213,6 @@ class KadeEngineData
 		if (FlxG.save.data.showState == null)
 			FlxG.save.data.showState = false;
 
-		if (FlxG.save.data.saveReplays == null)
-			FlxG.save.data.saveReplays = true;
-
 		if (FlxG.save.data.glDebug == null)
 			FlxG.save.data.glDebug = false;
 
@@ -262,24 +235,12 @@ class KadeEngineData
 			FlxG.save.data.showMs = true;
 
 		if (FlxG.save.data.volume != null)
-		{
 			FlxG.sound.volume = FlxG.save.data.volume;
-		}
 		if (FlxG.save.data.mute != null)
-		{
 			FlxG.sound.muted = FlxG.save.data.mute;
-		}
 
 		if (FlxG.save.data.noteCamera == null)
 			FlxG.save.data.noteCamera = false;
-
-		if (FlxG.save.data.moveEditor == null)
-			FlxG.save.data.moveEditor = true;
-
-		if (FlxG.save.data.editorPos == null)
-			FlxG.save.data.editorPos = [0, 420];
-		
-		KEMobileData.initSave();
 
 		if (FlxG.save.data.showHelp == null)
 			FlxG.save.data.showHelp = true;
@@ -296,16 +257,16 @@ class KadeEngineData
 		if (FlxG.save.data.developer == null)
 			FlxG.save.data.developer = false;
 
-		if (FlxG.save.data.maxRatings == null)
-			FlxG.save.data.maxRatings = 4;
-
 		if (FlxG.save.data.enabledMods == null)
 			FlxG.save.data.enabledMods = [];
+
+		if (FlxG.save.data.colorblind == null)
+			FlxG.save.data.colorblind = 0; // none	
+
+		KEMobileData.initSave();
 
 		FlxSprite.defaultAntialiasing = FlxG.save.data.antialiasing;
 		FlxObject.defaultMoves = false;
 		PlayerSettings.player1.controls.loadKeyBinds();
-
-		Main.watermarks = FlxG.save.data.watermark;
 	}
 }

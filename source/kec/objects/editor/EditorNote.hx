@@ -31,7 +31,7 @@ class EditorNote extends FlxSprite
 	public var modAngle:Float = 0; // The angle set by modcharts
 	public var localAngle:Float = 0; // The angle to be edited inside Note.hx
 	public var originAngle:Float = 0; // The angle the OG note of the sus note had (?)
-	public var noteCharterObject:FlxSprite;
+	public var sustain:EditorSustain;
 
 	private function set_texture(v:String)
 	{
@@ -53,8 +53,7 @@ class EditorNote extends FlxSprite
 					hitsoundsEditor = false;
 					if (Paths.fileExists('images/notetypes/hurt_'
 						+ NoteStyleHelper.noteskinArray[isPlayer ? FlxG.save.data.noteskin : FlxG.save.data.cpuNoteskin]
-						+ '.png',
-						IMAGE))
+						+ '.png'))
 						texture = 'notetypes/hurt_' + NoteStyleHelper.noteskinArray[isPlayer ? FlxG.save.data.noteskin : FlxG.save.data.cpuNoteskin];
 					else
 						texture = "notetypes/hurt_Arrows";
@@ -65,8 +64,7 @@ class EditorNote extends FlxSprite
 					hitsoundsEditor = true;
 					if (Paths.fileExists('images/notetypes/mustpress_'
 						+ NoteStyleHelper.noteskinArray[isPlayer ? FlxG.save.data.noteskin : FlxG.save.data.cpuNoteskin]
-						+ '.png',
-						IMAGE))
+						+ '.png'))
 						texture = 'notetypes/mustpress_' + NoteStyleHelper.noteskinArray[isPlayer ? FlxG.save.data.noteskin : FlxG.save.data.cpuNoteskin];
 					else
 						texture = "notetypes/mustpress_Arrows";
@@ -74,9 +72,23 @@ class EditorNote extends FlxSprite
 				case 'gf':
 					hitsoundsEditor = true;
 					quantNote = true;
+					texture = '';
+				case 'poison':
+					hitsoundsEditor = false;
+					texture = "notetypes/poison_Arrows";
+					quantNote = true;
+				case 'invis':
+					hitsoundsEditor = false;
+					texture = "notetypes/invis_Arrows";
+					quantNote = true;
+				case 'speed':
+					hitsoundsEditor = false;
+					texture = "notetypes/speed_Arrows";
+					quantNote = true;
 				default:
 					hitsoundsEditor = true;
 					quantNote = true;
+					texture = '';
 			}
 			type = v;
 		}
@@ -84,14 +96,14 @@ class EditorNote extends FlxSprite
 	}
 
 	function get_isPlayer():Bool
-	{
 		return rawData > 3;
-	}
 
 	public function new()
 	{
 		super();
 		texture = '';
+		visible = true;
+		active = false;
 	}
 
 	public function setup(t:Float, d:Int, l:Float, type:String, b:Float)
@@ -100,15 +112,13 @@ class EditorNote extends FlxSprite
 		this.rawData = d;
 		this.data = Std.int(d % 4);
 		this.holdLength = l;
-		texture = '';
 		this.type = type;
 		this.beat = b;
 		selected = false;
-		noteCharterObject = null;
+		sustain = null;
 		angle = modAngle = localAngle = 0;
 
 		visible = true;
-		active = false;
 
 		var animToPlay:String = '';
 		animToPlay = Constants.noteColors[data] + 'Scroll';
@@ -167,7 +177,7 @@ class EditorNote extends FlxSprite
 		var customSkin:String = skin + skinPostfix;
 		var path:String = '';
 
-		if (Paths.fileExists('images/' + customSkin + '.png', IMAGE))
+		if (Paths.fileExists('images/' + customSkin + '.png'))
 			skin = customSkin;
 		else
 			skinPostfix = '';
@@ -184,15 +194,14 @@ class EditorNote extends FlxSprite
 	function loadNoteAnims()
 	{
 		for (i in 0...4)
-		{
 			animation.addByPrefix(Constants.noteColors[i] + 'Scroll', Constants.noteColors[i] + ' alone'); // Normal notes
-		}
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
 	}
 
 	override function kill()
 	{
+		visible = false;
 		super.kill();
 	}
 }
