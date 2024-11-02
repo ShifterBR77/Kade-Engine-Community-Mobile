@@ -241,6 +241,7 @@ class OptionsMenu extends MusicBeatSubstate
 				new mobile.kec.backend.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
 				#end
 				new mobile.kec.backend.Options.MobileControlsOption("Change Mobile Controls Type.")
+			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
 				new LeftKeybind("The left note's keybind"),
 				new DownKeybind("The down note's keybind"),
