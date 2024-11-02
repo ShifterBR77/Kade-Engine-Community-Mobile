@@ -1463,7 +1463,7 @@ class PlayState extends MusicBeatState
 	{
 		// this actually handles flxbutton presses
 		
-		if (PlayStateChangeables.botPlay || paused || !songStarted || button == null || button.bindedDirection == nul)
+		if (PlayStateChangeables.botPlay || paused || !songStarted || button == null || button.bindedDirection == null)
 			return;
 
 		var key:Int = -1;
@@ -1490,7 +1490,7 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay || button == null || button.bindedDirection == null)
 			return;
 
-		var data = -1;
+		var key:Int = -1;
 		switch (button.bindedDirection) // arrow buttons
 		{
 			case LEFT:
