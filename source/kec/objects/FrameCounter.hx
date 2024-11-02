@@ -28,8 +28,7 @@ class FrameCounter extends TextField
 	{
 		super();
 
-		this.x = x;
-		this.y = y;
+		positionFPS(x, y);
 
 		currentFPS = 0;
 		selectable = false;
