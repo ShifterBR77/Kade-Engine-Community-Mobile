@@ -216,7 +216,7 @@ class Debug
 		logInfo("This is a RELEASE build.");
 		#end
 		#if !web
-		logInfo('Operating System : ${Sys.systemName()}');
+		logInfo('Operating System : ' + #if mobile #if android 'Android' #else 'iOS' #end #else '${Sys.systemName()}' #end);
 		#end
 		logInfo('Haxe Version: ' + haxe.macro.Compiler.getDefine("haxe"));
 		// I've wanted the haxe version since like 1.2 released. 1.9.4 isn't too late, is it?

@@ -18,6 +18,8 @@ class MusicBeatSubstate extends FlxSubState
 
 	public function new()
 	{
+		instance = this;
+
 		// Setup The Tween / Timer Manager.
 		tweenManager = new FlxTweenManager();
 		timerManager = new FlxTimerManager();
@@ -49,6 +51,13 @@ class MusicBeatSubstate extends FlxSubState
 		tweenManager.clear();
 
 		super.destroy();
+	}
+
+	override function close() {
+		//if (virtualPad != null)
+			removeVirtualPad();
+
+		super.close();
 	}
 
 	override function create()
