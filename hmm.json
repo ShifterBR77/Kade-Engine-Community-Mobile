@@ -9,17 +9,17 @@
     {
       "name": "openfl",
       "type": "haxelib",
-      "version": null
+      "version": "9.3.4"
     },
     {
       "name": "flixel-tools",
       "type": "haxelib",
-      "version": null
+      "version": "1.5.1"
     },
     {
       "name": "flixel-addons",
       "type": "haxelib",
-      "version": null
+      "version": "3.2.3"
     },
     {
       "name": "hxcpp-debug-server",
@@ -34,7 +34,7 @@
     {
       "name": "flixel-text-input",
       "type": "haxelib",
-      "version": null
+      "version": "2.0.2"
     },
     {
       "name": "linc_luajit",
@@ -75,7 +75,7 @@
     {
       "name": "hxvlc",
       "type": "haxelib",
-      "version": null
+      "version": "1.9.3"
     },
     {
       "name": "hxcpp",
@@ -92,7 +92,7 @@
     {
       "name": "hscript",
       "type": "haxelib",
-      "version": null
+      "version": "2.5.0"
     }
   ]
 }
