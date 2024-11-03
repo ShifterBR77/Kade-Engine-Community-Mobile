@@ -1462,7 +1462,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private function handleMobileInput(button:mobile.kec.objects.MobileButton):Void
-	{ // this actually handles flxbutton presses
+	{ // this actually handles mobilebutton presses
 		if (PlayStateChangeables.botPlay || paused || !songStarted || button == null || button.bindedDirection == null)
 			return;
 

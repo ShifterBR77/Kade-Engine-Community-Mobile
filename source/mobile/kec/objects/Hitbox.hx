@@ -83,6 +83,8 @@ class Hitbox extends FlxSpriteGroup
 
 			hint.onDown.callback = function()
 			{
+				onHintDown.dispatch(hint);
+
 				if (hintTween != null)
 					hintTween.cancel();
 
@@ -102,6 +104,8 @@ class Hitbox extends FlxSpriteGroup
 
 			hint.onOut.callback = hint.onUp.callback = function()
 			{
+				onHintUp.dispatch(hint);
+
 				if (hintTween != null)
 					hintTween.cancel();
 

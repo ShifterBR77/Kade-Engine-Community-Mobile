@@ -18,7 +18,7 @@ import flixel.util.FlxDestroyUtil;
 /**
  * A simple button class that calls a function when clicked by the touch.
  */
-class MobileButton extends MobileTypedButton<FlxSprite>
+class MobileButton extends TypedMobileButton<FlxSprite>
 {
 	/**
 	 * Used with public variable status, means not highlighted or pressed.
@@ -84,7 +84,7 @@ class MobileButton extends MobileTypedButton<FlxSprite>
 #if !display
 @:generic
 #end
-class MobileTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
+class TypedMobileButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 {
 	/**
 	 * The label that appears on the button. Can be any `FlxSprite`.
@@ -182,7 +182,7 @@ class MobileTypedButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 	public var canChangeLabelAlpha:Bool = true;
 
 	/**
-	 * Creates a new `MobileTypedButton` object with a gray background.
+	 * Creates a new `TypedMobileButton` object with a gray background.
 	 *
 	 * @param   X         The x position of the button.
 	 * @param   Y         The y position of the button.
