@@ -2634,7 +2634,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		camZooming = mobileControls.visible = #if !android virtualPad.visible = #end false;
+		camZooming = false;
 		endingSong = true;
 		inDaPlay = false;
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
@@ -2801,6 +2801,9 @@ class PlayState extends MusicBeatState
 					ease: FlxEase.circOut,
 					startDelay: 0.2 + (0.1 * note),
 				});
+			if (virtualPad != null)
+				createTween(virtualPad, {alpha: 0}, 0.2, {ease: FlxEase.circIn});
+			createTween(mobileControls, {alpha: 0}, 0.2, {ease: FlxEase.circIn});
 		}
 	}
 
