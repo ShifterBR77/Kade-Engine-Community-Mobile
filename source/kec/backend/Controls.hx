@@ -325,7 +325,9 @@ class Controls extends FlxActionSet
 			case B:
 				inline forEachBound(Control.BACK, (action, state) -> addButtonUI(action, vpad.buttonB, state));
 			case P:
+				#if !android
 				inline forEachBound(Control.PAUSE, (action, state) -> addButtonUI(action, vpad.buttonP, state));
+				#end
 			case NONE: // do nothing
 			default:
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButtonUI(action, vpad.buttonA, state));
@@ -361,7 +363,9 @@ class Controls extends FlxActionSet
 			case B:
 				inline forEachBound(Control.BACK, (action, state) -> addButtonNOTES(action, vpad.buttonB, state));
 			case P:
+				#if !android
 				inline forEachBound(Control.PAUSE, (action, state) -> addButtonNOTES(action, vpad.buttonP, state));
+				#end
 			case NONE: // do nothing
 			default:
 				inline forEachBound(Control.ACCEPT, (action, state) -> addButtonNOTES(action, vpad.buttonA, state));

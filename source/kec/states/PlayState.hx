@@ -702,7 +702,12 @@ class PlayState extends MusicBeatState
 
 		addVirtualPad(NONE, P);
 		addVirtualPadCamera(false);
-		#if !android virtualPad.visible = true #else virtualPad.alpha = 0 #end;
+		#if android
+		virtualPad.visible = false;
+		virtualPad.alpha = 0;
+		#else
+		virtualPad.visible = true;
+		#end
 
 		addMobileControls(false);
 		mobileControls.onInputUp.add(releaseMobileInput);
@@ -1722,6 +1727,7 @@ class PlayState extends MusicBeatState
 			skipText.alpha = 0;
 			createTween(skipText, {alpha: 1}, 0.2);
 			#if android
+			virtualPad.visible = true;
 			createTween(virtualPad, {alpha: FlxG.save.data.mobileCAlpha}, 0.2);
 			#end
 			skipText.cameras = [camHUD];
