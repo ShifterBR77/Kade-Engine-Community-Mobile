@@ -131,6 +131,8 @@ class MainMenuState extends MusicBeatState
 
 		changeItem();
 		tweenColorShit();
+		
+		addVirtualPad(NONE, E);
 
 		super.create();
 	}
@@ -172,7 +174,7 @@ class MainMenuState extends MusicBeatState
 		}
 
 		#if FEATURE_MODCORE
-		if (FlxG.keys.justPressed.M)
+		if (virtualPad.buttonE.justPressed || FlxG.keys.justPressed.M)
 			MusicBeatState.switchState(new ModMenuState());
 		#end
 

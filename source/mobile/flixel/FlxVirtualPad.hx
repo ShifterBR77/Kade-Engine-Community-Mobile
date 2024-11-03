@@ -12,8 +12,6 @@ import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 
-// MTODO: FIX AFTER VPAD DESTROY CALL SPAM
-
 enum FlxDPadMode
 {
 	UP_DOWN;
@@ -27,6 +25,7 @@ enum FlxActionMode
 {
 	A;
 	B;
+	E;
 	P;
 	A_B;
 	A_B_C;
@@ -123,6 +122,8 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 				add(buttonA = createButton(FlxG.width - 132, FlxG.height - 135, 'a', 0xFF0000));
 			case B:
 				add(buttonB = createButton(FlxG.width - 132, FlxG.height - 135, 'b', 0xFFCB00));
+			case E:
+				add(buttonE = createButton(FlxG.width - 132, FlxG.height - 135, 'e', 0xFF7D00));
 			case P:
 				add(buttonP = createButton(FlxG.width - 132, 0, 'x', 0x99062D));
 			case A_B:

@@ -33,6 +33,8 @@ class ModMenuState extends MusicBeatState
 
 		createMUI();
 		Debug.logTrace('Avaliable Mods ' + ModCore.modsToLoad);
+
+		addVirtualPad(UP_DOWN, A_B);
 	}
 
 	override function update(elapsed:Float)
