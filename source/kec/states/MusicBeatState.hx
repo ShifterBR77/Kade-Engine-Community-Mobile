@@ -181,24 +181,8 @@ class MusicBeatState extends FlxTransitionableState
 			transSubstate = null;
 		}
 
-		// Mobile Controls Related
-		if (trackedInputsMobileControls.length > 0)
-			controls.removeVirtualControlsInput(trackedInputsMobileControls);
-
-		if (trackedInputsVirtualPad.length > 0)
-			controls.removeVirtualControlsInput(trackedInputsVirtualPad);
-
-		if (virtualPad != null)
-			virtualPad = FlxDestroyUtil.destroy(virtualPad);
-
-		if (mobileControls != null)
-			mobileControls = FlxDestroyUtil.destroy(mobileControls);
-
-		if (camControls != null)
-			camControls = FlxDestroyUtil.destroy(camControls);
-
-		if (camVPad != null)
-			camVPad = FlxDestroyUtil.destroy(camVPad);
+		removeVirtualPad();
+		removeMobileControls();
 
 		timerManager.clear();
 		tweenManager.clear();

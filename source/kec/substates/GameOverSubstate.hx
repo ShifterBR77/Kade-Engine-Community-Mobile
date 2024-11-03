@@ -59,8 +59,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 		bf.playAnim('firstDeath');
-		addVirtualPad(NONE, A_B);
-		addVirtualPadCamera(false);
 		super.create();
 	}
 
@@ -155,5 +153,11 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		instance = null;
 		super.destroy();
+	}
+
+	override public function addThePads():Void
+	{
+		addVirtualPad(NONE, A_B);
+		addVirtualPadCamera(false);
 	}
 }

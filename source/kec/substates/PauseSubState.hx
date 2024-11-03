@@ -100,9 +100,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
-		addVirtualPad(UP_DOWN, A);
-		addVirtualPadCamera(false);
-
 		super.create();
 	}
 
@@ -283,5 +280,11 @@ class PauseSubState extends MusicBeatSubstate
 		createTween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 
 		changeSelection();
+	}
+
+	override public function addThePads():Void
+	{
+		addVirtualPad(UP_DOWN, A);
+		addVirtualPadCamera(false);
 	}
 }

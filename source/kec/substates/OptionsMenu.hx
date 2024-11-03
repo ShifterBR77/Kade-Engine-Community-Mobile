@@ -340,10 +340,13 @@ class OptionsMenu extends MusicBeatSubstate
 
 		switchCat(selectedCat);
 
-		addVirtualPad(LEFT_FULL, A_B);
+		addThePads();
 
 		super.create();
 	}
+
+	override public function addThePads():Void
+		addVirtualPad(LEFT_FULL, A_B);
 
 	function refresh()
 	{
@@ -572,8 +575,7 @@ class OptionsMenu extends MusicBeatSubstate
 				else
 				{
 					PauseSubState.goBack = true;
-					PauseSubState.instance.addVirtualPad(UP_DOWN, A);
-					PauseSubState.instance.addVirtualPadCamera(false);
+					PauseSubState.instance.addThePads();
 					PlayState.instance.updateSettings();
 					close();
 				}

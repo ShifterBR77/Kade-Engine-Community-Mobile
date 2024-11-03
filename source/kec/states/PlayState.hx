@@ -2042,9 +2042,13 @@ class PlayState extends MusicBeatState
 				PauseSubState.goToOptions = false;
 				PauseSubState.goBack = false;
 				openSubState(subStates[0]);
+				subStates[0].addThePads();
 			}
 			else
+			{
 				openSubState(subStates[3]);
+				subStates[3].addThePads();
+			}
 		}
 		else if (paused)
 		{
@@ -2239,6 +2243,7 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 			openSubState(subStates[0]);
+			subStates[0].addThePads();
 			for (note in playerStrums)
 				if (note.animation.curAnim != null && note.animation.curAnim.name != 'static')
 				{
@@ -2372,7 +2377,10 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.InstantRespawn)
 					MusicBeatState.resetState();
 				else
+				{
 					openSubState(subStates[2]);
+					subStates[2].addThePads();
+				}
 
 				isDead = true;
 
@@ -2415,7 +2423,10 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.InstantRespawn)
 					MusicBeatState.resetState();
 				else
+				{
 					openSubState(subStates[2]);
+					subStates[2].addThePads();
+				}
 				isDead = true;
 
 				#if FEATURE_DISCORD
