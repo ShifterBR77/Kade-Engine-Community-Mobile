@@ -5,7 +5,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
-import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 import openfl.geom.Matrix;
@@ -18,13 +17,13 @@ import openfl.geom.Matrix;
  */
 class Hitbox extends FlxSpriteGroup
 {
-	public var buttonLeft:FlxButton = new FlxButton(0, 0);
-	public var buttonDown:FlxButton = new FlxButton(0, 0);
-	public var buttonUp:FlxButton = new FlxButton(0, 0);
-	public var buttonRight:FlxButton = new FlxButton(0, 0);
+	public var buttonLeft:MobileButton = new MobileButton(0, 0);
+	public var buttonDown:MobileButton = new MobileButton(0, 0);
+	public var buttonUp:MobileButton = new MobileButton(0, 0);
+	public var buttonRight:MobileButton = new MobileButton(0, 0);
 
-	public var onHintUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
-	public var onHintDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onHintUp:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
+	public var onHintDown:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
 
 	/**
 	 * Create the zone.
@@ -59,30 +58,66 @@ class Hitbox extends FlxSpriteGroup
 		buttonRight = FlxDestroyUtil.destroy(buttonRight);
 	}
 
-	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):FlxButton
+	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):MobileButton
 	{
 		final guh:Float = FlxG.save.data.mobileCAlpha >= 0.9 ? FlxG.save.data.mobileCAlpha - 0.2 : FlxG.save.data.mobileCAlpha;
 		final guh2:Float = 0.00001;
-		var hint:FlxButton = new FlxButton(X, Y);
+		var hint:MobileButton = new MobileButton(X, Y);
 		hint.loadGraphic(createHintGraphic(Width, Height, Color));
+		hint.label = new FlxSprite();
+		hint.labelStatusDiff = (FlxG.save.data.hitboxType != '3') ? guh : guh2;
+		hint.label.loadGraphic(createHintGraphic(Width, Math.floor(Height * 0.035), Color, true));
+		hint.label.offset.y -= (hint.height - hint.label.height);
 		hint.solid = false;
 		hint.multiTouch = true;
 		hint.immovable = true;
 		hint.moves = false;
 		hint.antialiasing = FlxG.save.data.antialiasing;
 		hint.scrollFactor.set();
-		hint.alpha = 0.00001;
-		hint.onDown.callback = function()
+		hint.label.alpha = hint.alpha = guh2;
+		hint.canChangeLabelAlpha = false;
+		if (FlxG.save.data.hitboxType != '3')
 		{
-			onHintDown.dispatch(hint);
-			if (hint.alpha != guh)
-				hint.alpha = guh;
-		}
-		hint.onUp.callback = hint.onOut.callback = function()
-		{
-			onHintUp.dispatch(hint);
-			if (hint.alpha != guh2)
-				hint.alpha = guh2;
+			var hintTween:FlxTween = null;
+			var hintLaneTween:FlxTween = null;
+
+			hint.onDown.callback = function()
+			{
+				if (hintTween != null)
+					hintTween.cancel();
+
+				if (hintLaneTween != null)
+					hintLaneTween.cancel();
+
+				hintTween = FlxTween.tween(hint, {alpha: guh}, guh / 100, {
+					ease: FlxEase.circInOut,
+					onComplete: (twn:FlxTween) -> hintTween = null
+				});
+
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: guh2}, guh / 10, {
+					ease: FlxEase.circInOut,
+					onComplete: (twn:FlxTween) -> hintTween = null
+				});
+			}
+
+			hint.onOut.callback = hint.onUp.callback = function()
+			{
+				if (hintTween != null)
+					hintTween.cancel();
+
+				if (hintLaneTween != null)
+					hintLaneTween.cancel();
+
+				hintTween = FlxTween.tween(hint, {alpha: guh2}, guh / 10, {
+					ease: FlxEase.circInOut,
+					onComplete: (twn:FlxTween) -> hintTween = null
+				});
+
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: guh}, guh / 100, {
+					ease: FlxEase.circInOut,
+					onComplete: (twn:FlxTween) -> hintTween = null
+				});
+			}
 		}
 		#if FLX_DEBUG
 		hint.ignoreDrawDebug = true;
@@ -90,7 +125,7 @@ class Hitbox extends FlxSpriteGroup
 		return hint;
 	}
 
-	private function createHintGraphic(Width:Int, Height:Int, Color:Int = 0xFFFFFF):BitmapData
+	private function createHintGraphic(Width:Int, Height:Int, Color:Int = 0xFFFFFF, ?isLane:Bool = false):BitmapData
 	{
 		var guh:Float = FlxG.save.data.mobileCAlpha;
 		if (guh >= 0.9)
@@ -102,7 +137,10 @@ class Hitbox extends FlxSpriteGroup
 			var matrix:Matrix = new Matrix();
 			matrix.createGradientBox(Width, Height, 0, 0, 0);
 
-			shape.graphics.beginGradientFill(RADIAL, [Color, Color], [0, guh], [60, 255], matrix, PAD, RGB, 0);
+			if (isLane)
+				shape.graphics.beginFill(Color);
+			else
+				shape.graphics.beginGradientFill(RADIAL, [Color, Color], [0, guh], [60, 255], matrix, PAD, RGB, 0);
 			shape.graphics.drawRect(0, 0, Width, Height);
 			shape.graphics.endFill();
 		}
@@ -119,7 +157,10 @@ class Hitbox extends FlxSpriteGroup
 			shape.graphics.lineStyle(0, 0, 0);
 			shape.graphics.drawRect(3, 3, Width - 6, Height - 6);
 			shape.graphics.endFill();
-			shape.graphics.beginGradientFill(RADIAL, [Color, FlxColor.TRANSPARENT], [guh, 0], [0, 255], null, null, null, 0.5);
+			if (isLane)
+				shape.graphics.beginFill(Color);
+			else
+				shape.graphics.beginGradientFill(RADIAL, [Color, FlxColor.TRANSPARENT], [guh, 0], [0, 255], null, null, null, 0.5);
 			shape.graphics.drawRect(3, 3, Width - 6, Height - 6);
 			shape.graphics.endFill();
 		}

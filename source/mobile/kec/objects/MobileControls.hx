@@ -4,25 +4,22 @@ import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
-import flixel.util.FlxSignal;
-import mobile.flixel.FlxButton;
-import mobile.kec.objects.Hitbox;
-import mobile.flixel.FlxVirtualPad;
+import flixel.util.FlxSignal;	
 
 /**
  * @author Mihai Alexandru (M.A. Jigsaw)
  */
 class MobileControls extends FlxSpriteGroup
 {
-	public static var customVirtualPad(get, set):FlxVirtualPad;
+	public static var customVirtualPad(get, set):VirtualPad;
 	public static var mode(get, set):String;
 	public static var enabled(get, never):Bool;
 
-	public var virtualPad:FlxVirtualPad;
+	public var virtualPad:VirtualPad;
 	public var hitbox:Hitbox;
 
-	public var onInputUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
-	public var onInputDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onInputUp:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
+	public var onInputDown:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
 
 	public function new()
 	{
@@ -31,13 +28,13 @@ class MobileControls extends FlxSpriteGroup
 		switch (MobileControls.mode)
 		{
 			case 'Pad-Right':
-				virtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+				virtualPad = new VirtualPad(RIGHT_FULL, NONE);
 				bindVPadDirections(virtualPad);
 				virtualPad.onButtonUp.add(onInputUp.dispatch);
 				virtualPad.onButtonDown.add(onInputDown.dispatch);
 				add(virtualPad);
 			case 'Pad-Left':
-				virtualPad = new FlxVirtualPad(LEFT_FULL, NONE);
+				virtualPad = new VirtualPad(LEFT_FULL, NONE);
 				bindVPadDirections(virtualPad);
 				virtualPad.onButtonUp.add(onInputUp.dispatch);
 				virtualPad.onButtonDown.add(onInputDown.dispatch);
@@ -82,9 +79,9 @@ class MobileControls extends FlxSpriteGroup
 		return mode;
 	}
 
-	private static function get_customVirtualPad():FlxVirtualPad
+	private static function get_customVirtualPad():VirtualPad
 	{
-		var virtualPad:FlxVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+		var virtualPad:VirtualPad = new VirtualPad(RIGHT_FULL, NONE);
 		if (FlxG.save.data.buttons == null)
 			return virtualPad;
 
@@ -99,7 +96,7 @@ class MobileControls extends FlxSpriteGroup
 		return virtualPad;
 	}
 
-	private static function set_customVirtualPad(virtualPad:FlxVirtualPad):FlxVirtualPad
+	private static function set_customVirtualPad(virtualPad:VirtualPad):VirtualPad
 	{
 		if (FlxG.save.data.buttons == null)
 		{
@@ -127,7 +124,7 @@ class MobileControls extends FlxSpriteGroup
 	private static function get_enabled():Bool
 		return FlxG.save.data.mobileCAlpha >= 0.1;
 
-	private static function bindVPadDirections(vpad:FlxVirtualPad)
+	private static function bindVPadDirections(vpad:VirtualPad)
 	{
 		vpad.buttonLeft.bindedDirection = LEFT;
 		vpad.buttonDown.bindedDirection = DOWN;

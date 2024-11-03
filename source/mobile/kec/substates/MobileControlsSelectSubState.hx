@@ -10,8 +10,9 @@ import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSave;
-import mobile.flixel.FlxButton;
-import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.MobileButton;
+import flixel.ui.FlxButton as UIButton;
+import mobile.kec.objects.VirtualPad;
 import mobile.kec.objects.Hitbox;
 import openfl.utils.Assets;
 
@@ -19,7 +20,7 @@ class MobileControlsSelectSubState extends FlxSubState
 {
 	private final controlsItems:Array<String> = ['Pad-Right', 'Pad-Left', 'Pad-Custom', 'Hitbox', 'Keyboard'];
 
-	private var virtualPad:FlxVirtualPad;
+	private var virtualPad:VirtualPad;
 	private var hitbox:Hitbox;
 	private var upPosition:FlxText;
 	private var downPosition:FlxText;
@@ -31,8 +32,8 @@ class MobileControlsSelectSubState extends FlxSubState
 	private var rightArrow:FlxSprite;
 	private var curSelected:Int = 0;
 	private var buttonBinded:Bool = false;
-	private var bindButton:FlxButton;
-	private var resetButton:FlxButton;
+	private var bindButton:MobileButton;
+	private var resetButton:UIButton;
 
 	override function create()
 	{
@@ -46,7 +47,7 @@ class MobileControlsSelectSubState extends FlxSubState
 		bg.alpha = 0.4;
 		add(bg);
 
-		var exitButton:FlxButton = new FlxButton(FlxG.width - 200, 50, 'Exit', function()
+		var exitButton:UIButton = new UIButton(FlxG.width - 200, 50, 'Exit', function()
 		{
 			MobileControls.mode = controlsItems[Math.floor(curSelected)];
 
@@ -61,11 +62,11 @@ class MobileControlsSelectSubState extends FlxSubState
 		exitButton.color = FlxColor.LIME;
 		add(exitButton);
 
-		resetButton = new FlxButton(exitButton.x, exitButton.y + 100, 'Reset', function()
+		resetButton = new UIButton(exitButton.x, exitButton.y + 100, 'Reset', function()
 		{
 			if (controlsItems[Math.floor(curSelected)] == 'Pad-Custom' && resetButton.visible)
 			{
-				MobileControls.customVirtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+				MobileControls.customVirtualPad = new VirtualPad(RIGHT_FULL, NONE);
 				reloadMobileControls('Pad-Custom');
 			}
 		});
@@ -156,7 +157,7 @@ class MobileControlsSelectSubState extends FlxSubState
 				}
 				else
 				{
-					virtualPad.forEachAlive((button:FlxButton) ->
+					virtualPad.forEachAlive((button:MobileButton) ->
 					{
 						if (button.justPressed)
 							moveButton(touch, button);
@@ -208,7 +209,7 @@ class MobileControlsSelectSubState extends FlxSubState
 		rightPosition.visible = daChoice == 'Pad-Custom';
 	}
 
-	private function moveButton(touch:FlxTouch, button:FlxButton):Void
+	private function moveButton(touch:FlxTouch, button:MobileButton):Void
 	{
 		bindButton = button;
 		bindButton.x = touch.x - Std.int(bindButton.width / 2);
@@ -224,11 +225,11 @@ class MobileControlsSelectSubState extends FlxSubState
 		{
 			case 'Pad-Right':
 				removeControls();
-				virtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
+				virtualPad = new VirtualPad(RIGHT_FULL, NONE);
 				add(virtualPad);
 			case 'Pad-Left':
 				removeControls();
-				virtualPad = new FlxVirtualPad(LEFT_FULL, NONE);
+				virtualPad = new VirtualPad(LEFT_FULL, NONE);
 				add(virtualPad);
 			case 'Pad-Custom':
 				removeControls();

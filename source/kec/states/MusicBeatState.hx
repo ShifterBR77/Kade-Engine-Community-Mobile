@@ -14,7 +14,7 @@ import kec.states.FreeplayState;
 import kec.substates.CustomFadeTransition;
 import kec.substates.MusicBeatSubstate;
 import flixel.util.typeLimit.NextState;
-import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.VirtualPad;
 
 class MusicBeatState extends FlxTransitionableState
 {
@@ -48,7 +48,7 @@ class MusicBeatState extends FlxTransitionableState
 		return PlayerSettings.player1.controls;
 
 	public var mobileControls:MobileControls;
-	public var virtualPad:FlxVirtualPad;
+	public var virtualPad:VirtualPad;
 	public var camControls:FlxCamera;
 	public var camVPad:FlxCamera;
 
@@ -60,7 +60,7 @@ class MusicBeatState extends FlxTransitionableState
 		if (virtualPad != null)
 			removeVirtualPad();
 
-		virtualPad = new FlxVirtualPad(DPad, Action);
+		virtualPad = new VirtualPad(DPad, Action);
 		add(virtualPad);
 
 		controls.setVirtualPadUI(virtualPad, DPad, Action);

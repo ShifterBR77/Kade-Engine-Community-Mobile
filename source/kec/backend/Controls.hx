@@ -7,8 +7,8 @@ import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.keyboard.FlxKey;
-import mobile.flixel.FlxButton;
-import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.MobileButton;
+import mobile.kec.objects.VirtualPad;
 import mobile.kec.objects.Hitbox;
 
 #if (haxe >= "4.0.0")
@@ -266,7 +266,7 @@ class Controls extends FlxActionSet
 	public var trackedInputsUI:Array<FlxActionInput> = [];
 	public var trackedInputsNOTES:Array<FlxActionInput> = [];
 
-	public function addButtonNOTES(action:FlxActionDigital, button:FlxButton, state:FlxInputState):Void
+	public function addButtonNOTES(action:FlxActionDigital, button:MobileButton, state:FlxInputState):Void
 	{
 		if (button == null)
 			return;
@@ -276,7 +276,7 @@ class Controls extends FlxActionSet
 		action.add(input);
 	}
 
-	public function addButtonUI(action:FlxActionDigital, button:FlxButton, state:FlxInputState):Void
+	public function addButtonUI(action:FlxActionDigital, button:MobileButton, state:FlxInputState):Void
 	{
 		if (button == null)
 			return;
@@ -297,7 +297,7 @@ class Controls extends FlxActionSet
 		inline forEachBound(Control.RIGHT, (action, state) -> addButtonNOTES(action, hitbox.buttonRight, state));
 	}
 
-	public function setVirtualPadUI(vpad:FlxVirtualPad, DPad:FlxDPadMode, Action:FlxActionMode):Void
+	public function setVirtualPadUI(vpad:VirtualPad, DPad:FlxDPadMode, Action:FlxActionMode):Void
 	{
 		if (vpad == null)
 			return;
@@ -333,7 +333,7 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function setVirtualPadNOTES(vpad:FlxVirtualPad, DPad:FlxDPadMode, Action:FlxActionMode):Void
+	public function setVirtualPadNOTES(vpad:VirtualPad, DPad:FlxDPadMode, Action:FlxActionMode):Void
 	{
 		if (vpad == null)
 			return;

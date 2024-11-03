@@ -1,4 +1,4 @@
-package mobile.flixel;
+package mobile.kec.objects;
 
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
@@ -8,7 +8,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSignal;
-import mobile.flixel.FlxButton;
 import openfl.display.BitmapData;
 import openfl.utils.Assets;
 
@@ -44,46 +43,46 @@ enum FlxActionMode
  * @author Ka Wing Chin
  * @author Mihai Alexandru (M.A. Jigsaw)
  */
-class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
+class VirtualPad extends FlxTypedSpriteGroup<MobileButton>
 {
-	public var buttonLeft:FlxButton = new FlxButton(0, 0);
-	public var buttonUp:FlxButton = new FlxButton(0, 0);
-	public var buttonRight:FlxButton = new FlxButton(0, 0);
-	public var buttonDown:FlxButton = new FlxButton(0, 0);
+	public var buttonLeft:MobileButton = new MobileButton(0, 0);
+	public var buttonUp:MobileButton = new MobileButton(0, 0);
+	public var buttonRight:MobileButton = new MobileButton(0, 0);
+	public var buttonDown:MobileButton = new MobileButton(0, 0);
 
-	public var buttonLeft2:FlxButton = new FlxButton(0, 0);
-	public var buttonUp2:FlxButton = new FlxButton(0, 0);
-	public var buttonRight2:FlxButton = new FlxButton(0, 0);
-	public var buttonDown2:FlxButton = new FlxButton(0, 0);
+	public var buttonLeft2:MobileButton = new MobileButton(0, 0);
+	public var buttonUp2:MobileButton = new MobileButton(0, 0);
+	public var buttonRight2:MobileButton = new MobileButton(0, 0);
+	public var buttonDown2:MobileButton = new MobileButton(0, 0);
 
-	public var buttonA:FlxButton = new FlxButton(0, 0);
-	public var buttonB:FlxButton = new FlxButton(0, 0);
-	public var buttonC:FlxButton = new FlxButton(0, 0);
-	public var buttonD:FlxButton = new FlxButton(0, 0);
-	public var buttonE:FlxButton = new FlxButton(0, 0);
-	public var buttonF:FlxButton = new FlxButton(0, 0);
-	public var buttonG:FlxButton = new FlxButton(0, 0);
-	public var buttonH:FlxButton = new FlxButton(0, 0);
-	public var buttonI:FlxButton = new FlxButton(0, 0);
-	public var buttonJ:FlxButton = new FlxButton(0, 0);
-	public var buttonK:FlxButton = new FlxButton(0, 0);
-	public var buttonL:FlxButton = new FlxButton(0, 0);
-	public var buttonM:FlxButton = new FlxButton(0, 0);
-	public var buttonN:FlxButton = new FlxButton(0, 0);
-	public var buttonO:FlxButton = new FlxButton(0, 0);
-	public var buttonP:FlxButton = new FlxButton(0, 0);
-	public var buttonQ:FlxButton = new FlxButton(0, 0);
-	public var buttonR:FlxButton = new FlxButton(0, 0);
-	public var buttonS:FlxButton = new FlxButton(0, 0);
-	public var buttonT:FlxButton = new FlxButton(0, 0);
-	public var buttonU:FlxButton = new FlxButton(0, 0);
-	public var buttonV:FlxButton = new FlxButton(0, 0);
-	public var buttonX:FlxButton = new FlxButton(0, 0);
-	public var buttonY:FlxButton = new FlxButton(0, 0);
-	public var buttonZ:FlxButton = new FlxButton(0, 0);
+	public var buttonA:MobileButton = new MobileButton(0, 0);
+	public var buttonB:MobileButton = new MobileButton(0, 0);
+	public var buttonC:MobileButton = new MobileButton(0, 0);
+	public var buttonD:MobileButton = new MobileButton(0, 0);
+	public var buttonE:MobileButton = new MobileButton(0, 0);
+	public var buttonF:MobileButton = new MobileButton(0, 0);
+	public var buttonG:MobileButton = new MobileButton(0, 0);
+	public var buttonH:MobileButton = new MobileButton(0, 0);
+	public var buttonI:MobileButton = new MobileButton(0, 0);
+	public var buttonJ:MobileButton = new MobileButton(0, 0);
+	public var buttonK:MobileButton = new MobileButton(0, 0);
+	public var buttonL:MobileButton = new MobileButton(0, 0);
+	public var buttonM:MobileButton = new MobileButton(0, 0);
+	public var buttonN:MobileButton = new MobileButton(0, 0);
+	public var buttonO:MobileButton = new MobileButton(0, 0);
+	public var buttonP:MobileButton = new MobileButton(0, 0);
+	public var buttonQ:MobileButton = new MobileButton(0, 0);
+	public var buttonR:MobileButton = new MobileButton(0, 0);
+	public var buttonS:MobileButton = new MobileButton(0, 0);
+	public var buttonT:MobileButton = new MobileButton(0, 0);
+	public var buttonU:MobileButton = new MobileButton(0, 0);
+	public var buttonV:MobileButton = new MobileButton(0, 0);
+	public var buttonX:MobileButton = new MobileButton(0, 0);
+	public var buttonY:MobileButton = new MobileButton(0, 0);
+	public var buttonZ:MobileButton = new MobileButton(0, 0);
 
-	public var onButtonUp:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
-	public var onButtonDown:FlxTypedSignal<FlxButton->Void> = new FlxTypedSignal<FlxButton->Void>();
+	public var onButtonUp:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
+	public var onButtonDown:FlxTypedSignal<MobileButton->Void> = new FlxTypedSignal<MobileButton->Void>();
 
 	/**
 	 * Create a gamepad.
@@ -177,11 +176,11 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 	{
 		super.destroy();
 		for (field in Reflect.fields(this))
-			if (Std.isOfType(Reflect.field(this, field), FlxButton))
+			if (Std.isOfType(Reflect.field(this, field), MobileButton))
 				Reflect.setField(this, field, FlxDestroyUtil.destroy(Reflect.field(this, field)));
 	}
 
-	private function createButton(X:Float, Y:Float, Graphic:String, Color:Int = 0xFFFFFF):FlxButton
+	private function createButton(X:Float, Y:Float, Graphic:String, Color:Int = 0xFFFFFF):MobileButton
 	{
 		var graphic:FlxGraphic;
 
@@ -190,7 +189,7 @@ class FlxVirtualPad extends FlxTypedSpriteGroup<FlxButton>
 		else
 			graphic = FlxG.bitmap.add(Paths.getPath('images/virtualpad/default.png'));
 
-		var button:FlxButton = new FlxButton(X, Y);
+		var button:MobileButton = new MobileButton(X, Y);
 		button.frames = FlxTileFrames.fromGraphic(graphic, FlxPoint.get(Std.int(graphic.width / 2), graphic.height));
 		button.solid = false;
 		button.immovable = true;

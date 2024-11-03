@@ -6,7 +6,7 @@ import flixel.input.actions.FlxActionInput;
 import flixel.util.FlxDestroyUtil;
 import kec.backend.Controls;
 import kec.backend.PlayerSettings;
-import mobile.flixel.FlxVirtualPad;
+import mobile.kec.objects.VirtualPad;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -58,7 +58,7 @@ class MusicBeatSubstate extends FlxSubState
 		return PlayerSettings.player1.controls;
 
 	public var mobileControls:MobileControls;
-	public var virtualPad:FlxVirtualPad;
+	public var virtualPad:VirtualPad;
 	public var camControls:FlxCamera;
 	public var camVPad:FlxCamera;
 
@@ -70,7 +70,7 @@ class MusicBeatSubstate extends FlxSubState
 		if (virtualPad != null)
 			removeVirtualPad();
 
-		virtualPad = new FlxVirtualPad(DPad, Action);
+		virtualPad = new VirtualPad(DPad, Action);
 		add(virtualPad);
 
 		controls.setVirtualPadUI(virtualPad, DPad, Action);
