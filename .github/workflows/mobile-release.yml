@@ -69,7 +69,7 @@ jobs:
            path: /home/runner
 
       - name: Move Android File
-        run: mv /home/runner/${{ env.PROJECT_NAME }}-release.apk /home/runner/${{ env.PROJECT_NAME }}-Android.apk
+        run: mv "/home/runner/${{ env.PROJECT_NAME }}-release.apk" "/home/runner/${{ env.PROJECT_NAME }}-Android.apk"
 
       - name: Download iOS Build
         uses: actions/download-artifact@main
@@ -78,7 +78,7 @@ jobs:
            path: ${{ github.workspace }}
 
       - name: Zip iOS Build For Release
-        run: zip -r /home/runner/${{ env.PROJECT_NAME }}-iOS.zip ${{ github.workspace }}/${{ env.PROJECT_NAME }}.ipa
+        run: zip -r "/home/runner/${{ env.PROJECT_NAME }}-iOS.zip" "${{ github.workspace }}/${{ env.PROJECT_NAME }}.ipa"
 
       - name: Publish The Release
         uses: softprops/action-gh-release@master
