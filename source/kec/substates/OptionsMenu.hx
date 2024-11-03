@@ -346,7 +346,11 @@ class OptionsMenu extends MusicBeatSubstate
 	}
 
 	override public function addThePads():Void
+	{
 		addVirtualPad(LEFT_FULL, A_B);
+		addVirtualPadCamera(false);
+	}
+		
 
 	function refresh()
 	{
