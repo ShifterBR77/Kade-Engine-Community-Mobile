@@ -2802,8 +2802,8 @@ class PlayState extends MusicBeatState
 					startDelay: 0.2 + (0.1 * note),
 				});
 			if (virtualPad != null)
-				createTween(virtualPad, {alpha: 0}, 0.2, {ease: FlxEase.circIn});
-			createTween(mobileControls, {alpha: 0}, 0.2, {ease: FlxEase.circIn});
+				createTween(virtualPad, {alpha: 0}, 1, {ease: FlxEase.circIn});
+			createTween(mobileControls, {alpha: 0}, 1, {ease: FlxEase.circIn});
 		}
 	}
 
