@@ -9,14 +9,13 @@ import kec.backend.Controls;
 import kec.backend.PlayerSettings;
 import kec.backend.chart.TimingStruct;
 import kec.backend.chart.format.Modern;
-import kec.backend.util.NoteStyleHelper;
 import kec.states.FreeplayState;
 import kec.substates.CustomFadeTransition;
 import kec.substates.MusicBeatSubstate;
 import flixel.util.typeLimit.NextState;
 import mobile.kec.objects.VirtualPad;
 
-class MusicBeatState extends FlxTransitionableState
+class MusicBeatState extends FlxState implements IMusicBeatObject
 {
 	public static var instance:MusicBeatState;
 
@@ -41,8 +40,6 @@ class MusicBeatState extends FlxTransitionableState
 	var fullscreenBind:FlxKey;
 
 	public static var transSubstate:CustomFadeTransition;
-
-	var subStates:Array<MusicBeatSubstate>;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -128,15 +125,19 @@ class MusicBeatState extends FlxTransitionableState
 	public var tweenManager:FlxTweenManager;
 	public var timerManager:FlxTimerManager;
 
+	var musicBeatObjects:Array<IMusicBeatObject>;
+	var subStates:Array<MusicBeatSubstate>;
+
 	public function new()
 	{
 		instance = this;
 		super();
-		subStates = [];
 		// Setup The Tween / Timer Manager.
 		tweenManager = new FlxTweenManager();
 		timerManager = new FlxTimerManager();
 		fullscreenBind = FlxKey.fromString(Std.string(FlxG.save.data.fullscreenBind));
+		musicBeatObjects = [];
+		subStates = [];
 	}
 
 	override function create()
@@ -174,6 +175,7 @@ class MusicBeatState extends FlxTransitionableState
 		curTiming = null;
 		currentSection = null;
 		FlxDestroyUtil.destroyArray(subStates);
+		musicBeatObjects.resize(0);
 
 		if (transSubstate != null)
 		{
@@ -323,7 +325,7 @@ class MusicBeatState extends FlxTransitionableState
 			return v;
 
 		curStep = v;
-		stepHit();
+		stepHit(curStep);
 
 		return v;
 	}
@@ -334,7 +336,7 @@ class MusicBeatState extends FlxTransitionableState
 			return v;
 
 		curBeat = v;
-		beatHit();
+		beatHit(curBeat);
 		return v;
 	}
 
@@ -348,12 +350,16 @@ class MusicBeatState extends FlxTransitionableState
 		return v;
 	}
 
-	public function stepHit():Void
+	public function stepHit(step:Int):Void
 	{
+		for (musicObj in musicBeatObjects)
+			musicObj.stepHit(step);
 	}
 
-	public function beatHit():Void
+	public function beatHit(beat:Int):Void
 	{
+		for (musicObj in musicBeatObjects)
+			musicObj.beatHit(beat);
 	}
 
 	public function sectionHit():Void
@@ -403,6 +409,30 @@ class MusicBeatState extends FlxTransitionableState
 	{
 		Conductor.songPosition = time;
 		curTiming = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
+	}
+
+	override public function add(obj:FlxBasic):FlxBasic
+	{
+		if (obj is IMusicBeatObject)
+			musicBeatObjects.push(cast(obj, IMusicBeatObject));
+
+		return super.add(obj);
+	}
+
+	override public function insert(index:Int, obj:FlxBasic):FlxBasic
+	{
+		if (obj is IMusicBeatObject)
+			musicBeatObjects.insert(musicBeatObjects.length, cast(obj, IMusicBeatObject));
+
+		return super.insert(index, obj);
+	}
+
+	override public function remove(obj:FlxBasic, splice:Bool = false):FlxBasic
+	{
+		if (obj is IMusicBeatObject)
+			musicBeatObjects.remove(cast(obj, IMusicBeatObject));
+
+		return super.remove(obj, splice);
 	}
 
 	function getSectionByTime(ms:Float):Section

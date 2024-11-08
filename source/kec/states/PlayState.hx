@@ -1575,7 +1575,7 @@ class PlayState extends MusicBeatState
 
 		if (PlayStateChangeables.skillIssue)
 			health = 0;
-		if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
+		if (combo > 5 && gf != null && gf.offsets.exists('sad'))
 		{
 			gf.playAnim('sad');
 		}
@@ -1593,7 +1593,7 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.opponentMode)
 			char = dad;
 
-		if (char.animOffsets.exists(Constants.singAnimations[direction] + 'miss'))
+		if (char.offsets.exists(Constants.singAnimations[direction] + 'miss'))
 			char.playAnim(Constants.singAnimations[direction] + 'miss', true);
 
 		if (FlxG.save.data.missSounds)
@@ -2640,9 +2640,6 @@ class PlayState extends MusicBeatState
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 		Lib.current.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
-
 		#if FEATURE_LUAMODCHART
 		if (luaModchart != null)
 		{
@@ -2987,7 +2984,7 @@ class PlayState extends MusicBeatState
 			numGroup.sort(Sort.sortUI, -1);
 			ratingGroup.sort(Sort.sortUI, -1);
 			rating.fadeOut();
-			createTween(currentTimingShown, {alpha: 0}, 0.1, {
+			createTween(currentTimingShown, {alpha: 0}, 0.25, {
 				startDelay: (Conductor.crochet * 0.0005)
 			});
 		}
@@ -3030,7 +3027,7 @@ class PlayState extends MusicBeatState
 	{
 		if (daNote.causesMisses)
 		{
-			if (gf != null && combo > 5 && gf.animOffsets.exists('sad') && !PlayStateChangeables.opponentMode)
+			if (gf != null && combo > 5 && gf.offsets.exists('sad') && !PlayStateChangeables.opponentMode)
 				gf.playAnim('sad');
 			if (combo != 0)
 				combo = 0;
@@ -3055,7 +3052,7 @@ class PlayState extends MusicBeatState
 			if (PlayStateChangeables.opponentMode)
 				char = dad;
 
-			if (char.animOffsets.exists(Constants.singAnimations[direction] + 'miss'))
+			if (char.offsets.exists(Constants.singAnimations[direction] + 'miss'))
 				char.playAnim(Constants.singAnimations[direction] + 'miss', true);
 
 			#if FEATURE_LUAMODCHART
@@ -3180,7 +3177,7 @@ class PlayState extends MusicBeatState
 					if (daNote.isSustainNote)
 					{
 						var holdAnim:String = animToPlay + '-hold';
-						if (char.animOffsets.exists(holdAnim))
+						if (char.offsets.exists(holdAnim))
 							animToPlay = holdAnim;
 					}
 					char.playAnim(animToPlay, true);
@@ -3305,7 +3302,7 @@ class PlayState extends MusicBeatState
 					if (note.isSustainNote)
 					{
 						var holdAnim:String = animToPlay + '-hold';
-						if (char.animOffsets.exists(holdAnim))
+						if (char.offsets.exists(holdAnim))
 							animToPlay = holdAnim;
 					}
 					char.playAnim(animToPlay, true);
@@ -3375,9 +3372,9 @@ class PlayState extends MusicBeatState
 
 	var danced:Bool = false;
 
-	override function stepHit()
+	override function stepHit(curStep:Int)
 	{
-		super.stepHit();
+		super.stepHit(curStep);
 		if (curStep < 0)
 			return;
 
@@ -3444,9 +3441,9 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	override function beatHit()
+	override function beatHit(curBeat:Int)
 	{
-		super.beatHit();
+		super.beatHit(curBeat);
 		#if FEATURE_LUAMODCHART
 		if (executeModchart && luaModchart != null)
 		{

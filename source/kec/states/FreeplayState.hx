@@ -773,16 +773,6 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	override function beatHit()
-	{
-		super.beatHit();
-	}
-
-	override function stepHit()
-	{
-		super.stepHit();
-	}
-
 	var playinSong:Modern;
 
 	private function dotheMusicThing():Void
