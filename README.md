@@ -78,5 +78,7 @@ New And Improved Freeplay By BoloVEVO.
 
 - [AhmedxRNMD](https://twitter.com/AhmedxRNMD_) - Made the volume sounds (Legacy).
 
+- [Émmile](https://github.com/emilyj122) - Color Blind Filters
+
 - [discord server for this project](https://discord.gg/G2jJ8RfWtm) thanks for joining if you do.
 </details>
