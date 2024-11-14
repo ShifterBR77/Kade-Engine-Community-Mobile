@@ -9,6 +9,7 @@ import flixel.FlxGame;
 // https://github.com/FNF-CNE-Devs/CodenameEngine/blob/main/source/funkin/backend/system/FunkinGame.hx
 // Credits to this peeps.
 // DO NOT TOUCH ANYTHING.
+// Lily: *touches to it* oops
 class Game extends FlxGame
 {
 	var skipNextTickUpdate:Bool = false;

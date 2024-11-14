@@ -12,6 +12,7 @@ import openfl.utils.Assets;
  * A storage class for mobile.
  * @author Mihai Alexandru (M.A. Jigsaw)
  */
+// MTODO: switch this with StorageUtil
 class SUtil
 {
 	public static function getStorageDirectory():String
