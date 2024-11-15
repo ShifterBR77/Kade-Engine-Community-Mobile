@@ -51,7 +51,7 @@ class SMFile
 
 			if (_fileData.toString().split("#NOTES").length > 2)
 			{
-				SUtil.showPopUp("The chart must only have 1 difficulty, this one has "
+				CoolUtil.showPopUp("The chart must only have 1 difficulty, this one has "
 					+ (_fileData.toString().split("#NOTES").length - 1),
 					"SM File loading ("
 					+ header.TITLE
@@ -62,7 +62,7 @@ class SMFile
 
 			if (!StringTools.contains(header.MUSIC.toLowerCase(), "ogg"))
 			{
-				SUtil.showPopUp("The music MUST be an OGG File, make sure the sm file has the right music property.",
+				CoolUtil.showPopUp("The music MUST be an OGG File, make sure the sm file has the right music property.",
 					"SM File loading (" + header.TITLE + ")");
 				isValid = false;
 				return;
@@ -72,7 +72,7 @@ class SMFile
 			inc += 3; // skip three lines down
 			if (!StringTools.contains(data[inc], "dance-double:") && !StringTools.contains(data[inc], "dance-single"))
 			{
-				SUtil.showPopUp("The file you are loading is neither a Dance Double chart or a Dance Single chart",
+				CoolUtil.showPopUp("The file you are loading is neither a Dance Double chart or a Dance Single chart",
 					"SM File loading (" + header.TITLE + ")");
 				isValid = false;
 				return;
@@ -99,7 +99,7 @@ class SMFile
 		}
 		catch (e:Exception)
 		{
-			SUtil.showPopUp("Failure to load file.\n" + e, "SM File loading");
+			CoolUtil.showPopUp("Failure to load file.\n" + e, "SM File loading");
 		}
 	}
 

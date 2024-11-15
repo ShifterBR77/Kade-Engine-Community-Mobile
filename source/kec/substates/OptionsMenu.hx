@@ -142,6 +142,8 @@ class OptionsMenu extends MusicBeatSubstate
 	var saveIndex:Int = 0;
 
 	var saveOptIndex:Int = 0;
+	
+	final lastStorageType = FlxG.save.data.storageType;
 
 	public function new(pauseMenu:Bool = false)
 	{
@@ -240,7 +242,9 @@ class OptionsMenu extends MusicBeatSubstate
 				#if mobile
 				new mobile.kec.backend.Options.ScreensaverOption("Should Your Phone Sleep After Going Inactive For Few Seconds? (The Time Depends On Your Phone\'s Options)"),
 				#end
-				new mobile.kec.backend.Options.MobileControlsOption("Change Mobile Controls Type.")
+				new mobile.kec.backend.Options.MobileControlsOption("Change Mobile Controls Type.")#if android ,
+				new mobile.kec.backend.Options.StorageTypeOption("Change Storage Type.")
+				#end
 			]),
 			new OptionCata(-1, 155, "Editing Keybinds", [
 				new LeftKeybind("The left note's keybind"),
@@ -811,6 +815,14 @@ class OptionsMenu extends MusicBeatSubstate
 				cata.destroy();
 		options.resize(0);
 		super.destroy();
+		#if android
+		if (FlxG.save.data.storageType != lastStorageType)
+		{
+			onStorageChange();
+			CoolUtil.showPopUp('Storage Type has been changed and you needed restart the game!!\nPress OK to close the game.', 'Notice!');
+			lime.system.System.exit(0);
+		}
+		#end
 	}
 
 	function resetHoldTime()
@@ -848,6 +860,22 @@ class OptionsMenu extends MusicBeatSubstate
 			optObject.updateHitbox();
 		}
 	}
+
+	#if android
+	function onStorageChange():Void
+	{
+		sys.io.File.saveContent(lime.system.System.applicationStorageDirectory + 'storagetype.txt', FlxG.save.data.storageType);
+
+		var lastStoragePath:String = StorageType.fromStrForce(lastStorageType) + '/';
+
+		try
+		{
+			Sys.command('rm', ['-rf', lastStoragePath]);
+		}
+		catch (e:haxe.Exception)
+			trace('Failed to remove last directory. (${e.message})');
+	}
+	#end
 }
 
 class OptionText extends CoolText

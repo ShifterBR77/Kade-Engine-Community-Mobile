@@ -287,4 +287,17 @@ class CoolUtil
 	{
 		return Path.withoutDirectory(Path.withoutExtension(file));
 	}
+
+	public static function showPopUp(message:String, ?title:String):Void
+	{
+		#if android
+		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#elseif windows
+		kec.backend.cpp.CPPInterface.messageBox(message, title);
+		#elseif (!ios || !iphonesim)
+		lime.app.Application.current.window.alert(message, title);
+		#else
+		trace('$title - $message');
+		#end
+	}
 }

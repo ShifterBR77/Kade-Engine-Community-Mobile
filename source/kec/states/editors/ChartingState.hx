@@ -968,7 +968,7 @@ class ChartingState extends UIState
 		if ((data != null) && (data.length > 0))
 		{
 			#if mobile
-			SUtil.saveContent(SONG.songId.toLowerCase() + CoolUtil.getSuffixFromDiff(curDiff), ".json", data.trim());
+			StorageUtil.saveContent(SONG.songId.toLowerCase() + CoolUtil.getSuffixFromDiff(curDiff) + ".json", data.trim());
 			#else
 			_file = new FileReference();
 			_file.addEventListener(#if desktop OpenFlEvent.SELECT #else OpenFlEvent.COMPLETE #end, onSaveComplete);

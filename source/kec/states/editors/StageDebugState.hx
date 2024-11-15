@@ -754,7 +754,7 @@ class StageDebugState extends UIState
 		if ((data != null) && (data.length > 0))
 		{
 			#if mobile
-			SUtil.saveContent(Stage.curStage, ".json", data.trim());
+			StorageUtil.saveContent(Stage.curStage + ".json", data.trim());
 			#else
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
@@ -800,7 +800,7 @@ class StageDebugState extends UIState
 		if ((result != null) && (result.length > 0))
 		{
 			#if mobile
-			SUtil.saveContent(daStage + "Positions", ".txt", result.trim());
+			StorageUtil.saveContent(daStage + "Positions" + ".txt", result.trim());
 			#else
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);

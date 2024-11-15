@@ -107,7 +107,7 @@ class Debug
 	 */
 	public static function displayAlert(title:String, description:String):Void
 	{
-		SUtil.showPopUp(description, title);
+		CoolUtil.showPopUp(description, title);
 	}
 
 	/**

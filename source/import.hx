@@ -26,7 +26,7 @@ import android.os.Build.VERSION_CODES as AndroidVersionCode;
 import android.os.BatteryManager as AndroidBatteryManager;
 #end
 import mobile.kec.objects.MobileControls;
-import mobile.kec.backend.utils.SUtil;
+import mobile.kec.backend.util.StorageUtil;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.FlxBasic;
