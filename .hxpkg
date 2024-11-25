@@ -3,13 +3,16 @@
 		"profile": "default",
 		"pkgs": [
 			{
-				"name": "flixel"
+				"name": "flixel",
+				"link": "https://github.com/MobilePorting/flixel",
+				"branch": "5.8.0"
 			},
 			{
 				"name": "openfl"
 			},
 			{
-				"name": "lime"
+				"name": "lime",
+				"link": "https://github.com/mcagabe19-stuff/lime"
 			},
 			{
 				"name": "flixel-tools"
@@ -46,7 +49,8 @@
 				"link": "https://github.com/haxeui/haxeui-flixel.git"
 			},
 			{
-				"name": "hxcpp"
+				"name": "hxcpp",
+				"link": "https://github.com/mcagabe19-stuff/hxcpp"
 			},
 			{
 				"name": "thx.semver"
@@ -57,11 +61,15 @@
 			},
 			{
 				"name": "linc_luajit",
-				"link": "https://github.com/superpowers04/linc_luajit"
+				"link": "https://github.com/mcagabe19/linc_luajit-rewriten"
 			},
 			{
 				"name": "hscript-improved",
 				"link": "https://github.com/FNF-CNE-Devs/hscript-improved.git"
+			},
+			{
+				"name": "extension-androidtools",
+				"link": "https://github.com/MAJigsaw77/extension-androidtools"
 			}
 		]
 	}

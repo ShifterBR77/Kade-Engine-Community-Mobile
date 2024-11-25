@@ -42,8 +42,9 @@ jobs:
 
       - name: Install Libraries
         run: |
-          haxelib install hmm --quiet
-          haxelib run hmm install --quiet
+          haxelib --global install hxpkg
+          haxelib --global run hxpkg setup
+          hxpkg install --force
 
       - name: Configure Android
         if: inputs.name == 'Android'
