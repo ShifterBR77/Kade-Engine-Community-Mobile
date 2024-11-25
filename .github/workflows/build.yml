@@ -42,9 +42,8 @@ jobs:
 
       - name: Install Libraries
         run: |
-          haxelib --global install hxpkg
-          haxelib --global run hxpkg setup
-          hxpkg install --force
+          haxelib install hxpkg
+          haxelib run hxpkg install --force
 
       - name: Configure Android
         if: inputs.name == 'Android'
