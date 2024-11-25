@@ -155,7 +155,7 @@ class PlayState extends MusicBeatState
 	var notesHitArray:Array<Float> = [];
 
 	// If The Arrows Are Generated / Shown.
-	public var arrowsGenerated:Bool = false;
+	public var arrowsShown:Bool = false;
 
 	// If Is In PlayState.
 	public static var inDaPlay:Bool = false;
@@ -284,9 +284,7 @@ class PlayState extends MusicBeatState
 	public var dialogue:Array<String> = [];
 
 	// Kinda The Same Thing.
-	var inCutscene:Bool = false;
-
-	public var inCinematic:Bool = false;
+	public var inCutscene:Bool = false;
 
 	// From What I Can Tell, It's Just Used For StageDebugState.
 	public static var stageTesting:Bool = false;
@@ -333,6 +331,7 @@ class PlayState extends MusicBeatState
 	var lastPos:Float = -5000;
 
 	public var correctY = 698;
+
 	private var desyncs:Int = 0;
 	private var iDesyncs:Int = 0;
 
@@ -441,10 +440,10 @@ class PlayState extends MusicBeatState
 			switch (storyWeek)
 			{
 				case 7:
-					inCinematic = true;
+					inCutscene = true;
 				case 5:
 					if (PlayState.SONG.songId == 'winter-horrorland')
-						inCinematic = true;
+						inCutscene = true;
 			}
 		}
 
@@ -695,8 +694,10 @@ class PlayState extends MusicBeatState
 
 		tweenBoolshit = SONG.songId != 'tutorial' && SONG.songId != 'roses';
 
-		generateStaticArrows(0, tweenBoolshit);
-		generateStaticArrows(1, tweenBoolshit);
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+
+		appearStaticArrows(tweenBoolshit);
 
 		// If A Song Doesn't Have Events, It Makes One Automatically.
 
@@ -893,9 +894,6 @@ class PlayState extends MusicBeatState
 		for (goil in gfGroup.members)
 			goil.dance();
 
-		if (inCutscene)
-			removeStaticArrows(true);
-
 		if (isStoryMode)
 		{
 			switch (StringTools.replace(curSong, " ", "-").toLowerCase())
@@ -905,7 +903,6 @@ class PlayState extends MusicBeatState
 					add(blackScreen);
 					blackScreen.scrollFactor.set();
 					camHUD.visible = false;
-					removeStaticArrows();
 
 					FlxTimer.wait(0.1, function()
 					{
@@ -922,6 +919,7 @@ class PlayState extends MusicBeatState
 								ease: FlxEase.quadInOut,
 								onComplete: function(twn:FlxTween)
 								{
+									inCutscene = false;
 									startCountdown();
 									camHUD.visible = true;
 								}
@@ -1212,23 +1210,15 @@ class PlayState extends MusicBeatState
 			return;
 		#end
 
-		if (inCinematic || inCutscene)
-		{
-			if (!arrowsGenerated)
-			{
-				generateStaticArrows(1, true);
-
-				generateStaticArrows(0, true);
-			}
-		}
-
 		mobileControls.visible = true;
 
 		if (MobileControls.mode != "Hitbox")
 			createTween(mobileControls, {alpha: FlxG.save.data.mobileCAlpha}, 0.4);
 
-		inCinematic = false;
 		inCutscene = false;
+		
+		if (!arrowsShown)
+			appearStaticArrows(true);
 
 		Conductor.elapsedPosition = -(Math.floor(Conductor.crochet * 5));
 		startedCountdown = true;
@@ -1936,7 +1926,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	private function generateStaticArrows(player:Int, ?tween:Bool = true):Void
+	private function generateStaticArrows(player:Int):Void
 	{
 		final seX:Float = !PlayStateChangeables.opponentMode ? (PlayStateChangeables.middleScroll ? -278 : 42) : (PlayStateChangeables.middleScroll ? 366 : 42);
 		final seY:Float = strumLine.y;
@@ -1946,36 +1936,9 @@ class PlayState extends MusicBeatState
 
 			var noteTypeCheck:String = 'normal';
 			babyArrow.downScroll = PlayStateChangeables.useDownscroll;
-
 			babyArrow.x += Note.swagWidth * i;
-
-			var targAlpha = 1;
-
-			if (PlayStateChangeables.middleScroll)
-			{
-				if (PlayStateChangeables.opponentMode)
-				{
-					if (player == 1)
-						targAlpha = 0;
-				}
-				else
-				{
-					if (player == 0)
-						targAlpha = 0;
-				}
-			}
-
-			if (tween)
-			{
-				babyArrow.y -= 10;
-				babyArrow.alpha = 0;
-				createTween(babyArrow, {y: babyArrow.y + 10, alpha: targAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-			}
-			else
-				babyArrow.alpha = targAlpha;
-
+			babyArrow.alpha = 0;
 			babyArrow.ID = i;
-
 			babyArrow.loadLane();
 			arrowLanes.add(babyArrow.bgLane);
 
@@ -1992,26 +1955,48 @@ class PlayState extends MusicBeatState
 					else
 						cpuStrums.add(babyArrow);
 			}
-			// babyArrow.x += 98.5; // Tryna make it not offset because it was pissing me off + Psych Engine has it somewhat like this.
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width * 0.5) * player);
 
 			strumLineNotes.add(babyArrow);
 		}
-		arrowsGenerated = true;
 	}
 
-	private function appearStaticArrows():Void
+	private function appearStaticArrows(t:Bool = true):Void
 	{
-		var index = 0;
-		strumLineNotes.forEach(function(babyArrow:FlxSprite)
+		if (inCutscene || arrowsShown)
+			return;
+		var index:Int = 0;
+		strumLineNotes.forEachAlive(function(n:StaticArrow)
 		{
-			if (isStoryMode && !PlayStateChangeables.middleScroll)
-				babyArrow.visible = true;
-			if (index > 3 && PlayStateChangeables.middleScroll)
-				babyArrow.visible = true;
+			var targAlpha = 1;
+
+			if (PlayStateChangeables.middleScroll)
+			{
+				if (PlayStateChangeables.opponentMode)
+				{
+					if (index < 3)
+						targAlpha = 0;
+				}
+				else
+				{
+					if (index > 4)
+						targAlpha = 0;
+				}
+			}
+			if (t)
+			{
+				n.y -= 10;
+				n.alpha = 0;
+				createTween(n, {y: n.y + 10, alpha: targAlpha}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * index % 4)});
+			}
+			else
+				n.alpha = targAlpha;
+
 			index++;
 		});
+
+		arrowsShown = true;
 	}
 
 	function tweenCamIn():Void
@@ -2458,7 +2443,7 @@ class PlayState extends MusicBeatState
 			camFollowPos.setPosition(camFollow.x, camFollow.y);
 		}
 
-		if (generatedMusic && !(inCutscene || inCinematic))
+		if (generatedMusic && !inCutscene)
 		{
 			// hell
 			// note scroll code (mostly)
@@ -2619,7 +2604,6 @@ class PlayState extends MusicBeatState
 							desyncs++;
 							Debug.logTrace('Vocal Desyncs $desyncs');
 						}
-							
 			}
 		}
 	}
@@ -3989,39 +3973,6 @@ class PlayState extends MusicBeatState
 		judgementCounter.visible = (hidden) ? FlxG.save.data.judgementCounter : false;
 	}
 
-	function removeStaticArrows(?destroy:Bool = false)
-	{
-		if (arrowsGenerated)
-		{
-			arrowLanes.forEach(function(bgLane:FlxSprite)
-			{
-				arrowLanes.remove(bgLane, true);
-				if (destroy)
-					arrowLanes.destroy();
-			});
-
-			playerStrums.forEach(function(babyArrow:StaticArrow)
-			{
-				playerStrums.remove(babyArrow);
-				if (destroy)
-					babyArrow.destroy();
-			});
-			cpuStrums.forEach(function(babyArrow:StaticArrow)
-			{
-				cpuStrums.remove(babyArrow);
-				if (destroy)
-					babyArrow.destroy();
-			});
-			strumLineNotes.forEach(function(babyArrow:StaticArrow)
-			{
-				strumLineNotes.remove(babyArrow);
-				if (destroy)
-					babyArrow.destroy();
-			});
-			arrowsGenerated = false;
-		}
-	}
-
 	function changeNoteSkins(isPlayer:Bool, texture:String)
 	{
 		switch (isPlayer)
@@ -4145,7 +4096,6 @@ class PlayState extends MusicBeatState
 	{
 		#if VIDEOS
 		inCutscene = true;
-		inCinematic = true;
 		var diff:String = CoolUtil.getSuffixFromDiff(CoolUtil.difficulties[storyDifficulty]);
 		cutscene = new VideoHandler();
 		OpenFlAssets.loadBytes(Paths.video(name)).onComplete(function(bytes:openfl.utils.ByteArray):Void
@@ -4223,45 +4173,44 @@ class PlayState extends MusicBeatState
 
 	private function noteCamera(note:Note)
 	{
-		if (PlayStateChangeables.noteCamera)
+		if (!PlayStateChangeables.noteCamera)
+			return;
+		var camNoteExtend:Float = 20;
+
+		camNoteX = 0;
+		camNoteY = 0;
+
+		if (!note.isSustainNote)
 		{
-			var camNoteExtend:Float = 20;
+			if (Stage.staticCam)
+				updateCamFollow();
 
-			camNoteX = 0;
-			camNoteY = 0;
-
-			if (!note.isSustainNote)
+			switch (note.noteData)
 			{
-				if (Stage.staticCam)
-					updateCamFollow();
-
-				switch (note.noteData)
-				{
-					case 0:
-						camNoteX -= camNoteExtend;
-					case 1:
-						camNoteY += camNoteExtend;
-					case 2:
-						camNoteY -= camNoteExtend;
-					case 3:
-						camNoteX += camNoteExtend;
-				}
-
-				if (camNoteX > camNoteExtend)
-					camNoteX = camNoteExtend;
-
-				if (camNoteX < -camNoteExtend)
-					camNoteX = -camNoteExtend;
-
-				if (camNoteY > camNoteExtend)
-					camNoteY = camNoteExtend;
-
-				if (camNoteY < -camNoteExtend)
-					camNoteY = -camNoteExtend;
-
-				camFollow.x += camNoteX;
-				camFollow.y += camNoteY;
+				case 0:
+					camNoteX -= camNoteExtend;
+				case 1:
+					camNoteY += camNoteExtend;
+				case 2:
+					camNoteY -= camNoteExtend;
+				case 3:
+					camNoteX += camNoteExtend;
 			}
+
+			if (camNoteX > camNoteExtend)
+				camNoteX = camNoteExtend;
+
+			if (camNoteX < -camNoteExtend)
+				camNoteX = -camNoteExtend;
+
+			if (camNoteY > camNoteExtend)
+				camNoteY = camNoteExtend;
+
+			if (camNoteY < -camNoteExtend)
+				camNoteY = -camNoteExtend;
+
+			camFollow.x += camNoteX;
+			camFollow.y += camNoteY;
 		}
 	}
 
