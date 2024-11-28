@@ -66,7 +66,11 @@
 	<assets path="art/readme.txt" rename="do NOT readme.txt" unless="mobile" />
 	<assets path="LICENSE" rename="LICENSE.txt" unless="mobile" />
 	<assets path="assets/fonts" />
-	<assets path="alsoft.ini" unless="mobile" />
+	<!-- OpenAL config -->
+	<section if="desktop">
+		<assets path="alsoft.txt" rename="plugins/alsoft.ini" type="text" if="windows"/>
+		<assets path="alsoft.txt" rename="plugins/alsoft.conf" type="text" unless="windows"/>
+	</section>
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxedev set="webgl" />
 	<!-- Flixel -->
