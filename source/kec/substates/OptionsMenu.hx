@@ -870,7 +870,8 @@ class OptionsMenu extends MusicBeatSubstate
 
 		try
 		{
-			Sys.command('rm', ['-rf', lastStoragePath]);
+			if (FlxG.save.data.storageType != "EXTERNAL")
+				Sys.command('rm', ['-rf', lastStoragePath]);
 		}
 		catch (e:haxe.Exception)
 			trace('Failed to remove last directory. (${e.message})');
