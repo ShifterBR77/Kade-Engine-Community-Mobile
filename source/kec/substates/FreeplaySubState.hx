@@ -119,6 +119,7 @@ class ModMenu extends MusicBeatSubstate
 
 	private function refresh()
 	{
+		selectedModifierIndex = 0;
 		selectedModifier = modifiers[0];
 		selectModifier(modifiers[0]);
 	}

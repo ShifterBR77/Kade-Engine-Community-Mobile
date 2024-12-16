@@ -220,17 +220,6 @@ class StoryMenuState extends MusicBeatState
 			bullShit++;
 		}
 
-		PlayStateChangeables.modchart = true;
-		PlayStateChangeables.opponentMode = false;
-		PlayStateChangeables.mirrorMode = false;
-		PlayStateChangeables.holds = true;
-		PlayStateChangeables.healthDrain = false;
-		PlayStateChangeables.healthGain = 1;
-		PlayStateChangeables.healthLoss = 1;
-		PlayStateChangeables.practiceMode = false;
-		PlayStateChangeables.skillIssue = false;
-
-		trace("Line 165");
 		changeWeek();
 		changeDifficulty();
 
@@ -355,7 +344,6 @@ class StoryMenuState extends MusicBeatState
 				PlayState.storyPlaylist = weeksLoaded[curWeek].songs;
 				PlayState.isStoryMode = true;
 				Conductor.rate = 1;
-				PlayState.isSM = false;
 				PlayState.storyWeek = curWeek;
 				PlayState.storyDifficulty = CoolUtil.difficulties.indexOf(diffString);
 
