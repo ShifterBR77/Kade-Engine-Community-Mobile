@@ -1,9 +1,9 @@
 package kec.substates;
 
-import kec.backend.Controls.Control;
+import kec.objects.menu.CoolText;
 import kec.backend.Options;
+import kec.backend.Controls.Control;
 import kec.backend.PlayerSettings;
-import kec.objects.CoolText;
 
 class OptionCata extends FlxSprite
 {
