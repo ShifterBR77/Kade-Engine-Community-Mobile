@@ -34,7 +34,9 @@ class Init extends MusicBeatState
 
 		kec.backend.KeyBinds.keyCheck();
 		FilterUtils.initializeFilters();
+		#if FEATURE_DISCORD
 		kec.backend.Discord.load();
+		#end
 
 		FilterUtils.setColorBlindess(FlxG.save.data.colorblind);
 
