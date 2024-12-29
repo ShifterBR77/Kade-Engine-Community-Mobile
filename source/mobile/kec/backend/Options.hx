@@ -131,7 +131,7 @@ class MobileControlsOpacityOption extends Option
 
 	override function getValue():String
 	{
-		return "Mobile Controls Opacity: " + kec.backend.util.HelperFunctions.truncateFloat(FlxG.save.data.mobileCAlpha, 1);
+		return "Mobile Controls Opacity: " + kec.util.HelperFunctions.truncateFloat(FlxG.save.data.mobileCAlpha, 1);
 	}
 }
 

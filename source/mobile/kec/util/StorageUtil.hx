@@ -20,7 +20,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package mobile.kec.backend.util;
+package mobile.kec.util;
 
 import lime.system.System as LimeSystem;
 import haxe.io.Path;
