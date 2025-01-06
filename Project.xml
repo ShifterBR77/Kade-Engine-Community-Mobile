@@ -141,6 +141,9 @@
 	<haxeflag name="--macro" value="include('haxe.ui.containers')" />
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
 	<certificate path="key.keystore" password="kadeenginecommunity" alias="kecport" alias-password="kadeenginecommunity" if="android" unless="debug" />
+	<!-- Category Type for Apple Systems -->
+	<config:ios category_type="public.app-category.music-games" />
+	<config:mac category_type="public.app-category.music-games" />
 	<!-- _________________________________ Custom _______________________________ -->
 	<!-- Place custom nodes like icons here (higher priority to override the HaxeFlixel icon) -->
 	<assets path="art/iconOG.png" rename="icon.png" if="linux" />
