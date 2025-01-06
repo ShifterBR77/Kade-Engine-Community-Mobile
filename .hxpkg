@@ -4,7 +4,8 @@
     "pkgs": [
       {
         "name": "flixel",
-        "version": "5.8.0"
+        "link": "https://github.com/MobilePorting/flixel.git",
+        "branch": "5.8.0"
       },
       {
         "name": "openfl",
