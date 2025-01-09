@@ -290,14 +290,12 @@ class CoolUtil
 
 	public static function showPopUp(message:String, ?title:String):Void
 	{
-		#if android
+		/*#if android
 		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
-		#elseif windows
+		#else*/ #if windows
 		kec.backend.cpp.CPPInterface.messageBox(message, title);
-		#elseif (!ios || !iphonesim)
-		lime.app.Application.current.window.alert(message, title);
 		#else
-		trace('$title - $message');
+		lime.app.Application.current.window.alert(message, title);
 		#end
 	}
 }
