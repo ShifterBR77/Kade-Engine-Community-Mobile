@@ -48,6 +48,10 @@ New And Improved Freeplay By BoloVEVO.
 ### Shoutouts
 <details>
 
+- [FNF Assets License](https://github.com/FunkinCrew/funkin.assets/blob/4abd6cc06e56c6d56440fa858262932db118250c/LICENSE.md)
+
+- [FNF Art License](https://github.com/FunkinCrew/funkin.art/blob/fbd3e3df77734606d88516770b71b56e6fa04bce/LICENSE.md)
+
 - [Lily](https://www.youtube.com/@mcagabe19) - Head Porting of KEC
 
 - [TheRealJake_12](https://www.youtube.com/channel/UCYy-RfMjVx-1dYnmNQGB2sw) - *mostly everything.*
