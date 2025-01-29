@@ -7,7 +7,7 @@ permissions:
 
 env:
   PROJECT_NAME: "Kade Engine Community"
-  REPO_PATH: MobilePorting/Kade-Engine-Community-Mobile
+  REPO_PATH: ShifterBR77/Kade-Engine-Community-Mobile
 
 jobs:
   get-commit-hash:
